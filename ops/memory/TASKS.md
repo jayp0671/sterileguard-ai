@@ -3,7 +3,7 @@
 Mirror of ClickUp (SterileGuard workspace, folder SterileGuard AI). ClickUp is the source of truth.
 Edit with `sg memory task add|done`.
 
-Current sprint: Sprint 1 (Oct 12-18) Foundation
+Current sprint: Sprint 2 (Oct 19-25) Data, simulator, shell
 
 | ID | Title | Lead | Status | PR |
 | --- | --- | --- | --- | --- |
@@ -15,3 +15,8 @@ Current sprint: Sprint 1 (Oct 12-18) Foundation
 | SG-05 | Test strategy and harness for every layer | Carlos | done; review pending |  |
 | SG-06 | Real data intake: week 1, log template, sim parameters | Leo | repo done; Leo tasks pending |  |
 | SG-07 | Course admin: Carlos joined | All | done | |
+| SG-08 | Canonical schema, shift tables, datasets, audit log | Leo, Jay | done; PR pending merge | |
+| SG-09 | SimPy simulator, calibration, 5,000-day dataset | Leo, Jay | to do | |
+| SG-10 | Design system, app shell, styled auth | Jay | to do | |
+| SG-11 | API security layer and Plan Tomorrow | Jay | to do | |
+| SG-12 | Simulator correctness suite and RLS matrix | Carlos | to do | |

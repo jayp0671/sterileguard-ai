@@ -26,4 +26,5 @@ def main(path: str) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1]))
+    # lefthook on Windows splits paths that contain spaces into several arguments.
+    sys.exit(main(" ".join(sys.argv[1:])))

@@ -44,3 +44,9 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: ClickUp SG-02 to SG-06 marked complete with comments; TASKS.md updated
 - Next: Jay: gh auth login and Docker in the agent session, then: open the PR for sprint1/verify, read CI and fix it, supabase start + local keys into .env, local db tests, API image build + /ready, local demo users for the role e2e spec. Then Sprint 2: SG-08
 - Gotchas: none new
+
+## 2026-10-22 · Claude Code (for Jay) · SG-08
+
+- Done: sg_data.schema (FieldSpec registry, to_pandera, to_pydantic, db_columns), defaults.fill_tier2, 0004_shift_data (datasets, shift_plans, shift_actuals, RLS), 0005_audit (append-only audit_log + audit_row_change on 6 tables), pgTAP 0004 (23), drift test, repo field-list scan; local and staging migrated, pgTAP 46/46 on both
+- Next: SG-09 simulator
+- Gotchas: Ticket named the files 0003_shift_data/0004_audit; 0003 was taken, so they are 0004/0005 and SG-11 idempotency becomes 0006. to_pandera returns a DataFrameSchema (runtime-generated columns). Missing-setting Tier 2 defaults use FieldSpec.fallback. gh is not logged in, so PRs are opened by Jay.
