@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 2 (Oct 19-25) Data, simulator, shell
-- Branch: sg-08/canonical-schema
+- Branch: sg-09/simulator
 - Latest migration: 0005_audit.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-09 simulator
+- Next up (from handoff): SG-10 design system and shell
 
 ## Tickets
 
@@ -20,13 +20,14 @@
 - SG-06 repo done; Leo tasks pending: Real data intake: week 1, log template, sim parameters
 - SG-07 done: Course admin: Carlos joined
 - SG-08 done; PR pending merge: Canonical schema, shift tables, datasets, audit log
-- SG-09 to do: SimPy simulator, calibration, 5,000-day dataset
+- SG-09 done; real-day calibration waits on Leo: SimPy simulator, calibration, 5,000-day dataset
 - SG-10 to do: Design system, app shell, styled auth
 - SG-11 to do: API security layer and Plan Tomorrow
 - SG-12 to do: Simulator correctness suite and RLS matrix
 
 ## Tests
 
+- affected-python: 104 passed, 0 failed, 0 skipped (aa77394)
 - db-local: 1 passed, 0 failed, 0 skipped (a2e5a5b)
 - db-staging: 46 passed, 0 failed, 0 skipped (a2e5a5b)
 - python: 102 passed, 0 failed, 0 skipped (a2e5a5b)
@@ -37,6 +38,9 @@
 
 ## Last 10 commits
 
+- 82af929 jayp0671: feat(sim): SimPy simulator, LHS 5,000-day dataset, calibration and sg sim commands [SG-09]
+- aa77394 jayp0671: test(cli): isolate temp repos from git hook env vars [SG-08]
+- c31ecd2 jayp0671: feat(db,data): canonical schema, shift tables, datasets and append-only audit log [SG-08]
 - a2e5a5b Jay Patel: chore: Sprint 1 verification fixes (db/doctor env handling, memory logs) (#1)
 - e84217e jayp0671: docs(data): real data intake template, data dictionary, sim parameters, approvals [SG-06]
 - ac9abe1 jayp0671: test: test strategy and harness for every layer [SG-05]
