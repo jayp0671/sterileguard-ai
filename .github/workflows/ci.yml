@@ -76,6 +76,15 @@ jobs:
       - run: pnpm --filter @sg/web build
       - run: docker build -f apps/api/Dockerfile --build-arg GIT_SHA=${{ github.sha }} -t sg-api:ci .
 
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: pnpm exec supabase start -x studio,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor,realtime,storage-api
+      - run: uv run sg db rls-test
+      - run: uv run sg db lint
+
   secrets:
     runs-on: ubuntu-latest
     steps:

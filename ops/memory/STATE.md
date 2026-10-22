@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 1 (Oct 12-18) Foundation
-- Branch: sg-02/scaffolds-ci
-- Latest migration: none
+- Branch: sg-03/tenancy-rls
+- Latest migration: 0001_tenancy.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-03 tenancy schema and RLS
+- Next up (from handoff): SG-04 auth
 
 ## Tickets
 
@@ -22,6 +22,7 @@
 
 ## Tests
 
+- affected-python: 34 passed, 0 failed, 0 skipped (a99bfa5)
 - python: 34 passed, 0 failed, 0 skipped (3d76def)
 - web-contracts: 4 passed, 0 failed, 0 skipped (3d76def)
 - web-web: 5 passed, 0 failed, 0 skipped (3d76def)
@@ -32,4 +33,5 @@
 
 ## Last 10 commits
 
+- a99bfa5 jayp0671: feat(web,api): scaffolds, typed API contract and CI pipeline [SG-02]
 - 3d76def jayp0671: feat(repo): monorepo, sg CLI core, repo memory, agent hooks and skills [SG-01]
