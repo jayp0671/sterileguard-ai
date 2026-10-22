@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 1 (Oct 12-18) Foundation
-- Branch: sg-06/real-data-intake
+- Branch: sprint1/verify
 - Latest migration: 0003_session_policy.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Sprint 2 starts with SG-08 (schema and shift tables). First: Jay applies the blocked items listed in STATE (Supabase access, Docker, auth dashboard settings), then mark SG-02..SG-06 in ClickUp
+- Next up (from handoff): Open a PR for sprint1/verify; mark SG-04, SG-05, SG-06 complete in ClickUp; run local stack, db tests, Docker image build and CI check once Docker and gh work in the agent session; create local demo users to unblock the role spec
 
 ## Tickets
 
@@ -22,11 +22,12 @@
 
 ## Tests
 
-- affected-python: 75 passed, 0 failed, 0 skipped (ac9abe1)
-- e2e: 3 passed, 0 failed, 1 skipped (b9ef844)
-- python: 75 passed, 0 failed, 0 skipped (b9ef844)
-- web-contracts: 4 passed, 0 failed, 0 skipped (b9ef844)
-- web-web: 39 passed, 0 failed, 0 skipped (b9ef844)
+- affected-python: 77 passed, 0 failed, 0 skipped (3df0c99)
+- db-staging: 23 passed, 0 failed, 0 skipped (e84217e)
+- e2e: 3 passed, 0 failed, 1 skipped (e84217e)
+- python: 77 passed, 0 failed, 0 skipped (e84217e)
+- web-contracts: 4 passed, 0 failed, 0 skipped (e84217e)
+- web-web: 39 passed, 0 failed, 0 skipped (e84217e)
 
 ## Deployed URLs
 
@@ -34,6 +35,8 @@
 
 ## Last 10 commits
 
+- 3df0c99 jayp0671: fix(db): split local and staging env, guard db targets, Docker-free pgTAP runner [SG-03]
+- e84217e jayp0671: docs(data): real data intake template, data dictionary, sim parameters, approvals [SG-06]
 - ac9abe1 jayp0671: test: test strategy and harness for every layer [SG-05]
 - b9ef844 jayp0671: feat(auth): invite-only sign-in, mandatory TOTP and session policy [SG-04]
 - 3bd5ef3 jayp0671: feat(db): tenancy schema, roles and RLS foundation [SG-03]
