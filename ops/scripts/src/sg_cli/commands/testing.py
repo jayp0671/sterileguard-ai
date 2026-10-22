@@ -108,11 +108,12 @@ def vitest_suite(result: core.Result, suite: str, package: str) -> bool:
     return _run_suite(result, suite, cmd, junit)
 
 
-def run_unit(result: core.Result, python: bool, web: bool, cov: bool) -> bool:
+def run_unit(result: core.Result, python: bool, web: bool, cov: bool, fast: bool = False) -> bool:
     ok = True
     if python:
         extra = ["--cov", "--cov-report=xml:ops/reports/test/coverage-py.xml"] if cov else []
-        extra += ["-m", "not e2e and not integration"]
+        markers = "not e2e and not integration" + (" and not slow" if fast else "")
+        extra += ["-m", markers]
         ok &= pytest_suite(result, "python", list(PY_MEMBERS.values()), extra)
     if web:
         for path, package in JS_PACKAGES.items():
@@ -125,9 +126,10 @@ def unit(
     python_only: bool = typer.Option(False, "--python-only"),
     web_only: bool = typer.Option(False, "--web-only"),
     cov: bool = typer.Option(True, "--cov/--no-cov", help="Collect Python coverage."),
+    fast: bool = typer.Option(False, "--fast", help="Skip tests marked slow."),
 ) -> None:
     result = core.Result("test", "unit")
-    result.ok = run_unit(result, python=not web_only, web=not python_only, cov=cov)
+    result.ok = run_unit(result, python=not web_only, web=not python_only, cov=cov, fast=fast)
     result.finish()
 
 
@@ -171,5 +173,93 @@ def affected(base: str = typer.Option("origin/main", "--base")) -> None:
         core.run(["pnpm", "exec", "turbo", "run", "test", f"--filter=...[{base}]"], check=False)
         == 0
     )
+    result.ok = ok
+    result.finish()
+
+
+def playwright_suite(result: core.Result, suite: str, args: list[str]) -> bool:
+    junit = report_dir() / "junit-e2e.xml"
+    cmd = ["pnpm", "--filter", "@sg/web", "exec", "playwright", "test", *args]
+    ok = _run_suite(result, suite, cmd, junit)
+    return ok
+
+
+@app.command("e2e", help="Playwright end-to-end tests (chromium, firefox, webkit, tablet).")
+def e2e(
+    project: list[str] = typer.Option([], "--project", help="Repeatable; default all projects."),
+    headed: bool = typer.Option(False, "--headed"),
+    grep: str = typer.Option("", "--grep"),
+) -> None:
+    result = core.Result("test", "e2e")
+    args = [f"--project={p}" for p in project]
+    args += ["--headed"] if headed else []
+    args += [f"--grep={grep}"] if grep else []
+    result.ok = playwright_suite(result, "e2e", args)
+    result.finish()
+
+
+@app.command("a11y", help="Accessibility checks: Playwright specs tagged @a11y (axe in SG-28).")
+def a11y() -> None:
+    result = core.Result("test", "a11y")
+    result.ok = playwright_suite(
+        result, "a11y", ["--project=chromium", "--grep=@a11y", "--pass-with-no-tests"]
+    )
+    result.finish()
+
+
+@app.command("visual", help="Visual regression: Playwright specs tagged @visual (SG-31).")
+def visual(update: bool = typer.Option(False, "--update", help="Update snapshots.")) -> None:
+    result = core.Result("test", "visual")
+    args = ["--grep=@visual", "--pass-with-no-tests"] + (["--update-snapshots"] if update else [])
+    result.ok = playwright_suite(result, "visual", args)
+    result.finish()
+
+
+@app.command("db", help="pgTAP database tests (supabase/tests); full RLS matrix in SG-12.")
+def db() -> None:
+    result = core.Result("test", "db")
+    start = time.perf_counter()
+    code = core.run(["pnpm", "exec", "supabase", "test", "db"], check=False)
+    if not core.OPTIONS.dry_run:
+        record(
+            "db",
+            {"passed": int(code == 0), "failed": int(code != 0), "skipped": 0},
+            time.perf_counter() - start,
+        )
+    result.ok = code == 0
+    result.finish()
+
+
+LATER = {
+    "load": ("SG-31", "k6 load tests"),
+    "security": ("SG-28", "ZAP, gitleaks, Semgrep and audits"),
+    "i18n": ("SG-27", "missing keys and pseudo-locale"),
+    "agents": ("SG-26", "agent evals with recorded NIM responses"),
+}
+
+
+def _later(name: str, ticket: str, what: str) -> None:
+    result = core.Result("test", name)
+    result.data.update(implemented=False, ticket=ticket)
+    result.add(f"sg test {name} ({what}): not implemented yet, see {ticket}")
+    result.finish()
+
+
+for _name, (_ticket, _what) in LATER.items():
+    app.command(_name, help=f"{_what} (built by {_ticket}).")(
+        lambda n=_name, t=_ticket, w=_what: _later(n, t, w)
+    )
+
+
+@app.command("all", help="unit + api + db + e2e (chromium). What CI runs on a release.")
+def all_() -> None:
+    result = core.Result("test", "all")
+    ok = run_unit(result, python=True, web=True, cov=True)
+    code = core.run(["pnpm", "exec", "supabase", "status"], check=False)
+    if code == 0:
+        ok &= core.run(["pnpm", "exec", "supabase", "test", "db"], check=False) == 0
+    else:
+        result.add("- db: skipped (local Supabase not running)")
+    ok &= playwright_suite(result, "e2e", ["--project=chromium"])
     result.ok = ok
     result.finish()

@@ -27,6 +27,7 @@ dev = [
   "pytest-cov>=7.0",
   "hypothesis>=6.140",
   "pytest-asyncio>=1.2",
+  "polyfactory>=2.22",
 ]
 
 [tool.ruff]
@@ -50,10 +51,21 @@ mypy_path = "apps/api/src:packages/data/src:packages/sim/src:packages/ml/src:pac
 explicit_package_bases = true
 
 [tool.pytest.ini_options]
-addopts = "--import-mode=importlib"
+addopts = "--import-mode=importlib --strict-markers -ra"
 asyncio_mode = "auto"
+markers = [
+  "slow: long-running tests (simulation, training); skipped by sg test unit --fast",
+  "integration: needs a running database or API",
+  "e2e: end-to-end through a browser",
+  "nim: replays recorded NVIDIA NIM responses; never calls the live API",
+]
 testpaths = ["apps/api/tests", "packages/data/tests", "packages/sim/tests", "packages/ml/tests", "packages/agents/tests", "ops/scripts/tests"]
 
 [tool.coverage.run]
-source = ["sg_api", "sg_data", "sg_sim", "sg_ml", "sg_agents", "sg_cli"]
+# sg_cli is tested but not held to the 80% target (docs/testing.md).
+source = ["sg_api", "sg_data", "sg_sim", "sg_ml", "sg_agents"]
 branch = true
+
+[tool.coverage.report]
+fail_under = 80
+skip_empty = true

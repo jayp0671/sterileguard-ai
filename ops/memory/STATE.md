@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 1 (Oct 12-18) Foundation
-- Branch: sg-04/auth
+- Branch: sg-05/test-harness
 - Latest migration: 0003_session_policy.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-05 test harness
+- Next up (from handoff): SG-06 real data intake docs and template
 
 ## Tickets
 
@@ -22,10 +22,11 @@
 
 ## Tests
 
-- affected-python: 19 passed, 0 failed, 0 skipped (3bd5ef3)
-- python: 34 passed, 0 failed, 0 skipped (3d76def)
-- web-contracts: 4 passed, 0 failed, 0 skipped (3d76def)
-- web-web: 5 passed, 0 failed, 0 skipped (3d76def)
+- affected-python: 57 passed, 0 failed, 0 skipped (b9ef844)
+- e2e: 3 passed, 0 failed, 1 skipped (b9ef844)
+- python: 75 passed, 0 failed, 0 skipped (b9ef844)
+- web-contracts: 4 passed, 0 failed, 0 skipped (b9ef844)
+- web-web: 39 passed, 0 failed, 0 skipped (b9ef844)
 
 ## Deployed URLs
 
@@ -33,6 +34,7 @@
 
 ## Last 10 commits
 
+- b9ef844 jayp0671: feat(auth): invite-only sign-in, mandatory TOTP and session policy [SG-04]
 - 3bd5ef3 jayp0671: feat(db): tenancy schema, roles and RLS foundation [SG-03]
 - a99bfa5 jayp0671: feat(web,api): scaffolds, typed API contract and CI pipeline [SG-02]
 - 3d76def jayp0671: feat(repo): monorepo, sg CLI core, repo memory, agent hooks and skills [SG-01]

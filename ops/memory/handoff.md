@@ -20,3 +20,9 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: 0002_invites (RLS, accept_pending_invites), 0003_session_policy (session_age_seconds), API JWKS verification + aal2 + 12h server check + recent-TOTP dependency, POST /v1/admin/invites (+resend, revoke) with domain and platform_admin rules, POST /v1/audit/auth-event, web proxy route guard, /auth/confirm, sign-in, magic-link, accept-invite (zxcvbn), reset-password, mfa enroll/challenge, idle timeout modal, sign out of all devices, ReauthDialog, auth-settings runbook, ADR-0002
 - Next: SG-05 test harness
 - Gotchas: Dashboard auth settings, SMTP, Turnstile secret and email templates must be applied by hand from ops/runbooks/auth-settings.md. citext operators are not visible under search_path='', so emails compare with lower(). zxcvbn-ts v4 uses ZxcvbnFactory. Email links must use the token_hash templates in the runbook.
+
+## 2026-10-21 · Claude Code (for Jay) · SG-05
+
+- Done: docs/testing.md (all 16 layers), pytest strict markers + Hypothesis ci/dev profiles + polyfactory + per-member conftests, 80% coverage gate on sg_api/sim/ml/data, Vitest with RTL + MSW (no network) + 70% coverage gate, Playwright (chromium/firefox/webkit/tablet, per-role TOTP global setup via otplib), sg test unit/api/db/e2e/a11y/visual/affected/all (+ stubs for load/security/i18n/agents), JUnit + latest.json, bug and PR templates
+- Next: SG-06 real data intake docs and template
+- Gotchas: MSW 3 renamed onUnhandledRequest to onUnhandledFrame. Role-scoped e2e specs skip until SG-16 seeds demo users and E2E_* env vars are set. docs/testing.md needs Jay and Leo review.

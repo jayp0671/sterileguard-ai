@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 import threading
 from typing import IO
 
 import typer
+from rich.markup import escape
 
 from sg_cli import core
 
@@ -33,8 +35,11 @@ PROCS: list[tuple[str, str, list[str]]] = [
 
 
 def _pump(name: str, color: str, stream: IO[str]) -> None:
+    # Child output may contain characters the console encoding (cp1252 on Windows) lacks.
+    encoding = sys.stdout.encoding or "utf-8"
     for line in stream:
-        core.console.print(f"[{color}]{name:>4} |[/] {line.rstrip()}", markup=True, soft_wrap=True)
+        safe = line.rstrip().encode(encoding, "replace").decode(encoding)
+        core.console.print(f"[{color}]{name:>4} |[/] {escape(safe)}", markup=True, soft_wrap=True)
 
 
 def dev(
