@@ -1,0 +1,56 @@
+# Node
+node_modules/
+.next/
+out/
+dist/
+coverage/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+ops/secrets/**
+
+# Reports (generated)
+ops/reports/**
+!ops/reports/**/
+!ops/reports/**/.gitkeep
+!ops/reports/weekly/**
+
+# Data and models: real data never enters git
+data/**
+*.joblib
+
+# Test output
+apps/web/e2e/.auth/
+apps/web/test-results/
+apps/web/playwright-report/
+junit*.xml
+
+# Supabase local
+supabase/.branches
+supabase/.temp
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.claude/worktrees/
+.claude/settings.local.json

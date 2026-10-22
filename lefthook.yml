@@ -1,0 +1,29 @@
+# Git hooks. Installed by `sg bootstrap` (pnpm exec lefthook install).
+pre-commit:
+  parallel: false
+  commands:
+    biome:
+      glob: "*.{ts,tsx,js,jsx,json,jsonc,css}"
+      run: pnpm exec biome check --write --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+    ruff:
+      glob: "*.py"
+      run: uv run ruff format {staged_files} && uv run ruff check --fix {staged_files}
+      stage_fixed: true
+    secrets:
+      run: uv run --no-project python ops/scripts/hooks/secret_scan.py
+
+commit-msg:
+  commands:
+    conventional:
+      run: uv run --no-project python ops/scripts/hooks/commit_msg.py {1}
+
+pre-push:
+  commands:
+    affected:
+      run: uv run sg test affected
+
+post-merge:
+  commands:
+    memory:
+      run: uv run sg memory sync

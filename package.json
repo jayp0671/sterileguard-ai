@@ -1,0 +1,22 @@
+{
+  "name": "sterileguard",
+  "private": true,
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "biome ci .",
+    "format": "biome check --write .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "lefthook": "1.13.0",
+    "turbo": "2.5.6",
+    "supabase": "2.40.7"
+  }
+}

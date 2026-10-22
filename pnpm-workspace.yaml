@@ -1,0 +1,10 @@
+packages:
+  - "apps/web"
+  - "packages/contracts"
+onlyBuiltDependencies:
+  - lefthook
+  - supabase
+  - esbuild
+  - sharp
+  - "@tailwindcss/oxide"
+  - unrs-resolver

@@ -1,0 +1,50 @@
+[project]
+name = "sterileguard-workspace"
+version = "0.1.0"
+description = "SterileGuard AI monorepo (uv workspace root)"
+requires-python = ">=3.12,<3.13"
+dependencies = ["sg-cli"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["apps/api", "packages/data", "packages/sim", "packages/ml", "packages/agents", "ops/scripts"]
+
+[tool.uv.sources]
+sg-api = { workspace = true }
+sg-data = { workspace = true }
+sg-sim = { workspace = true }
+sg-ml = { workspace = true }
+sg-agents = { workspace = true }
+sg-cli = { workspace = true }
+
+[dependency-groups]
+dev = [
+  "ruff>=0.13",
+  "mypy>=1.18",
+  "pytest>=8.4",
+  "pytest-cov>=7.0",
+  "hypothesis>=6.140",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".claude/skills", ".agents/skills"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["sg_api", "sg_data", "sg_sim", "sg_ml", "sg_agents", "sg_cli"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+mypy_path = "apps/api/src:packages/data/src:packages/sim/src:packages/ml/src:packages/agents/src:ops/scripts/src"
+explicit_package_bases = true
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = ["apps/api/tests", "packages/data/tests", "packages/sim/tests", "packages/ml/tests", "packages/agents/tests", "ops/scripts/tests"]
