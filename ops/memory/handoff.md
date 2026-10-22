@@ -38,3 +38,9 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: .env split into local and *_STAGING blocks (DB password URL-encoded, backup in .env.bak); sg db guards local vs hosted and redacts URLs; Python pgTAP runner; staging migrated (0001-0003), seeded, lint clean, pgTAP 23/23; unit 77/39/4 pass; e2e chromium 3 pass, 1 skip; ClickUp SG-02 and SG-03 marked complete with comments
 - Next: Open a PR for sprint1/verify; mark SG-04, SG-05, SG-06 complete in ClickUp; run local stack, db tests, Docker image build and CI check once Docker and gh work in the agent session; create local demo users to unblock the role spec
 - Gotchas: Docker and gh are not visible from the agent session (no daemon pipe; gh not logged in). Local SUPABASE_ANON_KEY and NEXT_PUBLIC_SUPABASE_ANON_KEY are empty until 'supabase status -o env'. The agent will not create accounts on hosted Supabase.
+
+## 2026-10-22 · Claude Code (for Jay) · Sprint 1 close
+
+- Done: ClickUp SG-02 to SG-06 marked complete with comments; TASKS.md updated
+- Next: Jay: gh auth login and Docker in the agent session, then: open the PR for sprint1/verify, read CI and fix it, supabase start + local keys into .env, local db tests, API image build + /ready, local demo users for the role e2e spec. Then Sprint 2: SG-08
+- Gotchas: none new

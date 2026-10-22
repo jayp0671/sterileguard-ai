@@ -7,22 +7,22 @@
 - Latest migration: 0003_session_policy.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Open a PR for sprint1/verify; mark SG-04, SG-05, SG-06 complete in ClickUp; run local stack, db tests, Docker image build and CI check once Docker and gh work in the agent session; create local demo users to unblock the role spec
+- Next up (from handoff): Jay: gh auth login and Docker in the agent session, then: open the PR for sprint1/verify, read CI and fix it, supabase start + local keys into .env, local db tests, API image build + /ready, local demo users for the role e2e spec. Then Sprint 2: SG-08
 
 ## Tickets
 
 - SG-00 reference: READ FIRST: agent briefing, hard rules, DoD
-- SG-01 done (ClickUp updated): Monorepo, sg CLI core, repo memory, agent hooks, skills
-- SG-02 done (ClickUp not updated): Web and API scaffolds, typed API contract, CI
-- SG-03 done, staging blocked (ClickUp not updated): Supabase projects, tenancy schema, roles, RLS
-- SG-04 done, dashboard settings blocked (ClickUp not updated): Auth: invite-only, password, magic link, TOTP, session policy
-- SG-05 done, review pending (ClickUp not updated): Test strategy and harness for every layer
-- SG-06 docs done, Leo's tasks pending (ClickUp not updated): Real data intake: week 1, log template, sim parameters
+- SG-01 done: Monorepo, sg CLI core, repo memory, agent hooks, skills
+- SG-02 done; CI and Docker image unverified: Web and API scaffolds, typed API contract, CI
+- SG-03 done; staging migrated, pgTAP 23/23: Supabase projects, tenancy schema, roles, RLS
+- SG-04 done; TOTP journey pending demo users: Auth: invite-only, password, magic link, TOTP, session policy
+- SG-05 done; review pending: Test strategy and harness for every layer
+- SG-06 repo done; Leo tasks pending: Real data intake: week 1, log template, sim parameters
 - SG-07 done: Course admin: Carlos joined
 
 ## Tests
 
-- affected-python: 77 passed, 0 failed, 0 skipped (3df0c99)
+- affected-python: 77 passed, 0 failed, 0 skipped (071908f)
 - db-staging: 23 passed, 0 failed, 0 skipped (e84217e)
 - e2e: 3 passed, 0 failed, 1 skipped (e84217e)
 - python: 77 passed, 0 failed, 0 skipped (e84217e)
@@ -35,6 +35,7 @@
 
 ## Last 10 commits
 
+- 071908f jayp0671: docs(memory): sprint 1 verification handoff
 - 3df0c99 jayp0671: fix(db): split local and staging env, guard db targets, Docker-free pgTAP runner [SG-03]
 - e84217e jayp0671: docs(data): real data intake template, data dictionary, sim parameters, approvals [SG-06]
 - ac9abe1 jayp0671: test: test strategy and harness for every layer [SG-05]
