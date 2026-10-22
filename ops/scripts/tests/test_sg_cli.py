@@ -28,6 +28,9 @@ def _git(cwd: Path, *args: str) -> None:
 @pytest.fixture
 def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """A temporary git repo shaped like ours, with SG_ROOT pointing at it."""
+    # Inside a git hook (pre-push) GIT_DIR and friends point at the real repo.
+    for var in ("GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE", "GIT_PREFIX"):
+        monkeypatch.delenv(var, raising=False)
     (tmp_path / "AGENTS.md").write_text("x")
     mem = tmp_path / "ops" / "memory"
     mem.mkdir(parents=True)
