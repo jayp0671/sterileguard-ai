@@ -26,3 +26,9 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: docs/testing.md (all 16 layers), pytest strict markers + Hypothesis ci/dev profiles + polyfactory + per-member conftests, 80% coverage gate on sg_api/sim/ml/data, Vitest with RTL + MSW (no network) + 70% coverage gate, Playwright (chromium/firefox/webkit/tablet, per-role TOTP global setup via otplib), sg test unit/api/db/e2e/a11y/visual/affected/all (+ stubs for load/security/i18n/agents), JUnit + latest.json, bug and PR templates
 - Next: SG-06 real data intake docs and template
 - Gotchas: MSW 3 renamed onUnhandledRequest to onUnhandledFrame. Role-scoped e2e specs skip until SG-16 seeds demo users and E2E_* env vars are set. docs/testing.md needs Jay and Leo review.
+
+## 2026-10-21 · Claude Code (for Jay) · SG-06
+
+- Done: docs/domain/daily-log-template.xlsx + .csv (exact column names, README sheet, validation, no values), data-dictionary.md (5 questions with proposed answers marked TO CONFIRM, every field defined), parameters.md (every parameter with source and confidence, estimates marked), data-access.md (status table plus both request drafts), .gitignore guard for real-data filenames
+- Next: Sprint 2 starts with SG-08 (schema and shift tables). First: Jay applies the blocked items listed in STATE (Supabase access, Docker, auth dashboard settings), then mark SG-02..SG-06 in ClickUp
+- Gotchas: Only Leo can: fill week 1 privately, answer the five TO CONFIRM questions, verify parameters, send both approval requests, and log 5+ real days. ClickUp writes were denied for this agent after SG-01, so SG-02..SG-06 status and comments still need updating in ClickUp.

@@ -54,3 +54,9 @@ Thumbs.db
 .idea/
 .claude/worktrees/
 .claude/settings.local.json
+
+# Guard: real data files must never be committed (SG-06)
+docs/domain/*real*
+docs/domain/*week*
+*.real.csv
+*.real.xlsx

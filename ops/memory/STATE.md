@@ -3,26 +3,26 @@
 # STATE
 
 - Current sprint: Sprint 1 (Oct 12-18) Foundation
-- Branch: sg-05/test-harness
+- Branch: sg-06/real-data-intake
 - Latest migration: 0003_session_policy.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-06 real data intake docs and template
+- Next up (from handoff): Sprint 2 starts with SG-08 (schema and shift tables). First: Jay applies the blocked items listed in STATE (Supabase access, Docker, auth dashboard settings), then mark SG-02..SG-06 in ClickUp
 
 ## Tickets
 
 - SG-00 reference: READ FIRST: agent briefing, hard rules, DoD
-- SG-01 in progress: Monorepo, sg CLI core, repo memory, agent hooks, skills
-- SG-02 to do: Web and API scaffolds, typed API contract, CI
-- SG-03 to do: Supabase projects, tenancy schema, roles, RLS
-- SG-04 to do: Auth: invite-only, password, magic link, TOTP, session policy
-- SG-05 to do: Test strategy and harness for every layer
-- SG-06 to do: Real data intake: week 1, log template, sim parameters
+- SG-01 done (ClickUp updated): Monorepo, sg CLI core, repo memory, agent hooks, skills
+- SG-02 done (ClickUp not updated): Web and API scaffolds, typed API contract, CI
+- SG-03 done, staging blocked (ClickUp not updated): Supabase projects, tenancy schema, roles, RLS
+- SG-04 done, dashboard settings blocked (ClickUp not updated): Auth: invite-only, password, magic link, TOTP, session policy
+- SG-05 done, review pending (ClickUp not updated): Test strategy and harness for every layer
+- SG-06 docs done, Leo's tasks pending (ClickUp not updated): Real data intake: week 1, log template, sim parameters
 - SG-07 done: Course admin: Carlos joined
 
 ## Tests
 
-- affected-python: 57 passed, 0 failed, 0 skipped (b9ef844)
+- affected-python: 75 passed, 0 failed, 0 skipped (ac9abe1)
 - e2e: 3 passed, 0 failed, 1 skipped (b9ef844)
 - python: 75 passed, 0 failed, 0 skipped (b9ef844)
 - web-contracts: 4 passed, 0 failed, 0 skipped (b9ef844)
@@ -34,6 +34,7 @@
 
 ## Last 10 commits
 
+- ac9abe1 jayp0671: test: test strategy and harness for every layer [SG-05]
 - b9ef844 jayp0671: feat(auth): invite-only sign-in, mandatory TOTP and session policy [SG-04]
 - 3bd5ef3 jayp0671: feat(db): tenancy schema, roles and RLS foundation [SG-03]
 - a99bfa5 jayp0671: feat(web,api): scaffolds, typed API contract and CI pipeline [SG-02]
