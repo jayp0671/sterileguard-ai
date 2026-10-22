@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 1 (Oct 12-18) Foundation
-- Branch: sg-03/tenancy-rls
-- Latest migration: 0001_tenancy.sql
+- Branch: sg-04/auth
+- Latest migration: 0003_session_policy.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-04 auth
+- Next up (from handoff): SG-05 test harness
 
 ## Tickets
 
@@ -22,7 +22,7 @@
 
 ## Tests
 
-- affected-python: 34 passed, 0 failed, 0 skipped (a99bfa5)
+- affected-python: 19 passed, 0 failed, 0 skipped (3bd5ef3)
 - python: 34 passed, 0 failed, 0 skipped (3d76def)
 - web-contracts: 4 passed, 0 failed, 0 skipped (3d76def)
 - web-web: 5 passed, 0 failed, 0 skipped (3d76def)
@@ -33,5 +33,6 @@
 
 ## Last 10 commits
 
+- 3bd5ef3 jayp0671: feat(db): tenancy schema, roles and RLS foundation [SG-03]
 - a99bfa5 jayp0671: feat(web,api): scaffolds, typed API contract and CI pipeline [SG-02]
 - 3d76def jayp0671: feat(repo): monorepo, sg CLI core, repo memory, agent hooks and skills [SG-01]

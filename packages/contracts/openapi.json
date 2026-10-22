@@ -1,6 +1,53 @@
 {
   "components": {
     "schemas": {
+      "Accepted": {
+        "properties": {
+          "status": {
+            "const": "accepted",
+            "default": "accepted",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "Accepted",
+        "type": "object"
+      },
+      "AppRole": {
+        "enum": [
+          "technician",
+          "supervisor",
+          "dept_admin",
+          "data_steward",
+          "platform_admin"
+        ],
+        "title": "AppRole",
+        "type": "string"
+      },
+      "AuthEvent": {
+        "properties": {
+          "event": {
+            "enum": [
+              "sign_in_success",
+              "sign_in_failure",
+              "mfa_enroll",
+              "mfa_unenroll",
+              "mfa_challenge_failure",
+              "sign_out",
+              "sign_out_global",
+              "idle_timeout",
+              "session_expired"
+            ],
+            "title": "Event",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event"
+        ],
+        "title": "AuthEvent",
+        "type": "object"
+      },
       "Check": {
         "properties": {
           "ok": {
@@ -75,6 +122,95 @@
           "version"
         ],
         "title": "Health",
+        "type": "object"
+      },
+      "Invite": {
+        "properties": {
+          "accepted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accepted At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AppRole"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "department_id",
+          "role",
+          "created_at",
+          "expires_at"
+        ],
+        "title": "Invite",
+        "type": "object"
+      },
+      "InviteCreate": {
+        "properties": {
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AppRole"
+          }
+        },
+        "required": [
+          "email",
+          "department_id",
+          "role"
+        ],
+        "title": "InviteCreate",
         "type": "object"
       },
       "Problem": {
@@ -242,6 +378,178 @@
         "summary": "Ready",
         "tags": [
           "health"
+        ]
+      }
+    },
+    "/v1/admin/invites": {
+      "post": {
+        "operationId": "create_invite_v1_admin_invites_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invite"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Create Invite",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/invites/{invite_id}/resend": {
+      "post": {
+        "operationId": "resend_invite_v1_admin_invites__invite_id__resend_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invite"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Resend Invite",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/invites/{invite_id}/revoke": {
+      "post": {
+        "operationId": "revoke_invite_v1_admin_invites__invite_id__revoke_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invite"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Revoke Invite",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/audit/auth-event": {
+      "post": {
+        "operationId": "auth_event_v1_audit_auth_event_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Auth Event",
+        "tags": [
+          "audit"
         ]
       }
     }

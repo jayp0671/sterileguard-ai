@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     nim_api_key: str | None = None
     model_bucket: str = "models"
     internal_token: str = ""
+    site_url: str = "http://localhost:3000"
     git_sha: str | None = None
     ready_timeout_s: float = 3.0
 

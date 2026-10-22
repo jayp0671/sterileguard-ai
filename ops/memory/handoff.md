@@ -14,3 +14,9 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: supabase init (signups off, TOTP on, 900s JWT, 12-char passwords), 0001_tenancy.sql (app_role, orgs/facilities/departments/profiles/memberships, aal2-gated RLS, security-definer helpers), seed.sql, pgTAP smoke test, supabase/README.md RLS pattern, sg db migrate/reset/seed/types/lint/rls-test, CI db job
 - Next: SG-04 auth
 - Gotchas: Docker Desktop would not start in the agent session, so the migration and RLS matrix were checked in PGlite with a stubbed auth schema (24/24). pgTAP runs in the CI db job. Staging is not migrated yet: the Supabase MCP only sees an unrelated project; needs SUPABASE_DB_URL_STAGING or MCP access to sterileguard-ai. Prod project not created.
+
+## 2026-10-21 · Claude Code (for Jay) · SG-04
+
+- Done: 0002_invites (RLS, accept_pending_invites), 0003_session_policy (session_age_seconds), API JWKS verification + aal2 + 12h server check + recent-TOTP dependency, POST /v1/admin/invites (+resend, revoke) with domain and platform_admin rules, POST /v1/audit/auth-event, web proxy route guard, /auth/confirm, sign-in, magic-link, accept-invite (zxcvbn), reset-password, mfa enroll/challenge, idle timeout modal, sign out of all devices, ReauthDialog, auth-settings runbook, ADR-0002
+- Next: SG-05 test harness
+- Gotchas: Dashboard auth settings, SMTP, Turnstile secret and email templates must be applied by hand from ops/runbooks/auth-settings.md. citext operators are not visible under search_path='', so emails compare with lower(). zxcvbn-ts v4 uses ZxcvbnFactory. Email links must use the token_hash templates in the runbook.

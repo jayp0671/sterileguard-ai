@@ -11,9 +11,11 @@ from sg_api.core.config import Settings, get_settings
 from sg_api.core.errors import PROBLEM_JSON, Problem, install_error_handlers
 from sg_api.core.logging import configure_logging
 from sg_api.core.middleware import HEADER, RequestIdMiddleware
-from sg_api.routers import health
+from sg_api.routers import admin, audit, health
 
 v1 = APIRouter(prefix="/v1")
+v1.include_router(admin.router)
+v1.include_router(audit.router)
 
 # Every route documents the problem+json error shape so clients get a typed ApiError.
 ERRORS: dict[int | str, dict[str, object]] = {

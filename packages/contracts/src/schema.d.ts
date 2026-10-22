@@ -38,10 +38,100 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Invite */
+        post: operations["create_invite_v1_admin_invites_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/invites/{invite_id}/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resend Invite */
+        post: operations["resend_invite_v1_admin_invites__invite_id__resend_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/invites/{invite_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke Invite */
+        post: operations["revoke_invite_v1_admin_invites__invite_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/audit/auth-event": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Auth Event */
+        post: operations["auth_event_v1_audit_auth_event_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Accepted */
+        Accepted: {
+            /**
+             * Status
+             * @default accepted
+             * @constant
+             */
+            status: "accepted";
+        };
+        /**
+         * AppRole
+         * @enum {string}
+         */
+        AppRole: "technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin";
+        /** AuthEvent */
+        AuthEvent: {
+            /**
+             * Event
+             * @enum {string}
+             */
+            event: "sign_in_success" | "sign_in_failure" | "mfa_enroll" | "mfa_unenroll" | "mfa_challenge_failure" | "sign_out" | "sign_out_global" | "idle_timeout" | "session_expired";
+        };
         /** Check */
         Check: {
             /** Ok */
@@ -67,6 +157,50 @@ export interface components {
             status: "ok";
             /** Version */
             version: string;
+        };
+        /** Invite */
+        Invite: {
+            /** Accepted At */
+            accepted_at?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            /** Email */
+            email: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Revoked At */
+            revoked_at?: string | null;
+            role: components["schemas"]["AppRole"];
+        };
+        /** InviteCreate */
+        InviteCreate: {
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            role: components["schemas"]["AppRole"];
         };
         /**
          * Problem
@@ -165,6 +299,138 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Ready"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    create_invite_v1_admin_invites_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invite"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    resend_invite_v1_admin_invites__invite_id__resend_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invite_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invite"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    revoke_invite_v1_admin_invites__invite_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invite_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invite"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    auth_event_v1_audit_auth_event_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuthEvent"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
                 };
             };
             /** @description Problem */
