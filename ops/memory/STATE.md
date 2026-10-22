@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 1 (Oct 12-18) Foundation
-- Branch: unknown
+- Branch: sg-02/scaffolds-ci
 - Latest migration: none
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): see handoff.md
+- Next up (from handoff): SG-03 tenancy schema and RLS
 
 ## Tickets
 
@@ -22,7 +22,9 @@
 
 ## Tests
 
-- no test report yet (ops/reports/test/latest.json)
+- python: 34 passed, 0 failed, 0 skipped (3d76def)
+- web-contracts: 4 passed, 0 failed, 0 skipped (3d76def)
+- web-web: 5 passed, 0 failed, 0 skipped (3d76def)
 
 ## Deployed URLs
 
@@ -30,4 +32,4 @@
 
 ## Last 10 commits
 
-- none
+- 3d76def jayp0671: feat(repo): monorepo, sg CLI core, repo memory, agent hooks and skills [SG-01]

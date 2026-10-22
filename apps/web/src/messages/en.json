@@ -1,0 +1,11 @@
+{
+  "common": {
+    "footer": "Academic prototype. Not for clinical use. Do not enter patient information."
+  },
+  "home": {
+    "tagline": "Next-day overtime forecasts and staffing recommendations for sterile processing. Decision support only.",
+    "apiStatus": "API status",
+    "apiUp": "API online, version {version}",
+    "apiDown": "API unreachable"
+  }
+}

@@ -1,0 +1,88 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  UV_PYTHON: "3.12"
+  NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
+  NEXT_PUBLIC_API_URL: http://localhost:8000
+  HYPOTHESIS_PROFILE: ci
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: pnpm exec biome ci .
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: pnpm exec turbo run typecheck
+      - run: uv run mypy apps/api/src packages/data/src packages/sim/src packages/ml/src packages/agents/src ops/scripts/src ops/scripts/hooks
+
+  test-py:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: uv run sg test unit --python-only
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-py-report
+          path: ops/reports/test/
+
+  test-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: uv run sg test unit --web-only
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-web-report
+          path: ops/reports/test/
+
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: uv run sg contracts check
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter @sg/web build
+      - run: docker build -f apps/api/Dockerfile --build-arg GIT_SHA=${{ github.sha }} -t sg-api:ci .
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.28.0/gitleaks_8.28.0_linux_x64.tar.gz | tar xz gitleaks
+          ./gitleaks git --redact -v .

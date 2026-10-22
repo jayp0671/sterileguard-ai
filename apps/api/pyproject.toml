@@ -3,7 +3,13 @@ name = "sg-api"
 version = "0.1.0"
 description = "SterileGuard FastAPI service."
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "fastapi>=0.120",
+    "httpx>=0.28",
+    "pydantic-settings>=2.11",
+    "structlog>=25.4",
+    "uvicorn[standard]>=0.37",
+]
 
 [build-system]
 requires = ["hatchling>=1.27"]

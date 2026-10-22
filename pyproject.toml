@@ -26,6 +26,7 @@ dev = [
   "pytest>=8.4",
   "pytest-cov>=7.0",
   "hypothesis>=6.140",
+  "pytest-asyncio>=1.2",
 ]
 
 [tool.ruff]
@@ -35,6 +36,9 @@ extend-exclude = [".claude/skills", ".agents/skills"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "typer.Option", "typer.Argument"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["sg_api", "sg_data", "sg_sim", "sg_ml", "sg_agents", "sg_cli"]
@@ -47,4 +51,9 @@ explicit_package_bases = true
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
+asyncio_mode = "auto"
 testpaths = ["apps/api/tests", "packages/data/tests", "packages/sim/tests", "packages/ml/tests", "packages/agents/tests", "ops/scripts/tests"]
+
+[tool.coverage.run]
+source = ["sg_api", "sg_data", "sg_sim", "sg_ml", "sg_agents", "sg_cli"]
+branch = true

@@ -1,6 +1,10 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "$schema": "https://biomejs.dev/schemas/2.6.2/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "includes": [
       "**",
@@ -13,12 +17,38 @@
       "!packages/contracts/src/db.ts",
       "!apps/web/src/components/ui",
       "!.claude/skills/webapp-testing",
-      "!.agents/skills/webapp-testing"
+      "!.agents/skills/webapp-testing",
+      "!**/*.md"
     ]
   },
-  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
-  "linter": { "enabled": true, "rules": { "recommended": true } },
-  "javascript": { "formatter": { "quoteStyle": "double", "semicolons": "always" } },
-  "css": { "parser": { "tailwindDirectives": true } },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } }
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "none"
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
 }
