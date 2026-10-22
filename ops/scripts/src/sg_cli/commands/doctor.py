@@ -83,7 +83,12 @@ def collect() -> list[Check]:
         Check("supabase cli", code == 0, out if code == 0 else "not found", "pnpm install")
     )
     checks.append(
-        _tool("gitleaks", ["gitleaks", "version"], "Install gitleaks (pre-commit secret scan)")
+        _tool(
+            "gitleaks",
+            ["gitleaks", "version"],
+            "Install gitleaks (pre-commit falls back to a built-in pattern scan)",
+            required=False,
+        )
     )
 
     example = root / ".env.example"
