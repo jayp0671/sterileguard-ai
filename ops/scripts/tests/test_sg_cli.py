@@ -171,3 +171,24 @@ def test_hoist_flags_moves_global_flags_first() -> None:
         "memory",
         "sync",
     ]
+
+
+def test_redact_secrets_masks_url_passwords() -> None:
+    url = "postgresql://postgres.ref:s3cr%40t@pooler.example:5432/postgres"
+    assert core.redact_secrets(f"supabase db push --db-url {url}") == (
+        "supabase db push --db-url postgresql://postgres.ref:***@pooler.example:5432/postgres"
+    )
+
+
+def test_db_url_guards_local_and_hosted(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from sg_cli.commands import db
+
+    monkeypatch.setenv("SG_ROOT", str(tmp_path))
+    monkeypatch.setenv("SUPABASE_DB_URL", "postgresql://u:p@db.hosted.example:5432/postgres")
+    with pytest.raises(SystemExit):
+        db.db_url("local")
+    monkeypatch.setenv("SUPABASE_DB_URL", "postgresql://u:p@127.0.0.1:54322/postgres")
+    assert db.db_url("local").endswith("127.0.0.1:54322/postgres")
+    monkeypatch.setenv("SUPABASE_DB_URL_STAGING", "postgresql://u:p@127.0.0.1:54322/postgres")
+    with pytest.raises(SystemExit):
+        db.db_url("staging")

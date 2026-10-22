@@ -22,7 +22,7 @@ class CommandError(RuntimeError):
     """A subprocess exited non-zero."""
 
     def __init__(self, cmd: Sequence[str], returncode: int) -> None:
-        super().__init__(f"command failed ({returncode}): {' '.join(cmd)}")
+        super().__init__(f"command failed ({returncode}): {redact_secrets(' '.join(cmd))}")
         self.cmd = list(cmd)
         self.returncode = returncode
 
@@ -55,6 +55,14 @@ def which(name: str) -> str | None:
     return shutil.which(name)
 
 
+_CRED_RE = re.compile(r"(://[^:/@\s]+:)[^@\s]+@")
+
+
+def redact_secrets(text: str) -> str:
+    """Mask passwords in URLs (postgres://user:pass@host) before printing or reporting."""
+    return _CRED_RE.sub(lambda m: m.group(1) + "***@", text)
+
+
 def run(
     cmd: Sequence[str],
     cwd: Path | None = None,
@@ -62,7 +70,7 @@ def run(
     check: bool = True,
 ) -> int:
     """Run a command with streamed output. Honors --dry-run. Raises CommandError on failure."""
-    printable = " ".join(cmd)
+    printable = redact_secrets(" ".join(cmd))
     if OPTIONS.dry_run:
         console.print(f"[dim]would run:[/] {printable}")
         return 0

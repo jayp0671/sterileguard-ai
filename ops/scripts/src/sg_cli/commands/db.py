@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlsplit
 
 import typer
 
@@ -13,7 +14,14 @@ app = typer.Typer(no_args_is_help=True)
 
 SUPABASE = ["pnpm", "exec", "supabase"]
 LOCAL_DB_URL = "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-ENV_DB_VARS = {"staging": "SUPABASE_DB_URL_STAGING", "prod": "SUPABASE_DB_URL_PROD"}
+# Which variable each --env reads. Local tools never read a *_STAGING / *_PROD name, and a hosted
+# URL is refused for local, so a local command can never touch the hosted database.
+ENV_DB_VARS = {
+    "local": "SUPABASE_DB_URL",
+    "staging": "SUPABASE_DB_URL_STAGING",
+    "prod": "SUPABASE_DB_URL_PROD",
+}
+LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1", "host.docker.internal"}
 Env = Literal["local", "staging", "prod"]
 
 
@@ -22,11 +30,29 @@ def pending_migrations(root: Path) -> list[str]:
     return sorted(p.name for p in folder.glob("*.sql"))
 
 
+def is_local_url(url: str) -> bool:
+    return (urlsplit(url).hostname or "") in LOCAL_HOSTS
+
+
 def db_url(env: str) -> str:
-    if env == "local":
-        return LOCAL_DB_URL
+    """Database URL for an environment, with guards against crossing local and hosted."""
+    if env not in ENV_DB_VARS:
+        raise typer.BadParameter("env must be local, staging or prod")
     var = ENV_DB_VARS[env]
-    return core.require_env(var)[var]
+    if env == "local":
+        url = core.env_value(var) or LOCAL_DB_URL
+        if not is_local_url(url):
+            raise SystemExit(f"{var} must point at the local stack (127.0.0.1), not a hosted DB")
+        return url
+    url = core.require_env(var)[var]
+    if is_local_url(url):
+        raise SystemExit(f"{var} points at localhost; expected the hosted {env} database")
+    return url
+
+
+def redact(url: str) -> str:
+    parts = urlsplit(url)
+    return f"{parts.scheme}://{parts.username}:***@{parts.hostname}:{parts.port}{parts.path}"
 
 
 @app.command("migrate", help="Apply pending migrations to local, staging or prod.")
@@ -66,10 +92,19 @@ def reset() -> None:
     result.finish()
 
 
-@app.command("seed", help="Re-run supabase/seed.sql on the local database.")
-def seed() -> None:
+@app.command("seed", help="Re-run supabase/seed.sql on local or staging (never prod).")
+def seed(env: str = typer.Option("local", "--env", help="local | staging")) -> None:
     result = core.Result("db", "seed")
-    core.run(["psql", LOCAL_DB_URL, "-v", "ON_ERROR_STOP=1", "-f", "supabase/seed.sql"])
+    if env == "prod":
+        raise typer.BadParameter("seed.sql is for local and staging only")
+    url = db_url(env)
+    result.add(f"- seed {env} ({redact(url)})")
+    if not core.OPTIONS.dry_run:
+        import psycopg
+
+        sql = (core.repo_root() / "supabase" / "seed.sql").read_text(encoding="utf-8")
+        with psycopg.connect(url, autocommit=True, connect_timeout=15) as conn:
+            conn.execute(sql.encode("utf-8"))
     result.add("seed applied (idempotent)")
     result.finish()
 
@@ -102,10 +137,57 @@ def lint(env: str = typer.Option("local", "--env")) -> None:
     result.finish()
 
 
-@app.command("rls-test", help="Run the pgTAP tests in supabase/tests.")
-def rls_test() -> None:
+@app.command("rls-test", help="Run the pgTAP tests in supabase/tests (local or staging).")
+def rls_test(
+    env: str = typer.Option("local", "--env", help="local | staging"),
+    runner: str = typer.Option(
+        "auto", "--runner", help="auto | cli (supabase test db, needs Docker) | python (psycopg)"
+    ),
+) -> None:
+    """Every test file runs inside begin ... rollback, so staging is left unchanged."""
+    import time
+
+    from sg_cli.commands.testing import record
+
     result = core.Result("db", "rls-test")
-    result.ok = core.run([*SUPABASE, "test", "db"], check=False) == 0
+    if env == "prod":
+        raise typer.BadParameter("never run tests against prod")
+    url = db_url(env)
+    use_cli = runner == "cli" or (
+        runner == "auto" and env == "local" and core.capture([*SUPABASE, "status"])[0] == 0
+    )
+    start = time.perf_counter()
+    if use_cli:
+        target = [] if env == "local" else ["--db-url", url]
+        code = core.run([*SUPABASE, "test", "db", *target], check=False)
+        counts = {"passed": int(code == 0), "failed": int(code != 0), "skipped": 0}
+        result.ok = code == 0
+    elif core.OPTIONS.dry_run:
+        result.add(f"would run pgTAP files in supabase/tests against {redact(url)}")
+        counts = {"passed": 0, "failed": 0, "skipped": 0}
+    else:
+        from sg_cli import pgtap
+
+        files = pgtap.run_dir(url, core.repo_root() / "supabase" / "tests")
+        for f in files:
+            status = "ok" if f.ok else "FAIL"
+            result.add(
+                f"- {status} {f.name}: {f.passed} passed, {f.failed} failed, plan {f.planned}"
+            )
+            for line in f.lines:
+                if line.startswith("not ok"):
+                    result.add(f"    {line}")
+            if f.error:
+                result.add(f"    error: {core.redact_secrets(f.error)}")
+        counts = {
+            "passed": sum(f.passed for f in files),
+            "failed": sum(f.failed + (1 if f.error else 0) for f in files),
+            "skipped": 0,
+        }
+        result.ok = bool(files) and all(f.ok for f in files)
+    if not core.OPTIONS.dry_run:
+        record(f"db-{env}", counts, time.perf_counter() - start)
+    result.data.update(env=env, **counts)
     result.finish()
 
 
