@@ -9,6 +9,8 @@ const schema = z
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
     NEXT_PUBLIC_API_URL: z.url(),
     NEXT_PUBLIC_SITE_URL: z.url().default("http://localhost:3000"),
+    // development | staging | production. Dev-only pages (the /app/style page) need non-production.
+    NEXT_PUBLIC_APP_ENV: z.enum(["development", "staging", "production"]).default("development"),
   })
   .refine((v) => v.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? v.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
     message: "Set NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY",
@@ -20,6 +22,7 @@ const schema = z
       v.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string,
     apiUrl: v.NEXT_PUBLIC_API_URL.replace(/\/$/, ""),
     siteUrl: v.NEXT_PUBLIC_SITE_URL.replace(/\/$/, ""),
+    appEnv: v.NEXT_PUBLIC_APP_ENV,
   }));
 
 export type Env = z.infer<typeof schema>;

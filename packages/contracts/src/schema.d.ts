@@ -106,6 +106,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me_v1_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -201,6 +218,33 @@ export interface components {
              */
             email: string;
             role: components["schemas"]["AppRole"];
+        };
+        /** Me */
+        Me: {
+            /** Aal */
+            aal: string;
+            /** Display Name */
+            display_name: string | null;
+            /** Id */
+            id: string;
+            /** Locale */
+            locale: string;
+            /** Memberships */
+            memberships: components["schemas"]["Membership"][];
+            /**
+             * Theme
+             * @enum {string}
+             */
+            theme: "system" | "light" | "dark";
+        };
+        /** Membership */
+        Membership: {
+            /** Department Id */
+            department_id: string;
+            /** Department Name */
+            department_name: string;
+            /** Roles */
+            roles: ("technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin")[];
         };
         /**
          * Problem
@@ -431,6 +475,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    me_v1_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
                 };
             };
             /** @description Problem */

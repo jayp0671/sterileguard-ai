@@ -1,0 +1,151 @@
+/*
+ * SterileGuard design tokens (SG-10, ADR-0004). "Instrument panel, surgical steel."
+ * Raw scales first, then semantic tokens per theme. Colors are hex so the contrast check
+ * (src/styles/tokens.test.ts, `sg test a11y --tokens`) can verify every pair.
+ * Status colors are never used alone: components always pair them with an icon or label.
+ */
+
+:root {
+  /* Steel: slightly cool gray */
+  --steel-50: #f5f7f8;
+  --steel-100: #e9edf0;
+  --steel-200: #d4dbe0;
+  --steel-300: #b3bec6;
+  --steel-400: #8a98a3;
+  --steel-500: #6b7a86;
+  --steel-600: #55636e;
+  --steel-700: #45515a;
+  --steel-800: #353f47;
+  --steel-900: #252d33;
+  --steel-950: #161b1f;
+
+  /* Teal: the single accent, used like an indicator lamp */
+  --teal-50: #effcfa;
+  --teal-100: #c9f2ec;
+  --teal-200: #94e4da;
+  --teal-300: #5dcfc3;
+  --teal-400: #2fb5a9;
+  --teal-500: #16998e;
+  --teal-600: #0f7b73;
+  --teal-700: #0e635d;
+  --teal-800: #0f4f4b;
+  --teal-900: #0e403d;
+  --teal-950: #032624;
+
+  /* Type scale (12 13 14 16 20 24 32 40) lives in globals.css @theme so Tailwind's
+     text-* utilities use it. */
+
+  /* Space and shape: 8px grid with a 4px half step */
+  --space-unit: 0.5rem;
+  --radius-sm-token: 6px;
+  --radius-md-token: 8px;
+  --radius-lg-token: 12px;
+  --radius: 8px;
+  --elevation-popover: 0 1px 2px rgb(22 27 31 / 6%), 0 8px 24px -8px rgb(22 27 31 / 18%);
+  --touch-target: 44px;
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Light theme (semantic) */
+  --background: #f5f7f8;
+  --foreground: #161b1f;
+  --card: #ffffff;
+  --card-foreground: #161b1f;
+  --popover: #ffffff;
+  --popover-foreground: #161b1f;
+  --primary: #0e635d;
+  --primary-foreground: #ffffff;
+  --secondary: #e9edf0;
+  --secondary-foreground: #252d33;
+  --muted: #e9edf0;
+  --muted-foreground: #55636e;
+  --accent: #effcfa;
+  --accent-foreground: #0f4f4b;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --border: #d4dbe0;
+  --input: #6b7a86;
+  --ring: #0f7b73;
+  --chart-1: #0e635d;
+  --chart-2: #6b7a86;
+  --chart-3: #2fb5a9;
+  --chart-4: #b3bec6;
+  --chart-5: #a35a00;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #252d33;
+  --sidebar-primary: #0e635d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e9edf0;
+  --sidebar-accent-foreground: #161b1f;
+  --sidebar-border: #d4dbe0;
+  --sidebar-ring: #0f7b73;
+
+  --status-good-bg: #e8f5ec;
+  --status-good-fg: #1d6b3a;
+  --status-good-border: #9fd4b0;
+  --status-warning-bg: #fdf3e1;
+  --status-warning-fg: #7f4c00;
+  --status-warning-border: #f0c77a;
+  --status-critical-bg: #fdeceb;
+  --status-critical-fg: #a3231c;
+  --status-critical-border: #f1aaa5;
+  --status-info-bg: #e8f1fb;
+  --status-info-fg: #1f5a96;
+  --status-info-border: #a6c8ec;
+
+  /* Hairline "gauge" texture used on the brand panel and page headers */
+  --gauge-tick: rgb(69 81 90 / 22%);
+}
+
+.dark {
+  --background: #161b1f;
+  --foreground: #f5f7f8;
+  --card: #1c2227;
+  --card-foreground: #f5f7f8;
+  --popover: #1c2227;
+  --popover-foreground: #f5f7f8;
+  --primary: #2fb5a9;
+  --primary-foreground: #161b1f;
+  --secondary: #252d33;
+  --secondary-foreground: #e9edf0;
+  --muted: #252d33;
+  --muted-foreground: #9aa7b1;
+  --accent: #0e403d;
+  --accent-foreground: #c9f2ec;
+  --destructive: #f07167;
+  --destructive-foreground: #161b1f;
+  --border: #353f47;
+  --input: #6b7a86;
+  --ring: #2fb5a9;
+  --chart-1: #2fb5a9;
+  --chart-2: #8a98a3;
+  --chart-3: #94e4da;
+  --chart-4: #45515a;
+  --chart-5: #f3c46e;
+  --sidebar: #1c2227;
+  --sidebar-foreground: #e9edf0;
+  --sidebar-primary: #2fb5a9;
+  --sidebar-primary-foreground: #161b1f;
+  --sidebar-accent: #252d33;
+  --sidebar-accent-foreground: #f5f7f8;
+  --sidebar-border: #353f47;
+  --sidebar-ring: #2fb5a9;
+
+  --status-good-bg: #12291c;
+  --status-good-fg: #7fd9a0;
+  --status-good-border: #2c6141;
+  --status-warning-bg: #2e2210;
+  --status-warning-fg: #f3c46e;
+  --status-warning-border: #6a4d16;
+  --status-critical-bg: #33171a;
+  --status-critical-fg: #f4a29c;
+  --status-critical-border: #7a2f31;
+  --status-info-bg: #13243a;
+  --status-info-fg: #93c2f2;
+  --status-info-border: #2d4f78;
+
+  --gauge-tick: rgb(179 190 198 / 14%);
+}

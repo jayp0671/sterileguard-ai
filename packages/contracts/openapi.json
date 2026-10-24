@@ -213,6 +213,92 @@
         "title": "InviteCreate",
         "type": "object"
       },
+      "Me": {
+        "properties": {
+          "aal": {
+            "title": "Aal",
+            "type": "string"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "locale": {
+            "title": "Locale",
+            "type": "string"
+          },
+          "memberships": {
+            "items": {
+              "$ref": "#/components/schemas/Membership"
+            },
+            "title": "Memberships",
+            "type": "array"
+          },
+          "theme": {
+            "enum": [
+              "system",
+              "light",
+              "dark"
+            ],
+            "title": "Theme",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "locale",
+          "theme",
+          "aal",
+          "memberships"
+        ],
+        "title": "Me",
+        "type": "object"
+      },
+      "Membership": {
+        "properties": {
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "department_name": {
+            "title": "Department Name",
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "enum": [
+                "technician",
+                "supervisor",
+                "dept_admin",
+                "data_steward",
+                "platform_admin"
+              ],
+              "type": "string"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "department_id",
+          "department_name",
+          "roles"
+        ],
+        "title": "Membership",
+        "type": "object"
+      },
       "Problem": {
         "description": "Problem Details (RFC 9457).",
         "properties": {
@@ -550,6 +636,38 @@
         "summary": "Auth Event",
         "tags": [
           "audit"
+        ]
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "operationId": "me_v1_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Me",
+        "tags": [
+          "me"
         ]
       }
     }
