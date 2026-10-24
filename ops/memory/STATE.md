@@ -2,12 +2,12 @@
 
 # STATE
 
-- Current sprint: Sprint 1 (Oct 12-18) Foundation
-- Branch: sprint1/verify
-- Latest migration: 0003_session_policy.sql
+- Current sprint: Sprint 2 (Oct 19-25) Data, simulator, shell
+- Branch: sg-08/canonical-schema
+- Latest migration: 0005_audit.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Jay: gh auth login and Docker in the agent session, then: open the PR for sprint1/verify, read CI and fix it, supabase start + local keys into .env, local db tests, API image build + /ready, local demo users for the role e2e spec. Then Sprint 2: SG-08
+- Next up (from handoff): SG-09 simulator
 
 ## Tickets
 
@@ -19,15 +19,17 @@
 - SG-05 done; review pending: Test strategy and harness for every layer
 - SG-06 repo done; Leo tasks pending: Real data intake: week 1, log template, sim parameters
 - SG-07 done: Course admin: Carlos joined
+- SG-08 done; PR pending merge: Canonical schema, shift tables, datasets, audit log
+- SG-09 to do: SimPy simulator, calibration, 5,000-day dataset
+- SG-10 to do: Design system, app shell, styled auth
+- SG-11 to do: API security layer and Plan Tomorrow
+- SG-12 to do: Simulator correctness suite and RLS matrix
 
 ## Tests
 
-- affected-python: 77 passed, 0 failed, 0 skipped (071908f)
-- db-staging: 23 passed, 0 failed, 0 skipped (e84217e)
-- e2e: 3 passed, 0 failed, 1 skipped (e84217e)
-- python: 77 passed, 0 failed, 0 skipped (e84217e)
-- web-contracts: 4 passed, 0 failed, 0 skipped (e84217e)
-- web-web: 39 passed, 0 failed, 0 skipped (e84217e)
+- db-local: 1 passed, 0 failed, 0 skipped (a2e5a5b)
+- db-staging: 46 passed, 0 failed, 0 skipped (a2e5a5b)
+- python: 102 passed, 0 failed, 0 skipped (a2e5a5b)
 
 ## Deployed URLs
 
@@ -35,8 +37,7 @@
 
 ## Last 10 commits
 
-- 071908f jayp0671: docs(memory): sprint 1 verification handoff
-- 3df0c99 jayp0671: fix(db): split local and staging env, guard db targets, Docker-free pgTAP runner [SG-03]
+- a2e5a5b Jay Patel: chore: Sprint 1 verification fixes (db/doctor env handling, memory logs) (#1)
 - e84217e jayp0671: docs(data): real data intake template, data dictionary, sim parameters, approvals [SG-06]
 - ac9abe1 jayp0671: test: test strategy and harness for every layer [SG-05]
 - b9ef844 jayp0671: feat(auth): invite-only sign-in, mandatory TOTP and session policy [SG-04]

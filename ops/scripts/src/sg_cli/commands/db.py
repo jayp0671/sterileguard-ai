@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
@@ -116,10 +117,19 @@ def types() -> None:
     if core.OPTIONS.dry_run:
         core.run([*SUPABASE, "gen", "types", "typescript", "--local"])
     else:
-        code, text = core.capture([*SUPABASE, "gen", "types", "typescript", "--local"])
-        if code != 0:
-            raise core.CommandError(["supabase", "gen", "types"], code)
-        out.write_text(text.rstrip() + "\n", encoding="utf-8", newline="\n")
+        # stdout only: the CLI prints progress and hints on stderr, which must not land in db.ts.
+        exe = core.which(SUPABASE[0]) or SUPABASE[0]
+        proc = subprocess.run(
+            [exe, *SUPABASE[1:], "gen", "types", "typescript", "--local"],
+            cwd=core.repo_root(),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        if proc.returncode != 0:
+            raise core.CommandError(["supabase", "gen", "types"], proc.returncode)
+        out.write_text(proc.stdout.rstrip() + "\n", encoding="utf-8", newline="\n")
     result.add(f"wrote {out.relative_to(core.repo_root())}")
     result.finish()
 

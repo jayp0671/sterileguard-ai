@@ -28,6 +28,9 @@ dev = [
   "hypothesis>=6.140",
   "pytest-asyncio>=1.2",
   "polyfactory>=2.22",
+  "pandas-stubs>=3.0.5.260914",
+  "scipy-stubs>=1.18.1.1",
+  "types-pyyaml>=6.0.12.20260906",
 ]
 
 [tool.ruff]

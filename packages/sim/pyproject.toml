@@ -3,7 +3,17 @@ name = "sg-sim"
 version = "0.1.0"
 description = "SimPy simulator of the Dental Central Sterile workflow."
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "matplotlib>=3.9",
+    "numpy>=2.1",
+    "optuna>=4.1",
+    "pandas>=2.2",
+    "pyarrow>=18",
+    "pyyaml>=6.0",
+    "scipy>=1.14",
+    "sg-data",
+    "simpy>=4.1",
+]
 
 [build-system]
 requires = ["hatchling>=1.27"]
@@ -11,3 +21,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sg_sim"]
+
+[tool.uv.sources]
+sg-data = { workspace = true }
