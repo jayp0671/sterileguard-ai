@@ -74,3 +74,9 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: test_correctness.py: Hypothesis property (conservation, overtime bounds, staff pool, presence, machine counts, downtime), reproducibility (assert_frame_equal + content_hash), hand-computed golden scenario (8.5 h), slow directional and performance tests; 0010_rls_matrix.test.sql: 11 tables x 4 ops x 8 actors from a rules table, one-audit-row checks for 6 audited tables, coverage of every public table, helper search_path and anon checks; mutation proof on staging (loosened shift_plans_insert -> 2 unexpected allows, rolled back); sg test db aliases sg db rls-test; CI db job gated on DB changes but always reports; db-nightly.yml
 - Next: Sprint 3: open and merge the stacked PRs SG-08 to SG-12, then SG-13 feature registry and first model
 - Gotchas: Stayers decide one at a time, so the first to leave can make the next stay (golden case). Local pgTAP not run this session (Docker Desktop off); staging 375/375. Matrix must be extended by every DB ticket; the coverage assertion enforces it.
+
+## 2026-10-24 · Claude Code (for Jay) · Sprint 2 close
+
+- Done: PRs #2 to #6 (SG-08 to SG-12) merged with all 8 required checks green; stacked branches rebased onto main after each squash merge; fixed sg db types writing Supabase CLI messages into db.ts; RLS matrix verified in CI under pg_prove
+- Next: Sprint 3: SG-13 feature registry and first model on the 5,000-day simulated dataset
+- Gotchas: Vercel preview deployments fail (not a required check); inspect with vercel inspect. Local pgTAP still needs Docker Desktop. Calibration against real days waits on Leo.
