@@ -88,7 +88,7 @@ def _run_suite(result: core.Result, suite: str, cmd: list[str], junit: Path) -> 
 
 def pytest_suite(result: core.Result, suite: str, paths: list[str], extra: list[str]) -> bool:
     junit = report_dir() / f"junit-{suite}.xml"
-    cmd = ["uv", "run", "pytest", *paths, f"--junitxml={junit}", *extra]
+    cmd = ["uv", "run", "python", "-m", "pytest", *paths, f"--junitxml={junit}", *extra]
     return _run_suite(result, suite, cmd, junit)
 
 
@@ -199,11 +199,23 @@ def e2e(
 
 
 @app.command("a11y", help="Accessibility checks: Playwright specs tagged @a11y (axe in SG-28).")
-def a11y() -> None:
+def a11y(
+    tokens: bool = typer.Option(
+        False, "--tokens", help="Only the WCAG contrast check of the design tokens (SG-10)."
+    ),
+) -> None:
     result = core.Result("test", "a11y")
-    result.ok = playwright_suite(
-        result, "a11y", ["--project=chromium", "--grep=@a11y", "--pass-with-no-tests"]
-    )
+    if tokens:
+        code = core.run(
+            ["pnpm", "--filter", "@sg/web", "exec", "vitest", "run", "src/styles/tokens.test.ts"],
+            check=False,
+        )
+        result.ok = code == 0
+        result.add("token contrast: " + ("pass" if result.ok else "FAIL"))
+    else:
+        result.ok = playwright_suite(
+            result, "a11y", ["--project=chromium", "--grep=@a11y", "--pass-with-no-tests"]
+        )
     result.finish()
 
 

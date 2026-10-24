@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 2 (Oct 19-25) Data, simulator, shell
-- Branch: sg-09/simulator
+- Branch: sg-10/design-system
 - Latest migration: 0005_audit.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-10 design system and shell
+- Next up (from handoff): SG-11 API security and Plan Tomorrow
 
 ## Tickets
 
@@ -21,16 +21,13 @@
 - SG-07 done: Course admin: Carlos joined
 - SG-08 done; PR pending merge: Canonical schema, shift tables, datasets, audit log
 - SG-09 done; real-day calibration waits on Leo: SimPy simulator, calibration, 5,000-day dataset
-- SG-10 to do: Design system, app shell, styled auth
+- SG-10 done; screenshots and web-design-guidelines audit pending: Design system, app shell, styled auth
 - SG-11 to do: API security layer and Plan Tomorrow
 - SG-12 to do: Simulator correctness suite and RLS matrix
 
 ## Tests
 
-- affected-python: 104 passed, 0 failed, 0 skipped (aa77394)
-- db-local: 1 passed, 0 failed, 0 skipped (a2e5a5b)
-- db-staging: 46 passed, 0 failed, 0 skipped (a2e5a5b)
-- python: 102 passed, 0 failed, 0 skipped (a2e5a5b)
+- python: 127 passed, 0 failed, 0 skipped (56512ed)
 
 ## Deployed URLs
 
@@ -38,6 +35,9 @@
 
 ## Last 10 commits
 
+- 78460df jayp0671: chore(sim): format config YAML for Biome 2.6; skip the generated calibrated config [SG-09]
+- 56512ed jayp0671: test(cli): use a remaining stub for the global-flags test [SG-09]
+- 7992a85 jayp0671: chore(sim): plausibility-only calibration and memory update [SG-09]
 - 82af929 jayp0671: feat(sim): SimPy simulator, LHS 5,000-day dataset, calibration and sg sim commands [SG-09]
 - aa77394 jayp0671: test(cli): isolate temp repos from git hook env vars [SG-08]
 - c31ecd2 jayp0671: feat(db,data): canonical schema, shift tables, datasets and append-only audit log [SG-08]
@@ -45,6 +45,3 @@
 - e84217e jayp0671: docs(data): real data intake template, data dictionary, sim parameters, approvals [SG-06]
 - ac9abe1 jayp0671: test: test strategy and harness for every layer [SG-05]
 - b9ef844 jayp0671: feat(auth): invite-only sign-in, mandatory TOTP and session policy [SG-04]
-- 3bd5ef3 jayp0671: feat(db): tenancy schema, roles and RLS foundation [SG-03]
-- a99bfa5 jayp0671: feat(web,api): scaffolds, typed API contract and CI pipeline [SG-02]
-- 3d76def jayp0671: feat(repo): monorepo, sg CLI core, repo memory, agent hooks and skills [SG-01]

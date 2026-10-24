@@ -17,6 +17,6 @@ Current sprint: Sprint 2 (Oct 19-25) Data, simulator, shell
 | SG-07 | Course admin: Carlos joined | All | done | |
 | SG-08 | Canonical schema, shift tables, datasets, audit log | Leo, Jay | done; PR pending merge | |
 | SG-09 | SimPy simulator, calibration, 5,000-day dataset | Leo, Jay | done; real-day calibration waits on Leo | |
-| SG-10 | Design system, app shell, styled auth | Jay | to do | |
+| SG-10 | Design system, app shell, styled auth | Jay | done; screenshots and web-design-guidelines audit pending | |
 | SG-11 | API security layer and Plan Tomorrow | Jay | to do | |
 | SG-12 | Simulator correctness suite and RLS matrix | Carlos | to do | |
