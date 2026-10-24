@@ -11,7 +11,7 @@ and docs/domain/data-dictionary.md; adjust them here, nowhere else.
 from __future__ import annotations
 
 import datetime as dt
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 import pandas as pd
@@ -47,6 +47,9 @@ class FieldSpec:
     max_length: int | None = None
     nullable: bool = False
     synonyms: tuple[str, ...] = field(default_factory=tuple)
+    # UI metadata for inputs (exported through OpenAPI so the web form is generated from it)
+    label: str = ""
+    group: str = ""
 
     @property
     def required(self) -> bool:
@@ -287,6 +290,28 @@ FIELDS: tuple[FieldSpec, ...] = (
     ),
 )
 
+# Short form labels and form sections for the plan inputs (SG-11). Sections: demand,
+# staffing, equipment, carryover.
+_UI: dict[str, tuple[str, str]] = {
+    "regular_patients": ("Regular patients", "demand"),
+    "mf_cases": ("MF cases", "demand"),
+    "student_clinic_sessions": ("Student clinic sessions", "demand"),
+    "is_holiday": ("Holiday or school closed", "demand"),
+    "academic_event": ("Academic event", "demand"),
+    "morning_staff_present": ("7:00 AM staff", "staffing"),
+    "aft_11_staff": ("11:00 AM start", "staffing"),
+    "aft_13_staff": ("1:00 PM start", "staffing"),
+    "aft_15_staff": ("3:00 PM start", "staffing"),
+    "outside_support_staff": ("Outside support", "staffing"),
+    "ot_available_staff": ("Staff willing to stay for overtime", "staffing"),
+    "washers_up": ("Washers working", "equipment"),
+    "sterilizers_up": ("Sterilizers working", "equipment"),
+    "carryover_backlog_estimate": ("Backlog at 7:00 AM", "carryover"),
+}
+FIELDS = tuple(
+    replace(f, label=_UI[f.name][0], group=_UI[f.name][1]) if f.name in _UI else f for f in FIELDS
+)
+
 BY_NAME: dict[str, FieldSpec] = {f.name: f for f in FIELDS}
 
 
@@ -416,7 +441,7 @@ def to_pandera(
 # Pydantic
 # ---------------------------------------------------------------------------
 
-PydanticKind = Literal["plan_in", "actual_in", "row"]
+PydanticKind = Literal["plan_in", "plan_values", "actual_in", "row"]
 
 _PY_TYPE: dict[str, Any] = {
     "int": int,
@@ -442,10 +467,13 @@ def _field_def(spec: FieldSpec, *, required: bool) -> tuple[Any, Any]:
         kw["le"] = spec.max
     if spec.max_length:
         kw["max_length"] = spec.max_length
+    extra: dict[str, Any] = {"tier": spec.tier}
     if spec.unit:
-        kw["json_schema_extra"] = {"unit": spec.unit, "tier": spec.tier}
-    else:
-        kw["json_schema_extra"] = {"tier": spec.tier}
+        extra["unit"] = spec.unit
+    if spec.label:
+        extra["x-label"] = spec.label
+        extra["x-group"] = spec.group
+    kw["json_schema_extra"] = extra
     typ = _py_type(spec)
     if required:
         return (typ, Field(..., **kw))
@@ -462,21 +490,27 @@ class _CrossFieldBase(BaseModel):
         return self
 
 
-_MODEL_NAMES = {"plan_in": "ShiftPlanIn", "actual_in": "ShiftActualIn", "row": "ShiftRow"}
+_MODEL_NAMES = {
+    "plan_in": "ShiftPlanIn",
+    "plan_values": "ShiftPlanValues",
+    "actual_in": "ShiftActualIn",
+    "row": "ShiftRow",
+}
 _MODEL_CACHE: dict[str, type[BaseModel]] = {}
 
 
 def to_pydantic(kind: PydanticKind) -> type[BaseModel]:
-    """ShiftPlanIn (inputs, date comes from the path), ShiftActualIn (outcomes), ShiftRow (all)."""
+    """ShiftPlanIn (inputs, date comes from the path), ShiftPlanValues (the same inputs, all
+    optional, for suggestions with gaps), ShiftActualIn (outcomes), ShiftRow (all)."""
     if kind in _MODEL_CACHE:
         return _MODEL_CACHE[kind]
-    if kind == "plan_in":
+    if kind in ("plan_in", "plan_values"):
         specs = [s for s in fields(roles={"input"}) if s.name != "date"]
     elif kind == "actual_in":
         specs = fields(roles={"outcome"})
     else:
         specs = list(FIELDS)
-    defs = {s.name: _field_def(s, required=s.required) for s in specs}
+    defs = {s.name: _field_def(s, required=s.required and kind != "plan_values") for s in specs}
     model = create_model(  # type: ignore[call-overload]
         _MODEL_NAMES[kind], __base__=_CrossFieldBase, **defs
     )

@@ -26,3 +26,12 @@ def client(settings: Settings) -> Iterator[TestClient]:
     app.dependency_overrides[get_settings] = lambda: settings
     with TestClient(app) as c:
         yield c
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limits() -> Iterator[None]:
+    """The limiter keeps counts in process memory; start every test from zero."""
+    from sg_api.core import ratelimit
+
+    ratelimit.reset()
+    yield

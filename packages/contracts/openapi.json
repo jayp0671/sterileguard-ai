@@ -299,6 +299,343 @@
         "title": "Membership",
         "type": "object"
       },
+      "PlanOut": {
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "missing": {
+            "description": "Tier 2 fields filled from department defaults",
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing",
+            "type": "array"
+          },
+          "sources": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Per field: saved, settings:<key>, default, history:<description> or none",
+            "title": "Sources",
+            "type": "object"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "draft",
+                  "final"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "suggested": {
+            "description": "True when nothing is saved and these are suggestions",
+            "title": "Suggested",
+            "type": "boolean"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "values": {
+            "$ref": "#/components/schemas/ShiftPlanValues"
+          }
+        },
+        "required": [
+          "department_id",
+          "date",
+          "suggested",
+          "values",
+          "sources"
+        ],
+        "title": "PlanOut",
+        "type": "object"
+      },
+      "PlanPut": {
+        "properties": {
+          "academic_event": {
+            "anyOf": [
+              {
+                "enum": [
+                  "none",
+                  "exam",
+                  "break",
+                  "semester_start"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Academic calendar event",
+            "tier": 2,
+            "title": "Academic Event",
+            "x-group": "demand",
+            "x-label": "Academic event"
+          },
+          "aft_11_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting about 11:00 AM",
+            "tier": 2,
+            "title": "Aft 11 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "11:00 AM start"
+          },
+          "aft_13_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting about 1:00 PM",
+            "tier": 2,
+            "title": "Aft 13 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "1:00 PM start"
+          },
+          "aft_15_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting at the regular afternoon start (3:00 PM)",
+            "tier": 2,
+            "title": "Aft 15 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "3:00 PM start"
+          },
+          "backfill": {
+            "default": false,
+            "description": "Allow a past date, to enter real days already worked",
+            "title": "Backfill",
+            "type": "boolean"
+          },
+          "carryover_backlog_estimate": {
+            "anyOf": [
+              {
+                "maximum": 2.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Work waiting at 7:00 AM (0 light, 1 normal, 2 heavy)",
+            "tier": 2,
+            "title": "Carryover Backlog Estimate",
+            "unit": "scale 0-2",
+            "x-group": "carryover",
+            "x-label": "Backlog at 7:00 AM"
+          },
+          "is_holiday": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Holiday or school closed",
+            "tier": 2,
+            "title": "Is Holiday",
+            "x-group": "demand",
+            "x-label": "Holiday or school closed"
+          },
+          "mf_cases": {
+            "anyOf": [
+              {
+                "maximum": 80.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Maxillofacial surgery cases scheduled",
+            "tier": 2,
+            "title": "Mf Cases",
+            "unit": "cases",
+            "x-group": "demand",
+            "x-label": "MF cases"
+          },
+          "morning_staff_present": {
+            "description": "Dental Central Sterile staff present for the morning operation",
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "tier": 1,
+            "title": "Morning Staff Present",
+            "type": "integer",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "7:00 AM staff"
+          },
+          "ot_available_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Morning staff who agreed to stay for overtime",
+            "tier": 2,
+            "title": "Ot Available Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "Staff willing to stay for overtime"
+          },
+          "outside_support_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Outside-department helpers (until about 8 PM)",
+            "tier": 2,
+            "title": "Outside Support Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "Outside support"
+          },
+          "regular_patients": {
+            "description": "Scheduled regular patients (emergency and intake excluded)",
+            "maximum": 800.0,
+            "minimum": 0.0,
+            "tier": 1,
+            "title": "Regular Patients",
+            "type": "integer",
+            "unit": "patients",
+            "x-group": "demand",
+            "x-label": "Regular patients"
+          },
+          "status": {
+            "default": "draft",
+            "description": "draft autosaves; final is the plan of record",
+            "enum": [
+              "draft",
+              "final"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "sterilizers_up": {
+            "anyOf": [
+              {
+                "maximum": 10.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sterilizers working at 7:00 AM",
+            "tier": 2,
+            "title": "Sterilizers Up",
+            "unit": "machines",
+            "x-group": "equipment",
+            "x-label": "Sterilizers working"
+          },
+          "student_clinic_sessions": {
+            "anyOf": [
+              {
+                "maximum": 40.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Scheduled student clinic sessions",
+            "tier": 2,
+            "title": "Student Clinic Sessions",
+            "unit": "sessions",
+            "x-group": "demand",
+            "x-label": "Student clinic sessions"
+          },
+          "washers_up": {
+            "anyOf": [
+              {
+                "maximum": 10.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Washer-disinfectors working at 7:00 AM",
+            "tier": 2,
+            "title": "Washers Up",
+            "unit": "machines",
+            "x-group": "equipment",
+            "x-label": "Washers working"
+          }
+        },
+        "required": [
+          "regular_patients",
+          "morning_staff_present"
+        ],
+        "title": "PlanPut",
+        "type": "object"
+      },
       "Problem": {
         "description": "Problem Details (RFC 9457).",
         "properties": {
@@ -382,6 +719,264 @@
           "checks"
         ],
         "title": "Ready",
+        "type": "object"
+      },
+      "ShiftPlanValues": {
+        "properties": {
+          "academic_event": {
+            "anyOf": [
+              {
+                "enum": [
+                  "none",
+                  "exam",
+                  "break",
+                  "semester_start"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Academic calendar event",
+            "tier": 2,
+            "title": "Academic Event",
+            "x-group": "demand",
+            "x-label": "Academic event"
+          },
+          "aft_11_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting about 11:00 AM",
+            "tier": 2,
+            "title": "Aft 11 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "11:00 AM start"
+          },
+          "aft_13_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting about 1:00 PM",
+            "tier": 2,
+            "title": "Aft 13 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "1:00 PM start"
+          },
+          "aft_15_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting at the regular afternoon start (3:00 PM)",
+            "tier": 2,
+            "title": "Aft 15 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "3:00 PM start"
+          },
+          "carryover_backlog_estimate": {
+            "anyOf": [
+              {
+                "maximum": 2.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Work waiting at 7:00 AM (0 light, 1 normal, 2 heavy)",
+            "tier": 2,
+            "title": "Carryover Backlog Estimate",
+            "unit": "scale 0-2",
+            "x-group": "carryover",
+            "x-label": "Backlog at 7:00 AM"
+          },
+          "is_holiday": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Holiday or school closed",
+            "tier": 2,
+            "title": "Is Holiday",
+            "x-group": "demand",
+            "x-label": "Holiday or school closed"
+          },
+          "mf_cases": {
+            "anyOf": [
+              {
+                "maximum": 80.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Maxillofacial surgery cases scheduled",
+            "tier": 2,
+            "title": "Mf Cases",
+            "unit": "cases",
+            "x-group": "demand",
+            "x-label": "MF cases"
+          },
+          "morning_staff_present": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Dental Central Sterile staff present for the morning operation",
+            "tier": 1,
+            "title": "Morning Staff Present",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "7:00 AM staff"
+          },
+          "ot_available_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Morning staff who agreed to stay for overtime",
+            "tier": 2,
+            "title": "Ot Available Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "Staff willing to stay for overtime"
+          },
+          "outside_support_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Outside-department helpers (until about 8 PM)",
+            "tier": 2,
+            "title": "Outside Support Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "Outside support"
+          },
+          "regular_patients": {
+            "anyOf": [
+              {
+                "maximum": 800.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Scheduled regular patients (emergency and intake excluded)",
+            "tier": 1,
+            "title": "Regular Patients",
+            "unit": "patients",
+            "x-group": "demand",
+            "x-label": "Regular patients"
+          },
+          "sterilizers_up": {
+            "anyOf": [
+              {
+                "maximum": 10.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sterilizers working at 7:00 AM",
+            "tier": 2,
+            "title": "Sterilizers Up",
+            "unit": "machines",
+            "x-group": "equipment",
+            "x-label": "Sterilizers working"
+          },
+          "student_clinic_sessions": {
+            "anyOf": [
+              {
+                "maximum": 40.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Scheduled student clinic sessions",
+            "tier": 2,
+            "title": "Student Clinic Sessions",
+            "unit": "sessions",
+            "x-group": "demand",
+            "x-label": "Student clinic sessions"
+          },
+          "washers_up": {
+            "anyOf": [
+              {
+                "maximum": 10.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Washer-disinfectors working at 7:00 AM",
+            "tier": 2,
+            "title": "Washers Up",
+            "unit": "machines",
+            "x-group": "equipment",
+            "x-label": "Washers working"
+          }
+        },
+        "title": "ShiftPlanValues",
         "type": "object"
       }
     }
@@ -668,6 +1263,124 @@
         "summary": "Me",
         "tags": [
           "me"
+        ]
+      }
+    },
+    "/v1/plans/{plan_date}": {
+      "get": {
+        "operationId": "get_plan_v1_plans__plan_date__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Plan Date",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department the plan belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the plan belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Get Plan",
+        "tags": [
+          "plans"
+        ]
+      },
+      "put": {
+        "operationId": "put_plan_v1_plans__plan_date__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Plan Date",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department the plan belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the plan belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Put Plan",
+        "tags": [
+          "plans"
         ]
       }
     }

@@ -123,6 +123,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/plans/{plan_date}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Plan */
+        get: operations["get_plan_v1_plans__plan_date__get"];
+        /** Put Plan */
+        put: operations["put_plan_v1_plans__plan_date__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -246,6 +264,124 @@ export interface components {
             /** Roles */
             roles: ("technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin")[];
         };
+        /** PlanOut */
+        PlanOut: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Department Id */
+            department_id: string;
+            /**
+             * Missing
+             * @description Tier 2 fields filled from department defaults
+             */
+            missing?: string[];
+            /**
+             * Sources
+             * @description Per field: saved, settings:<key>, default, history:<description> or none
+             */
+            sources: {
+                [key: string]: string;
+            };
+            /** Status */
+            status?: ("draft" | "final") | null;
+            /**
+             * Suggested
+             * @description True when nothing is saved and these are suggestions
+             */
+            suggested: boolean;
+            /** Updated At */
+            updated_at?: string | null;
+            values: components["schemas"]["ShiftPlanValues"];
+        };
+        /** PlanPut */
+        PlanPut: {
+            /**
+             * Academic Event
+             * @description Academic calendar event
+             */
+            academic_event?: ("none" | "exam" | "break" | "semester_start") | null;
+            /**
+             * Aft 11 Staff
+             * @description Staff starting about 11:00 AM
+             */
+            aft_11_staff?: number | null;
+            /**
+             * Aft 13 Staff
+             * @description Staff starting about 1:00 PM
+             */
+            aft_13_staff?: number | null;
+            /**
+             * Aft 15 Staff
+             * @description Staff starting at the regular afternoon start (3:00 PM)
+             */
+            aft_15_staff?: number | null;
+            /**
+             * Backfill
+             * @description Allow a past date, to enter real days already worked
+             * @default false
+             */
+            backfill: boolean;
+            /**
+             * Carryover Backlog Estimate
+             * @description Work waiting at 7:00 AM (0 light, 1 normal, 2 heavy)
+             */
+            carryover_backlog_estimate?: number | null;
+            /**
+             * Is Holiday
+             * @description Holiday or school closed
+             */
+            is_holiday?: boolean | null;
+            /**
+             * Mf Cases
+             * @description Maxillofacial surgery cases scheduled
+             */
+            mf_cases?: number | null;
+            /**
+             * Morning Staff Present
+             * @description Dental Central Sterile staff present for the morning operation
+             */
+            morning_staff_present: number;
+            /**
+             * Ot Available Staff
+             * @description Morning staff who agreed to stay for overtime
+             */
+            ot_available_staff?: number | null;
+            /**
+             * Outside Support Staff
+             * @description Outside-department helpers (until about 8 PM)
+             */
+            outside_support_staff?: number | null;
+            /**
+             * Regular Patients
+             * @description Scheduled regular patients (emergency and intake excluded)
+             */
+            regular_patients: number;
+            /**
+             * Status
+             * @description draft autosaves; final is the plan of record
+             * @default draft
+             * @enum {string}
+             */
+            status: "draft" | "final";
+            /**
+             * Sterilizers Up
+             * @description Sterilizers working at 7:00 AM
+             */
+            sterilizers_up?: number | null;
+            /**
+             * Student Clinic Sessions
+             * @description Scheduled student clinic sessions
+             */
+            student_clinic_sessions?: number | null;
+            /**
+             * Washers Up
+             * @description Washer-disinfectors working at 7:00 AM
+             */
+            washers_up?: number | null;
+        };
         /**
          * Problem
          * @description Problem Details (RFC 9457).
@@ -278,6 +414,79 @@ export interface components {
              * @enum {string}
              */
             status: "ready" | "not_ready";
+        };
+        /** ShiftPlanValues */
+        ShiftPlanValues: {
+            /**
+             * Academic Event
+             * @description Academic calendar event
+             */
+            academic_event?: ("none" | "exam" | "break" | "semester_start") | null;
+            /**
+             * Aft 11 Staff
+             * @description Staff starting about 11:00 AM
+             */
+            aft_11_staff?: number | null;
+            /**
+             * Aft 13 Staff
+             * @description Staff starting about 1:00 PM
+             */
+            aft_13_staff?: number | null;
+            /**
+             * Aft 15 Staff
+             * @description Staff starting at the regular afternoon start (3:00 PM)
+             */
+            aft_15_staff?: number | null;
+            /**
+             * Carryover Backlog Estimate
+             * @description Work waiting at 7:00 AM (0 light, 1 normal, 2 heavy)
+             */
+            carryover_backlog_estimate?: number | null;
+            /**
+             * Is Holiday
+             * @description Holiday or school closed
+             */
+            is_holiday?: boolean | null;
+            /**
+             * Mf Cases
+             * @description Maxillofacial surgery cases scheduled
+             */
+            mf_cases?: number | null;
+            /**
+             * Morning Staff Present
+             * @description Dental Central Sterile staff present for the morning operation
+             */
+            morning_staff_present?: number | null;
+            /**
+             * Ot Available Staff
+             * @description Morning staff who agreed to stay for overtime
+             */
+            ot_available_staff?: number | null;
+            /**
+             * Outside Support Staff
+             * @description Outside-department helpers (until about 8 PM)
+             */
+            outside_support_staff?: number | null;
+            /**
+             * Regular Patients
+             * @description Scheduled regular patients (emergency and intake excluded)
+             */
+            regular_patients?: number | null;
+            /**
+             * Sterilizers Up
+             * @description Sterilizers working at 7:00 AM
+             */
+            sterilizers_up?: number | null;
+            /**
+             * Student Clinic Sessions
+             * @description Scheduled student clinic sessions
+             */
+            student_clinic_sessions?: number | null;
+            /**
+             * Washers Up
+             * @description Washer-disinfectors working at 7:00 AM
+             */
+            washers_up?: number | null;
         };
     };
     responses: never;
@@ -505,6 +714,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    get_plan_v1_plans__plan_date__get: {
+        parameters: {
+            query: {
+                /** @description Department the plan belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path: {
+                plan_date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    put_plan_v1_plans__plan_date__put: {
+        parameters: {
+            query: {
+                /** @description Department the plan belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path: {
+                plan_date: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanPut"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanOut"];
                 };
             };
             /** @description Problem */
