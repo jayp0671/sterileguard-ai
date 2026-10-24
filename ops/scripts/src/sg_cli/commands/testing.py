@@ -227,19 +227,14 @@ def visual(update: bool = typer.Option(False, "--update", help="Update snapshots
     result.finish()
 
 
-@app.command("db", help="pgTAP database tests (supabase/tests); full RLS matrix in SG-12.")
-def db() -> None:
-    result = core.Result("test", "db")
-    start = time.perf_counter()
-    code = core.run(["pnpm", "exec", "supabase", "test", "db"], check=False)
-    if not core.OPTIONS.dry_run:
-        record(
-            "db",
-            {"passed": int(code == 0), "failed": int(code != 0), "skipped": 0},
-            time.perf_counter() - start,
-        )
-    result.ok = code == 0
-    result.finish()
+@app.command("db", help="pgTAP database tests incl. the RLS matrix (alias of sg db rls-test).")
+def db(
+    env: str = typer.Option("local", "--env", help="local | staging"),
+    runner: str = typer.Option("auto", "--runner", help="auto | cli | python"),
+) -> None:
+    from sg_cli.commands.db import rls_test
+
+    rls_test(env=env, runner=runner)
 
 
 LATER = {

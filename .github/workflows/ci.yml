@@ -77,13 +77,32 @@ jobs:
       - run: docker build -f apps/api/Dockerfile --build-arg GIT_SHA=${{ github.sha }} -t sg-api:ci .
 
   db:
+    # Required check. On pull requests it runs pgTAP (RLS matrix, SG-12) only when the database
+    # or its tooling changed; otherwise it passes quickly so non-DB PRs are not blocked.
+    # db-nightly.yml runs the same suite on main every night.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup
-      - run: pnpm exec supabase start -x studio,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor,realtime,storage-api
-      - run: uv run sg db rls-test
-      - run: uv run sg db lint
+        with:
+          fetch-depth: 0
+      - id: changes
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "db=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "origin/${{ github.base_ref }}...HEAD"               | grep -qE '^(supabase/|ops/scripts/src/sg_cli/(pgtap\.py|commands/db\.py))'; then
+            echo "db=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "db=false" >> "$GITHUB_OUTPUT"
+            echo "No database changes: skipping pgTAP." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - if: steps.changes.outputs.db == 'true'
+        uses: ./.github/actions/setup
+      - if: steps.changes.outputs.db == 'true'
+        run: pnpm exec supabase start -x studio,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor,realtime,storage-api
+      - if: steps.changes.outputs.db == 'true'
+        run: uv run sg test db
+      - if: steps.changes.outputs.db == 'true'
+        run: uv run sg db lint
 
   secrets:
     runs-on: ubuntu-latest
