@@ -1,7 +1,7 @@
 """Thin Supabase gateway over PostgREST and the Auth admin API.
 
 Business queries run with the caller's access token so RLS applies (plan §7.1, least privilege).
-The service-role key is used only for the Auth admin call that sends invite emails.
+The service-role key is used only through sg_api.db.service_client (invite emails).
 """
 
 from __future__ import annotations
@@ -12,6 +12,8 @@ import httpx
 
 from sg_api.core.config import Settings
 from sg_api.core.errors import ApiError
+from sg_api.core.middleware import HEADER, REQUEST_ID
+from sg_api.db.service_client import ServiceClient
 
 Row = dict[str, Any]
 
@@ -23,6 +25,7 @@ class Gateway(Protocol):
         self, token: str, table: str, params: dict[str, str], patch: Row
     ) -> list[Row]: ...
     async def rpc(self, token: str, fn: str, args: Row | None = None) -> Any: ...
+    async def upsert(self, token: str, table: str, row: Row, on_conflict: str) -> Row: ...
     async def admin_invite(self, email: str, redirect_to: str) -> None: ...
 
 
@@ -33,11 +36,15 @@ class SupabaseGateway:
         self.client = client or httpx.AsyncClient(timeout=10.0)
 
     def _headers(self, token: str) -> dict[str, str]:
-        return {
+        headers = {
             "apikey": self.settings.supabase_anon_key,
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         }
+        # PostgREST exposes request headers to SQL; the audit trigger reads x-request-id.
+        if request_id := REQUEST_ID.get():
+            headers[HEADER] = request_id
+        return headers
 
     @staticmethod
     def _raise(resp: httpx.Response) -> None:
@@ -75,6 +82,21 @@ class SupabaseGateway:
         rows: list[Row] = resp.json()
         return rows
 
+    async def upsert(self, token: str, table: str, row: Row, on_conflict: str) -> Row:
+        headers = {
+            **self._headers(token),
+            "Prefer": "resolution=merge-duplicates,return=representation",
+        }
+        resp = await self.client.post(
+            f"{self.base}/rest/v1/{table}",
+            params={"on_conflict": on_conflict},
+            json=row,
+            headers=headers,
+        )
+        self._raise(resp)
+        rows: list[Row] = resp.json()
+        return rows[0]
+
     async def rpc(self, token: str, fn: str, args: Row | None = None) -> Any:
         resp = await self.client.post(
             f"{self.base}/rest/v1/rpc/{fn}", json=args or {}, headers=self._headers(token)
@@ -83,16 +105,5 @@ class SupabaseGateway:
         return resp.json()
 
     async def admin_invite(self, email: str, redirect_to: str) -> None:
-        key = self.settings.supabase_service_role_key
-        if not key:
-            raise ApiError(503, "invite email is not configured (service role key missing)")
-        resp = await self.client.post(
-            f"{self.base}/auth/v1/invite",
-            params={"redirect_to": redirect_to},
-            json={"email": email},
-            headers={"apikey": key, "Authorization": f"Bearer {key}"},
-        )
-        if resp.status_code == 422:
-            raise ApiError(409, "this email already has an account; ask them to sign in")
-        if resp.status_code >= 400:
-            raise ApiError(502, "invite email could not be sent")
+        # Invite emails need the Auth admin API, which only the service role can call.
+        await ServiceClient(self.settings, self.client).admin_invite(email, redirect_to)

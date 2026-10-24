@@ -22,6 +22,8 @@ from sg_api.core.errors import ApiError
 ALGORITHMS = ["ES256", "RS256", "EdDSA"]
 SESSION_LIMIT_S = 12 * 3600
 REAUTH_WINDOW_S = 5 * 60
+JWKS_CACHE_S = 10 * 60
+MFA_REQUIRED = "https://sterileguard.dev/problems/mfa-required"
 
 
 @dataclass(frozen=True)
@@ -47,7 +49,9 @@ class Principal:
 class TokenVerifier:
     def __init__(self, settings: Settings, jwks_client: PyJWKClient | None = None) -> None:
         self.issuer = f"{settings.supabase_url.rstrip('/')}/auth/v1"
-        self.jwks = jwks_client or PyJWKClient(settings.supabase_jwks_url, cache_keys=True)
+        self.jwks = jwks_client or PyJWKClient(
+            settings.supabase_jwks_url, cache_keys=True, cache_jwk_set=True, lifespan=JWKS_CACHE_S
+        )
 
     def verify(self, token: str) -> Principal:
         try:
@@ -108,7 +112,7 @@ def optional_principal(
 
 def require_aal2(principal: Principal = Depends(get_principal)) -> Principal:
     if not principal.is_aal2:
-        raise ApiError(403, "two-factor authentication required (aal2)")
+        raise ApiError(403, "two-factor authentication required (aal2)", type_=MFA_REQUIRED)
     return principal
 
 

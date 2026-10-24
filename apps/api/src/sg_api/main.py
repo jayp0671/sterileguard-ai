@@ -9,14 +9,17 @@ from fastapi.middleware.gzip import GZipMiddleware
 from sg_api import __version__
 from sg_api.core.config import Settings, get_settings
 from sg_api.core.errors import PROBLEM_JSON, Problem, install_error_handlers
+from sg_api.core.idempotency import IdempotencyMiddleware
 from sg_api.core.logging import configure_logging
 from sg_api.core.middleware import HEADER, RequestIdMiddleware
-from sg_api.routers import admin, audit, health, me
+from sg_api.core.ratelimit import RateLimitMiddleware
+from sg_api.routers import admin, audit, health, me, plans
 
 v1 = APIRouter(prefix="/v1")
 v1.include_router(admin.router)
 v1.include_router(audit.router)
 v1.include_router(me.router)
+v1.include_router(plans.router)
 
 # Every route documents the problem+json error shape so clients get a typed ApiError.
 ERRORS: dict[int | str, dict[str, object]] = {
@@ -33,6 +36,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         description="Decision support only. Academic prototype. No patient data.",
     )
     app.state.model = None
+    # add_middleware wraps: the last one added runs first. Idempotency sits inside GZip so it
+    # stores plain JSON; rate limiting runs after request ids are bound.
+    app.add_middleware(IdempotencyMiddleware)
     app.add_middleware(GZipMiddleware, minimum_size=1000)
     app.add_middleware(
         CORSMiddleware,
@@ -42,6 +48,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["Authorization", "Content-Type", HEADER, "Idempotency-Key"],
         expose_headers=[HEADER],
     )
+    app.add_middleware(RateLimitMiddleware)
     app.add_middleware(RequestIdMiddleware)
     install_error_handlers(app)
     app.include_router(health.router, responses=ERRORS)
