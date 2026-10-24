@@ -8,7 +8,7 @@ from typing import Any
 import typer
 
 from sg_cli import core
-from sg_cli.commands import bootstrap, contracts, db, dev, doctor, memory, stubs, testing
+from sg_cli.commands import bootstrap, contracts, db, dev, doctor, memory, sim, stubs, testing
 
 GLOBAL_FLAGS = ("--dry-run", "--json")
 
@@ -47,7 +47,15 @@ app.command("doctor", help="Check tools, versions and env vars.")(doctor.doctor)
 app.command("bootstrap", help="Install everything and prepare a local stack.")(bootstrap.bootstrap)
 app.command("dev", help="Run Supabase, web (3000) and API (8000) together.")(dev.dev)
 app.add_typer(memory.app, name="memory", help="Repo memory: sync, handoff, adr, task.")
-stubs.register(app, implemented={"contracts": contracts.app, "db": db.app, "test": testing.app})
+stubs.register(
+    app,
+    implemented={
+        "contracts": contracts.app,
+        "db": db.app,
+        "sim": sim.app,
+        "test": testing.app,
+    },
+)
 
 
 if __name__ == "__main__":

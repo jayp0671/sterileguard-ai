@@ -1,0 +1,138 @@
+# Dental Central Sterile simulator config (SG-09). Every number cites docs/domain/parameters.md
+# ("params: <section>"). Values marked estimate are low confidence and tuned by `sg sim calibrate`.
+# Times are minutes; t = 0 is 07:00.
+
+clock:
+  horizon: 960 # 23:00, end of the last afternoon shift (params: Staffing)
+  ot_cutoff: 840 # 21:00 hard overtime cutoff (params: Staffing, plan §11)
+  cutoff_jitter: 30 # personal cutoff +/- minutes (SG-09 ticket)
+  morning_end: 480 # 15:00 (params: Staffing)
+
+department_settings: # mirrors departments.settings (supabase/seed.sql) for Tier 2 defaults
+  shift_windows:
+    - { key: aft_11, default_staff: 3 }
+    - { key: aft_13, default_staff: 1 }
+    - { key: aft_15, default_staff: 2 }
+  outside_support_default: 2
+  washers: 2
+  sterilizers: 2
+  mf_cases_default: 20
+  student_clinic_sessions_default: 4 # estimate
+  ot_available_default: 2 # estimate
+
+staff:
+  shift_length: 480 # 8 h afternoon shifts (params: Staffing, estimate)
+  starts: { aft_11: 240, aft_13: 360, aft_15: 480 } # 11:00, 13:00, 15:00 (params: Staffing)
+  outside_support_start: 300 # 12:00, start to confirm (params: Staffing)
+  outside_support_end: 780 # 20:00 (params: Staffing)
+  ot_stay_threshold: 30 # units in progress per staff member below which stayers leave (estimate, pre-calibration)
+  priority: [decon, inspect, pack] # decontamination > inspection and assembly > packaging
+
+# Stage minutes per unit, triangular (params: Per-unit stage times, estimate)
+units:
+  cassette:
+    weight: 1.0 # load units used in a washer or sterilizer (estimate)
+    decon: { dist: triangular, low: 2, mode: 3, high: 5 }
+    inspect: { dist: triangular, low: 3, mode: 5, high: 8 }
+    pack: { dist: triangular, low: 1, mode: 2, high: 3 }
+  pouch:
+    weight: 0.2 # about 60 pouches per sterilizer load (params: Equipment)
+    decon: { dist: triangular, low: 0.3, mode: 0.5, high: 1 }
+    inspect: { dist: triangular, low: 0.3, mode: 0.5, high: 1 }
+    pack: { dist: triangular, low: 0.3, mode: 0.5, high: 1 }
+  mf_tray:
+    weight: 6.0 # 1 MF tray + 4 cassettes per load (params: Equipment)
+    decon: { dist: triangular, low: 5, mode: 8, high: 12 }
+    inspect: { dist: triangular, low: 10, mode: 15, high: 25 }
+    pack: { dist: triangular, low: 3, mode: 4, high: 6 }
+  handpiece:
+    weight: 0.5 # estimate
+    decon: { dist: triangular, low: 2, mode: 3, high: 4 }
+    inspect: { dist: triangular, low: 2, mode: 3, high: 5 }
+    pack: { dist: triangular, low: 0.5, mode: 1, high: 1.5 }
+
+work:
+  per_patient: { cassette: 1, pouch: 2, handpiece: 0.3 } # params: Work generated
+  per_mf_case: { mf_tray: 1, pouch: 3 } # params: Work generated
+  per_session: { cassette: 12 } # 12 sets issued (params: Work generated)
+  unused_share: 0.25 # params: Work generated
+  unused_factor: { dist: triangular, low: 0.7, mode: 1.0, high: 1.3 }
+  emergency_patients: { dist: poisson, lam: 10 } # 5 to 15 per day (params: Work generated)
+  carryover_units: { 0: 10, 1: 40, 2: 120 } # backlog scale -> units (estimate)
+  carryover_scale_cuts: [25, 80] # units -> 0/1/2 for the next day's input
+  max_carryover_units: 400 # backlog beyond this is assumed cleared by surge help outside the model (ADR-0003)
+
+arrivals:
+  blocks: # clinic blocks; pickups from first_pickup to last_pickup (params: Arrival timing)
+    - { first_pickup: 120, last_pickup: 360, share: 0.5 } # 09:00 to 13:00
+    - { first_pickup: 420, last_pickup: 660, share: 0.5 } # 14:00 to 18:00
+  pickup_interval: { dist: triangular, low: 30, mode: 45, high: 60 } # SG-09 ticket default 30 to 60
+  mf_case_window: [60, 480] # cases 08:00 to 15:00 (params: Arrival timing)
+  mf_return_delay: 60 # trays return about 1 h after each case
+  unused_window: [480, 660] # returned unused sets arrive in the afternoon
+
+machines:
+  washer:
+    capacity: 40 # load units (estimate; params lists 8 sets, too few for 2 washers to clear a day: Leo to confirm)
+    cycle: { dist: triangular, low: 30, mode: 45, high: 60 } # params: Equipment
+    max_load_wait: 15
+  sterilizer:
+    capacity: 40 # load units (estimate; Leo to confirm with the sterilizer IFU)
+    cycle: { dist: triangular, low: 40, mode: 45, high: 60 } # dynamic air removal incl. drying
+    max_load_wait: 15
+  cool_minutes: 20 # time only, no resource (estimate)
+
+disruptions:
+  p_down: 0.0125 # per machine per day; about 5% of days one of 4 machines is down
+  down_start: [0, 600]
+  down_duration: { dist: lognormal, median: 150, sigma: 0.45, low: 60, high: 240 } # 1 to 4 h
+  p_bi: 0.004 # about 1 per year (params: Events)
+  bi_loads: 2
+
+# Calibration multipliers (sg sim calibrate writes dental_cs.calibrated.yaml)
+scale:
+  units_per_patient: 1.0
+  units_per_session: 1.0
+  stage_time: 0.55 # pre-calibration: per-unit estimates scaled so a normal day roughly clears
+
+calendar: # sampler (params: Work generated, Academic calendar)
+  patients_mean: 366
+  patients_sd: 45
+  weekday_multipliers: [1.07, 0.94, 1.21, 1.10, 0.68] # Mon..Fri from week 1 (392, 343, 442, 404, 248)
+  mf_lambda: 20
+  sessions_mean: 4
+  holiday_dates: ["2026-11-26", "2026-11-27", "2026-12-25", "2027-01-01"]
+  events:
+    - {
+        name: break,
+        start: "2026-11-26",
+        end: "2026-11-29",
+        patient_factor: 0.2,
+        session_factor: 0.0,
+      }
+    - {
+        name: break,
+        start: "2026-12-18",
+        end: "2027-01-08",
+        patient_factor: 0.4,
+        session_factor: 0.0,
+      }
+    - {
+        name: exam,
+        start: "2026-12-07",
+        end: "2026-12-17",
+        patient_factor: 0.8,
+        session_factor: 0.5,
+      }
+
+# Scenario coverage design for `sg sim run --design lhs` (SG-09): Latin hypercube ranges.
+# ot_available_staff is a share of morning staff, so it never exceeds it.
+design:
+  morning_staff_present: [2, 5]
+  aft_11_staff: [1, 4]
+  aft_13_staff: [0, 2]
+  aft_15_staff: [1, 3]
+  outside_support_staff: [0, 3]
+  ot_available_staff: [0, 1]
+  washers_up: [1, 2]
+  sterilizers_up: [1, 2]

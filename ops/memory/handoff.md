@@ -50,3 +50,9 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: sg_data.schema (FieldSpec registry, to_pandera, to_pydantic, db_columns), defaults.fill_tier2, 0004_shift_data (datasets, shift_plans, shift_actuals, RLS), 0005_audit (append-only audit_log + audit_row_change on 6 tables), pgTAP 0004 (23), drift test, repo field-list scan; local and staging migrated, pgTAP 46/46 on both
 - Next: SG-09 simulator
 - Gotchas: Ticket named the files 0003_shift_data/0004_audit; 0003 was taken, so they are 0004/0005 and SG-11 idempotency becomes 0006. to_pandera returns a DataFrameSchema (runtime-generated columns). Missing-setting Tier 2 defaults use FieldSpec.fallback. gh is not logged in, so PRs are opened by Jay.
+
+## 2026-10-22 · Claude Code (for Jay) · SG-09
+
+- Done: sg_sim: process-per-worker SimPy model (staff windows, stayers, batch washers/sterilizers with load wait, downtime, BI recall, carryover), sampler, simulate_day/sequence, export validated by sg_data schema, LHS 5,000-day dataset (250x20 workdays, multiprocessing) in local and staging (dataset 5fa1a749, 5000 plans + 5000 actuals), calibrate (Optuna TPE) + validate (KS), sg sim run/calibrate/validate; 24 tests; ADR-0003
+- Next: SG-10 design system and shell
+- Gotchas: First-draft machine capacity and stage times could not clear a day; capacities raised to 40 load units and stage_time 0.55 pre-calibration (ADR-0003, Leo to verify). No real days yet, so calibration is plausibility-only (dental_cs.calibrated.yaml); MAE criterion waits for Leo's week 1. Windows: spawned pool needs OPENBLAS_NUM_THREADS=1. Carryover capped at 400 units between days.

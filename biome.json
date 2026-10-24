@@ -18,6 +18,7 @@
       "!apps/web/src/components/ui",
       "!.claude/skills/webapp-testing",
       "!.agents/skills/webapp-testing",
+      "!packages/sim/configs/*.calibrated.yaml",
       "!**/*.md"
     ]
   },
