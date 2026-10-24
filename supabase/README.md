@@ -40,6 +40,15 @@ to. A `dept_admin` manages memberships in their own department but can never gra
 Wrap helper calls that do not depend on the row in `(select ...)` so Postgres evaluates them once
 per query, not once per row.
 
+### RLS permission matrix (SG-12)
+
+`supabase/tests/0010_rls_matrix.test.sql` checks every table x select/insert/update/delete x
+every role in department A, a department-B technician, an aal1 user and anon. Expected results
+are the `rules` rows (one per table and operation, listing the allowed actors); every other
+actor must be denied. **Every migration that adds a table must add its four rules there.** The
+coverage assertion fails if any table in `public` is missing. Run it with
+`sg test db --env staging --runner python` (no Docker) or `sg test db` against the local stack.
+
 ## `departments.settings` shape
 
 Validated by a Pydantic `DepartmentSettings` model in the API (SG-11).

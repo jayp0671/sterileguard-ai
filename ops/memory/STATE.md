@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 2 (Oct 19-25) Data, simulator, shell
-- Branch: sg-11/api-security-plan-tomorrow
+- Branch: sg-12/sim-tests-rls-matrix
 - Latest migration: 0006_idempotency.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-12 tests
+- Next up (from handoff): Sprint 3: open and merge the stacked PRs SG-08 to SG-12, then SG-13 feature registry and first model
 
 ## Tickets
 
@@ -23,11 +23,12 @@
 - SG-09 done; real-day calibration waits on Leo: SimPy simulator, calibration, 5,000-day dataset
 - SG-10 done; screenshots and web-design-guidelines audit pending: Design system, app shell, styled auth
 - SG-11 done; staging migrated (0006): API security layer and Plan Tomorrow
-- SG-12 to do: Simulator correctness suite and RLS matrix
+- SG-12 done; matrix 375/375 on staging: Simulator correctness suite and RLS matrix
 
 ## Tests
 
-- python: 145 passed, 0 failed, 0 skipped (a2468ae)
+- db-staging: 421 passed, 0 failed, 0 skipped (0d497dd)
+- python: 152 passed, 0 failed, 0 skipped (0d497dd)
 
 ## Deployed URLs
 
@@ -35,6 +36,7 @@
 
 ## Last 10 commits
 
+- 0d497dd jayp0671: feat(api,web): API security layer (JWT, roles, rate limits, idempotency) and Plan Tomorrow [SG-11]
 - a2468ae jayp0671: feat(web): design system, tokens, core components, app shell, styled auth screens and GET /v1/me [SG-10]
 - 78460df jayp0671: chore(sim): format config YAML for Biome 2.6; skip the generated calibrated config [SG-09]
 - 56512ed jayp0671: test(cli): use a remaining stub for the global-flags test [SG-09]
@@ -44,4 +46,3 @@
 - c31ecd2 jayp0671: feat(db,data): canonical schema, shift tables, datasets and append-only audit log [SG-08]
 - a2e5a5b Jay Patel: chore: Sprint 1 verification fixes (db/doctor env handling, memory logs) (#1)
 - e84217e jayp0671: docs(data): real data intake template, data dictionary, sim parameters, approvals [SG-06]
-- ac9abe1 jayp0671: test: test strategy and harness for every layer [SG-05]

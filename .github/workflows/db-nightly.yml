@@ -1,0 +1,28 @@
+name: db-nightly
+
+# Nightly pgTAP run on main (SG-12): RLS permission matrix, audit immutability, helpers.
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  UV_PYTHON: "3.12"
+  NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
+  NEXT_PUBLIC_API_URL: http://localhost:8000
+
+jobs:
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - uses: ./.github/actions/setup
+      - run: pnpm exec supabase start -x studio,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor,realtime,storage-api
+      - run: uv run sg test db
+      - run: uv run sg db lint
