@@ -50,3 +50,67 @@ def notebook(
     core.run(_ml("notebook", "--run", run, *(["--save"] if save else [])))
     result.add(f"notebook {run} executed")
     result.finish()
+
+
+# Registry (SG-14). Service-role credentials come from .env through the sg db guards; prod is
+# refused here: production activation goes through the API with re-authentication.
+_ENV_VARS = {
+    "local": ("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"),
+    "staging": ("SUPABASE_URL_STAGING", "SUPABASE_SERVICE_ROLE_KEY_STAGING"),
+}
+
+
+def _registry_env(env: str) -> dict[str, str]:
+    from sg_cli.commands.db import db_url
+
+    if env not in _ENV_VARS:
+        raise typer.BadParameter("--env must be local or staging (never prod)")
+    url_var, key_var = _ENV_VARS[env]
+    found = core.require_env(url_var, key_var)
+    return {
+        "SG_ML_DB_URL": db_url(env),
+        "SG_ML_SUPABASE_URL": found[url_var],
+        "SG_ML_SERVICE_KEY": found[key_var],
+        "SG_ML_BUCKET": core.env_value("MODEL_BUCKET") or "models",
+    }
+
+
+@app.command("register", help="Upload a run's artifact and card; insert a candidate version.")
+def register(
+    run: str = typer.Option(..., "--run", help="run id under data/runs/"),
+    env: str = typer.Option("local", "--env", help="local | staging"),
+) -> None:
+    result = core.Result("ml", "register")
+    core.run(_ml("register", "--run", run), env=_registry_env(env))
+    result.data.update(run=run, env=env)
+    result.add(f"registered {run} on {env} as a candidate")
+    result.finish()
+
+
+@app.command("activate", help="Activate a version (refused unless its gates passed).")
+def activate(
+    version: str = typer.Argument(...),
+    env: str = typer.Option("local", "--env", help="local | staging"),
+) -> None:
+    result = core.Result("ml", "activate")
+    core.run(_ml("activate", version), env=_registry_env(env))
+    result.add(f"activated {version} on {env}")
+    result.finish()
+
+
+@app.command("rollback", help="Re-activate the most recent retired version.")
+def rollback(
+    feature_set: str = typer.Option("full", "--feature-set", help="full | core"),
+    env: str = typer.Option("local", "--env", help="local | staging"),
+) -> None:
+    result = core.Result("ml", "rollback")
+    core.run(_ml("rollback", "--feature-set", feature_set), env=_registry_env(env))
+    result.add(f"rolled back {feature_set} on {env}")
+    result.finish()
+
+
+@app.command("models", help="List registered versions.")
+def models(env: str = typer.Option("local", "--env", help="local | staging")) -> None:
+    result = core.Result("ml", "models")
+    core.run(_ml("models"), env=_registry_env(env))
+    result.finish()

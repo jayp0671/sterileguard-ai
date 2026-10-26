@@ -7,5 +7,159 @@
     "apiStatus": "API status",
     "apiUp": "API online, version {version}",
     "apiDown": "API unreachable"
+  },
+  "drivers": {
+    "regular_patients": {
+      "pos": "{value} scheduled patients is adding about {hours} hours",
+      "neg": "{value} scheduled patients is reducing overtime by about {hours} hours"
+    },
+    "morning_staff_present": {
+      "pos": "{value} staff at 7:00 AM is adding about {hours} hours",
+      "neg": "{value} staff at 7:00 AM is reducing overtime by about {hours} hours"
+    },
+    "mf_cases": {
+      "pos": "{value} MF cases is adding about {hours} hours",
+      "neg": "{value} MF cases is reducing overtime by about {hours} hours"
+    },
+    "student_clinic_sessions": {
+      "pos": "{value} student clinic sessions is adding about {hours} hours",
+      "neg": "{value} student clinic sessions is reducing overtime by about {hours} hours"
+    },
+    "aft_11_staff": {
+      "pos": "{value} staff starting at 11:00 is adding about {hours} hours",
+      "neg": "{value} staff starting at 11:00 is reducing overtime by about {hours} hours"
+    },
+    "aft_13_staff": {
+      "pos": "{value} staff starting at 1:00 PM is adding about {hours} hours",
+      "neg": "{value} staff starting at 1:00 PM is reducing overtime by about {hours} hours"
+    },
+    "aft_15_staff": {
+      "pos": "{value} staff starting at 3:00 PM is adding about {hours} hours",
+      "neg": "{value} staff starting at 3:00 PM is reducing overtime by about {hours} hours"
+    },
+    "outside_support_staff": {
+      "pos": "{value} outside support staff is adding about {hours} hours",
+      "neg": "{value} outside support staff is reducing overtime by about {hours} hours"
+    },
+    "ot_available_staff": {
+      "pos": "{value} staff willing to stay is adding about {hours} hours",
+      "neg": "{value} staff willing to stay is reducing overtime by about {hours} hours"
+    },
+    "washers_up": {
+      "pos": "{value, plural, one {Only # washer working} other {# washers working}} is adding about {hours} hours",
+      "neg": "{value, plural, one {Only # washer working} other {# washers working}} is reducing overtime by about {hours} hours"
+    },
+    "sterilizers_up": {
+      "pos": "{value, plural, one {Only # sterilizer available} other {# sterilizers available}} is adding about {hours} hours",
+      "neg": "{value, plural, one {Only # sterilizer available} other {# sterilizers available}} is reducing overtime by about {hours} hours"
+    },
+    "carryover_backlog_estimate": {
+      "pos": "Carryover backlog of {value} is adding about {hours} hours",
+      "neg": "Carryover backlog of {value} is reducing overtime by about {hours} hours"
+    },
+    "is_holiday": {
+      "pos": "Holiday or school closure is adding about {hours} hours",
+      "neg": "Holiday or school closure is reducing overtime by about {hours} hours"
+    },
+    "academic_event": {
+      "pos": "Academic event ({value}) is adding about {hours} hours",
+      "neg": "Academic event ({value}) is reducing overtime by about {hours} hours"
+    },
+    "total_afternoon_staff": {
+      "pos": "{value} afternoon staff is adding about {hours} hours",
+      "neg": "{value} afternoon staff is reducing overtime by about {hours} hours"
+    },
+    "staff_hours_before_15": {
+      "pos": "{value} staff hours before 3:00 PM is adding about {hours} hours",
+      "neg": "{value} staff hours before 3:00 PM is reducing overtime by about {hours} hours"
+    },
+    "patients_per_morning_staff": {
+      "pos": "{value} patients per morning staff member is adding about {hours} hours",
+      "neg": "{value} patients per morning staff member is reducing overtime by about {hours} hours"
+    },
+    "demand_units_est": {
+      "pos": "Expected workload of {value} work units is adding about {hours} hours",
+      "neg": "Expected workload of {value} work units is reducing overtime by about {hours} hours"
+    },
+    "capacity_ratio": {
+      "pos": "Workload of {value} units per staff hour is adding about {hours} hours",
+      "neg": "Workload of {value} units per staff hour is reducing overtime by about {hours} hours"
+    },
+    "day_of_week": {
+      "pos": "The {value} schedule is adding about {hours} hours",
+      "neg": "The {value} schedule is reducing overtime by about {hours} hours"
+    },
+    "is_monday": {
+      "pos": "Monday is adding about {hours} hours",
+      "neg": "Monday is reducing overtime by about {hours} hours"
+    },
+    "is_friday": {
+      "pos": "Friday is adding about {hours} hours",
+      "neg": "Friday is reducing overtime by about {hours} hours"
+    },
+    "week_of_semester": {
+      "pos": "Week {value} of the term is adding about {hours} hours",
+      "neg": "Week {value} of the term is reducing overtime by about {hours} hours"
+    },
+    "ot_hours_prev_day": {
+      "pos": "Overtime of {value} hours on the previous workday is adding about {hours} hours",
+      "neg": "Overtime of {value} hours on the previous workday is reducing overtime by about {hours} hours"
+    },
+    "ot_hours_7d_mean": {
+      "pos": "Average overtime of {value} hours over the past week is adding about {hours} hours",
+      "neg": "Average overtime of {value} hours over the past week is reducing overtime by about {hours} hours"
+    },
+    "other": {
+      "pos": "Other factors is adding about {hours} hours",
+      "neg": "Other factors is reducing overtime by about {hours} hours"
+    },
+    "mf_cases__missing": {
+      "pos": "Using the department default for mf cases is adding about {hours} hours",
+      "neg": "Using the department default for mf cases is reducing overtime by about {hours} hours"
+    },
+    "student_clinic_sessions__missing": {
+      "pos": "Using the department default for student clinic sessions is adding about {hours} hours",
+      "neg": "Using the department default for student clinic sessions is reducing overtime by about {hours} hours"
+    },
+    "aft_11_staff__missing": {
+      "pos": "Using the department default for 11:00 am start is adding about {hours} hours",
+      "neg": "Using the department default for 11:00 am start is reducing overtime by about {hours} hours"
+    },
+    "aft_13_staff__missing": {
+      "pos": "Using the department default for 1:00 pm start is adding about {hours} hours",
+      "neg": "Using the department default for 1:00 pm start is reducing overtime by about {hours} hours"
+    },
+    "aft_15_staff__missing": {
+      "pos": "Using the department default for 3:00 pm start is adding about {hours} hours",
+      "neg": "Using the department default for 3:00 pm start is reducing overtime by about {hours} hours"
+    },
+    "outside_support_staff__missing": {
+      "pos": "Using the department default for outside support is adding about {hours} hours",
+      "neg": "Using the department default for outside support is reducing overtime by about {hours} hours"
+    },
+    "ot_available_staff__missing": {
+      "pos": "Using the department default for staff willing to stay for overtime is adding about {hours} hours",
+      "neg": "Using the department default for staff willing to stay for overtime is reducing overtime by about {hours} hours"
+    },
+    "washers_up__missing": {
+      "pos": "Using the department default for washers working is adding about {hours} hours",
+      "neg": "Using the department default for washers working is reducing overtime by about {hours} hours"
+    },
+    "sterilizers_up__missing": {
+      "pos": "Using the department default for sterilizers working is adding about {hours} hours",
+      "neg": "Using the department default for sterilizers working is reducing overtime by about {hours} hours"
+    },
+    "carryover_backlog_estimate__missing": {
+      "pos": "Using the department default for backlog at 7:00 am is adding about {hours} hours",
+      "neg": "Using the department default for backlog at 7:00 am is reducing overtime by about {hours} hours"
+    },
+    "is_holiday__missing": {
+      "pos": "Using the department default for holiday or school closed is adding about {hours} hours",
+      "neg": "Using the department default for holiday or school closed is reducing overtime by about {hours} hours"
+    },
+    "academic_event__missing": {
+      "pos": "Using the department default for academic event is adding about {hours} hours",
+      "neg": "Using the department default for academic event is reducing overtime by about {hours} hours"
+    }
   }
 }

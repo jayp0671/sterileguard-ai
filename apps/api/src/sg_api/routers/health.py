@@ -28,6 +28,8 @@ class Check(BaseModel):
 class Ready(BaseModel):
     status: Literal["ready", "not_ready"]
     checks: dict[str, Check]
+    # Loaded model version per feature set (SG-14), e.g. {"full": "20261026-0030-abc1234"}.
+    models: dict[str, str] = {}
 
 
 def app_version(settings: Settings) -> str:
@@ -50,8 +52,9 @@ async def check_database(settings: Settings) -> Check:
 
 
 def check_model(request: Request) -> Check:
-    loaded = getattr(request.app.state, "model", None) is not None
-    return Check(ok=loaded, reason=None if loaded else "no active model loaded (SG-14)")
+    service = getattr(request.app.state, "model_service", None)
+    loaded = service is not None and service.get("full") is not None
+    return Check(ok=loaded, reason=None if loaded else "no active full model loaded")
 
 
 @router.get("/health", response_model=Health)
@@ -67,5 +70,10 @@ async def health(settings: Settings = Depends(get_settings)) -> Health:
 async def ready(request: Request, settings: Settings = Depends(get_settings)) -> JSONResponse:
     checks = {"database": await check_database(settings), "model": check_model(request)}
     ok = all(c.ok for c in checks.values())
-    body = Ready(status="ready" if ok else "not_ready", checks=checks)
+    service = getattr(request.app.state, "model_service", None)
+    body = Ready(
+        status="ready" if ok else "not_ready",
+        checks=checks,
+        models=service.versions() if service is not None else {},
+    )
     return JSONResponse(body.model_dump(exclude_none=True), status_code=200 if ok else 503)

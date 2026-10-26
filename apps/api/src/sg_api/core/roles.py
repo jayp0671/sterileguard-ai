@@ -93,3 +93,29 @@ def require_role(*roles: str) -> Callable[..., Awaitable[DepartmentAccess]]:
         return DepartmentAccess(principal=principal, department_id=dept, roles=held)
 
     return dependency
+
+
+@dataclass(frozen=True)
+class GlobalAccess:
+    principal: Principal
+    roles: frozenset[str]
+
+
+def require_any_role(*roles: str) -> Callable[..., Awaitable[GlobalAccess]]:
+    """For global resources (the model registry): the caller holds one of `roles` in any
+    department. 403 forbidden_role otherwise."""
+    needed = frozenset(roles)
+
+    async def dependency(
+        principal: Principal = Depends(current_user), gw: Gateway = Depends(get_gateway)
+    ) -> GlobalAccess:
+        held = frozenset(str(r["role"]) for r in await get_memberships(principal, gw))
+        if not held & needed:
+            raise ApiError(
+                403,
+                f"this action needs one of these roles: {', '.join(sorted(needed))}",
+                type_=FORBIDDEN_ROLE,
+            )
+        return GlobalAccess(principal=principal, roles=held)
+
+    return dependency

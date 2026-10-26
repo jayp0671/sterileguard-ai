@@ -55,6 +55,9 @@ values ('40000000-0000-4000-8000-0000000000f2', '40000000-0000-4000-8000-0000000
         '2026-11-02', 4.5, 'real', '40000000-0000-4000-8000-0000000000a1');
 insert into public.idempotency_keys (user_id, key, method, path, body_hash, status, response)
 values ('40000000-0000-4000-8000-0000000000a1', 'mx-key-1', 'PUT', '/v1/plans/x', 'h', 200, '{}');
+insert into public.model_versions (id, version, feature_set, artifact_path, card, metrics, training_dataset_ids)
+values ('40000000-0000-4000-8000-0000000000d1', 'mx-20261026-0000-abc1234', 'full', 'mx/artifact.joblib',
+        '{}', '{}', array['40000000-0000-4000-8000-0000000000f3']::uuid[]);
 
 -- ---------------------------------------------------------------------------
 -- Actors and rules
@@ -171,6 +174,15 @@ insert into rules values
   ('idempotency_keys', 'update', $q$with t as (update public.idempotency_keys set status = 201 where user_id = '40000000-0000-4000-8000-0000000000a1' and key = 'mx-key-1' returning 1) select count(*) from t$q$,
    array['tech_a']),
   ('idempotency_keys', 'delete', $q$with t as (delete from public.idempotency_keys where user_id = '40000000-0000-4000-8000-0000000000a1' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  -- model_versions (SG-14): global; supervisor and above in any department read; no direct writes
+  ('model_versions', 'select', $q$select count(*) from public.model_versions where id = '40000000-0000-4000-8000-0000000000d1'$q$,
+   array['sup_a','admin_a','platform']),
+  ('model_versions', 'insert', $q$with t as (insert into public.model_versions (version, feature_set, artifact_path, card, metrics, training_dataset_ids) values ('mx-new', 'full', 'p', '{}', '{}', '{}') returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('model_versions', 'update', $q$with t as (update public.model_versions set status = 'rejected' where id = '40000000-0000-4000-8000-0000000000d1' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('model_versions', 'delete', $q$with t as (delete from public.model_versions where id = '40000000-0000-4000-8000-0000000000d1' returning 1) select count(*) from t$q$,
    array[]::text[]);
 
 create temp table matrix as
@@ -229,7 +241,11 @@ insert into audited values
   ('shift_actuals',
    $q$insert into public.shift_actuals (id, department_id, shift_date, ot_labor_hours, source) values ('40000000-0000-4000-8000-0000000000f6', '40000000-0000-4000-8000-00000000000a', '2026-11-04', 1, 'real')$q$,
    $q$update public.shift_actuals set ot_labor_hours = 2 where id = '40000000-0000-4000-8000-0000000000f6'$q$,
-   $q$delete from public.shift_actuals where id = '40000000-0000-4000-8000-0000000000f6'$q$);
+   $q$delete from public.shift_actuals where id = '40000000-0000-4000-8000-0000000000f6'$q$),
+  ('model_versions',
+   $q$insert into public.model_versions (id, version, feature_set, artifact_path, card, metrics, training_dataset_ids) values ('40000000-0000-4000-8000-0000000000d2', 'mx-audit', 'core', 'p', '{}', '{}', '{}')$q$,
+   $q$update public.model_versions set status = 'rejected' where id = '40000000-0000-4000-8000-0000000000d2'$q$,
+   $q$delete from public.model_versions where id = '40000000-0000-4000-8000-0000000000d2'$q$);
 
 -- One audit row per change, with the right before/after shape.
 create function pg_temp.sgt_audit_delta(stmt text, tbl text, act text)

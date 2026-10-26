@@ -208,10 +208,12 @@ def test_db_columns_cover_schema() -> None:
 
 
 # Files allowed to list field names: the schema itself, generated code, data templates, docs,
-# SQL migrations (DDL must name columns), and tests.
+# SQL migrations (DDL must name columns), tests, and translation catalogs (driver sentences are
+# keyed drivers.<feature>; packages/ml/tests/test_explain.py keeps en.json equal to the
+# templates generated from the feature registry).
 ALLOWED = re.compile(
     r"(sg_data/schema\.py|/generated/|db\.ts$|openapi\.json$|\.sql$|\.md$|\.csv$|/tests?/|"
-    r"test_[^/]*\.py$|\.test\.tsx?$|\.spec\.ts$)"
+    r"test_[^/]*\.py$|\.test\.tsx?$|\.spec\.ts$|/messages/[a-z-]+\.json$)"
 )
 SCAN_EXT = {".py", ".ts", ".tsx", ".js", ".yaml", ".yml", ".json"}
 SKIP_DIRS = {

@@ -20,8 +20,8 @@ Current sprint: Sprint 3 (Oct 26-Nov 1) ML core and midterm
 | SG-10 | Design system, app shell, styled auth | Jay | done; screenshots and web-design-guidelines audit pending | #4 |
 | SG-11 | API security layer and Plan Tomorrow | Jay | done; staging migrated (0006) | #5 |
 | SG-12 | Simulator correctness suite and RLS matrix | Carlos | done; matrix 375/375 on staging | #6 |
-| SG-13 | ML pipeline: features, baselines, GBM with ranges, tuning, evaluation | Leo | in review | |
-| SG-14 | SHAP drivers and model registry with hot swap | Leo, Jay | to do | |
+| SG-13 | ML pipeline: features, baselines, GBM with ranges, tuning, evaluation | Leo | done; ADR-0005 and term dates need Leo | #8 |
+| SG-14 | SHAP drivers and model registry with hot swap | Leo, Jay | in review; staging migrated (0007) | |
 | SG-15 | Forecast API and Forecast home page | Jay | to do | |
 | SG-16 | Staging deployment, keep-alive, demo seed | Jay, Leo | to do | |
 | SG-17 | ML activation gates and first E2E journeys | Carlos | to do | |

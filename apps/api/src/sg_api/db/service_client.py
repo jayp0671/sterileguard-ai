@@ -1,9 +1,11 @@
 """Service-role client (SG-11). READ THIS BEFORE USING IT.
 
 The service-role key BYPASSES ROW-LEVEL SECURITY. It exists only for work that no single user's
-token can do: sending invite emails through the Auth admin API, and scheduled jobs (purging
-expired idempotency keys, simulation uploads). Never call it from a request handler on behalf
-of a user for business data: use sg_api.db.user_client so RLS applies.
+token can do: sending invite emails through the Auth admin API, scheduled jobs (purging
+expired idempotency keys, simulation uploads), loading the active model from the private
+`models` bucket (SG-14), and the model status functions, which no user role may call. Never
+call it from a request handler on behalf of a user for business data: use
+sg_api.db.user_client so RLS applies.
 """
 
 from __future__ import annotations
@@ -42,9 +44,31 @@ class ServiceClient:
             raise ApiError(502, "invite email could not be sent")
 
     async def rpc(self, fn: str, args: dict[str, Any] | None = None) -> Any:
-        resp = await self.client.post(
-            f"{self.base}/rest/v1/rpc/{fn}", json=args or {}, headers=self._headers()
-        )
+        resp = await self.rpc_response(fn, args)
         if resp.status_code >= 400:
             raise ApiError(502, f"service rpc {fn} failed")
         return resp.json()
+
+    async def rpc_response(self, fn: str, args: dict[str, Any] | None = None) -> httpx.Response:
+        """The raw response, for callers that map database error codes themselves."""
+        return await self.client.post(
+            f"{self.base}/rest/v1/rpc/{fn}", json=args or {}, headers=self._headers()
+        )
+
+    async def select(self, table: str, params: dict[str, str]) -> list[dict[str, Any]]:
+        resp = await self.client.get(
+            f"{self.base}/rest/v1/{table}", params=params, headers=self._headers()
+        )
+        if resp.status_code >= 400:
+            raise ApiError(502, f"service select on {table} failed")
+        rows: list[dict[str, Any]] = resp.json()
+        return rows
+
+    async def download(self, bucket: str, path: str) -> bytes:
+        """An object from a private Storage bucket."""
+        resp = await self.client.get(
+            f"{self.base}/storage/v1/object/{bucket}/{path}", headers=self._headers(), timeout=120.0
+        )
+        if resp.status_code >= 400:
+            raise ApiError(502, f"storage download of {path} failed")
+        return resp.content

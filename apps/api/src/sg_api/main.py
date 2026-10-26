@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -13,12 +16,16 @@ from sg_api.core.idempotency import IdempotencyMiddleware
 from sg_api.core.logging import configure_logging
 from sg_api.core.middleware import HEADER, RequestIdMiddleware
 from sg_api.core.ratelimit import RateLimitMiddleware
-from sg_api.routers import admin, audit, health, me, plans
+from sg_api.db.service_client import ServiceClient
+from sg_api.routers import admin, audit, health, me, models, plans
+from sg_api.services.models import ModelService, SupabaseModelSource
 
 v1 = APIRouter(prefix="/v1")
 v1.include_router(admin.router)
 v1.include_router(audit.router)
 v1.include_router(me.router)
+v1.include_router(models.router)
+v1.include_router(models.internal)
 v1.include_router(plans.router)
 
 # Every route documents the problem+json error shape so clients get a typed ApiError.
@@ -27,15 +34,33 @@ ERRORS: dict[int | str, dict[str, object]] = {
 }
 
 
+def model_service_for(settings: Settings) -> ModelService:
+    """Loads models with the service role when it is configured; otherwise no model (tests,
+    local runs without Supabase) and /ready reports it."""
+    if not settings.supabase_service_role_key:
+        return ModelService(source=None)
+    return ModelService(SupabaseModelSource(ServiceClient(settings), settings.model_bucket))
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     configure_logging()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        service: ModelService = app.state.model_service
+        await service.refresh()
+        service.start()
+        yield
+        await service.stop()
+
     app = FastAPI(
         title="SterileGuard AI API",
         version=__version__,
         description="Decision support only. Academic prototype. No patient data.",
+        lifespan=lifespan,
     )
-    app.state.model = None
+    app.state.model_service = model_service_for(settings)
     # add_middleware wraps: the last one added runs first. Idempotency sits inside GZip so it
     # stores plain JSON; rate limiting runs after request ids are bound.
     app.add_middleware(IdempotencyMiddleware)
