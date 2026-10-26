@@ -211,6 +211,11 @@ class FeatureContext:
             sim_config_hash=cfg.config_hash,
         )
 
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> FeatureContext:
+        """The context saved in a model artifact, so serving uses the training coefficients."""
+        return cls(**{**d, "term_starts": tuple(d["term_starts"])})
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "units_per_patient": self.units_per_patient,
@@ -278,6 +283,22 @@ def add_lags(df: pd.DataFrame) -> pd.DataFrame:
     out["ot_hours_prev_day"] = prev
     out["ot_hours_7d_mean"] = mean7
     return out.drop(columns=["_seq", "_date"]).loc[df.index]
+
+
+def lags_from_history(target: dt.date, history: dict[dt.date, float]) -> dict[str, float]:
+    """The two lag features for one target date from earlier actuals (date -> overtime), with
+    the same rules as add_lags: previous workday within PREV_DAY_MAX_GAP days, mean over the
+    prior 7 days. NaN when there is no history."""
+    earlier = {d: v for d, v in history.items() if d < target and v is not None}
+    prev = mean7 = float("nan")
+    if earlier:
+        last = max(earlier)
+        if (target - last).days <= PREV_DAY_MAX_GAP:
+            prev = float(earlier[last])
+        window = [v for d, v in earlier.items() if (target - d).days <= 7]
+        if window:
+            mean7 = float(np.mean(window))
+    return {"ot_hours_prev_day": prev, "ot_hours_7d_mean": mean7}
 
 
 def add_features(

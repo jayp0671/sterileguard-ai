@@ -22,6 +22,7 @@ export function MetricCard({
   deltaLabel,
   deltaGoodWhen = "down",
   footer,
+  size = "md",
   className,
 }: {
   label: string;
@@ -36,6 +37,8 @@ export function MetricCard({
   deltaLabel?: string;
   deltaGoodWhen?: "up" | "down";
   footer?: ReactNode;
+  /** "hero" is the page's main readout: a large Plex Mono numeral. */
+  size?: "md" | "hero";
   className?: string;
 }) {
   const max = scaleMax ?? Math.max((range?.[1] ?? value) * 1.5, 1);
@@ -52,7 +55,12 @@ export function MetricCard({
     >
       <h3 className="engraved">{label}</h3>
       <p className="flex items-baseline gap-2">
-        <span className="tabular text-3xl font-medium leading-none tracking-tight">
+        <span
+          className={cn(
+            "tabular font-medium leading-none tracking-tight",
+            size === "hero" ? "font-mono text-5xl sm:text-6xl" : "text-3xl",
+          )}
+        >
           {fmt(value, digits)}
         </span>
         {unit ? <span className="text-sm text-muted-foreground">{unit}</span> : null}

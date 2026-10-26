@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 3 (Oct 26-Nov 1) ML core and midterm
-- Branch: sg-14/shap-registry
-- Latest migration: 0007_models.sql
+- Branch: sg-15/forecast
+- Latest migration: 0008_forecasts.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-15 forecast API and home page; SG-17 gates so a candidate can be activated
+- Next up (from handoff): SG-17 gates (so a model can be activated), then SG-16 deploy and demo seed
 
 ## Tickets
 
@@ -25,17 +25,17 @@
 - SG-11 done; staging migrated (0006): API security layer and Plan Tomorrow
 - SG-12 done; matrix 375/375 on staging: Simulator correctness suite and RLS matrix
 - SG-13 done; ADR-0005 and term dates need Leo: ML pipeline: features, baselines, GBM with ranges, tuning, evaluation
-- SG-14 in review; staging migrated (0007): SHAP drivers and model registry with hot swap
-- SG-15 to do: Forecast API and Forecast home page
+- SG-14 done; staging migrated (0007); ADR-0006 needs Leo: SHAP drivers and model registry with hot swap
+- SG-15 in review; staging migrated (0008): Forecast API and Forecast home page
 - SG-16 to do: Staging deployment, keep-alive, demo seed
 - SG-17 to do: ML activation gates and first E2E journeys
 - SG-18 to do: Midterm presentation and live demo (Oct 30)
 
 ## Tests
 
-- affected-python: 187 passed, 0 failed, 2 skipped (462ba3e)
-- db-staging: 470 passed, 0 failed, 0 skipped (462ba3e)
-- python: 186 passed, 1 failed, 0 skipped (49f3cfe)
+- affected-python: 205 passed, 0 failed, 2 skipped (fc77580)
+- db-staging: 537 passed, 0 failed, 0 skipped (fc77580)
+- python: 205 passed, 0 failed, 0 skipped (fc77580)
 
 ## Deployed URLs
 
@@ -43,7 +43,8 @@
 
 ## Last 10 commits
 
-- 462ba3e jayp0671: feat(ml): feature registry, baselines, monotone gradient boosting with 80% ranges, evaluation, notebooks [SG-13]
+- fc77580 jayp0671: feat(ml,api,db): SHAP drivers in plain language and model registry with hot swap [SG-14]
+- 33ec05a Jay Patel: feat(ml): feature registry, baselines, monotone gradient boosting with 80% ranges, evaluation, notebooks [SG-13] (#8)
 - 49f3cfe Jay Patel: chore: close Sprint 2 in repo memory (#7)
 - 7208137 Jay Patel: [SG-12] Tests: simulator correctness suite and full RLS permission matrix (#6)
 - a49e354 Jay Patel: [SG-11] API security layer (JWT, roles, rate limits, idempotency) and Plan Tomorrow feature (#5)
@@ -52,4 +53,3 @@
 - 4939f60 Jay Patel: [SG-08] Canonical data schema, shift tables, datasets and append-only audit log (#2)
 - a2e5a5b Jay Patel: chore: Sprint 1 verification fixes (db/doctor env handling, memory logs) (#1)
 - e84217e jayp0671: docs(data): real data intake template, data dictionary, sim parameters, approvals [SG-06]
-- ac9abe1 jayp0671: test: test strategy and harness for every layer [SG-05]

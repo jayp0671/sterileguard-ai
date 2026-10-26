@@ -72,6 +72,57 @@
         "title": "Check",
         "type": "object"
       },
+      "DriverOut": {
+        "properties": {
+          "contribution_hours": {
+            "title": "Contribution Hours",
+            "type": "number"
+          },
+          "default_text": {
+            "title": "Default Text",
+            "type": "string"
+          },
+          "feature": {
+            "title": "Feature",
+            "type": "string"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "text_key": {
+            "description": "i18n key drivers.<feature>.<pos|neg>",
+            "title": "Text Key",
+            "type": "string"
+          },
+          "text_params": {
+            "additionalProperties": true,
+            "title": "Text Params",
+            "type": "object"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "rank",
+          "feature",
+          "contribution_hours",
+          "text_key",
+          "text_params",
+          "default_text"
+        ],
+        "title": "DriverOut",
+        "type": "object"
+      },
       "FieldError": {
         "properties": {
           "loc": {
@@ -105,6 +156,140 @@
         "title": "FieldError",
         "type": "object"
       },
+      "ForecastIn": {
+        "properties": {
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "target_date": {
+            "format": "date",
+            "title": "Target Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "department_id",
+          "target_date"
+        ],
+        "title": "ForecastIn",
+        "type": "object"
+      },
+      "ForecastOut": {
+        "properties": {
+          "burden_class": {
+            "enum": [
+              "low",
+              "moderate",
+              "high"
+            ],
+            "title": "Burden Class",
+            "type": "string"
+          },
+          "burden_probs": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Burden Probs",
+            "type": "object"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "disclaimer": {
+            "default": "Model estimate, not a guarantee.",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "drivers": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DriverOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          },
+          "feature_set": {
+            "enum": [
+              "full",
+              "core"
+            ],
+            "title": "Feature Set",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "ot_p10": {
+            "title": "Ot P10",
+            "type": "number"
+          },
+          "ot_p50": {
+            "title": "Ot P50",
+            "type": "number"
+          },
+          "ot_p90": {
+            "title": "Ot P90",
+            "type": "number"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "target_date": {
+            "format": "date",
+            "title": "Target Date",
+            "type": "string"
+          },
+          "thresholds": {
+            "$ref": "#/components/schemas/Thresholds"
+          },
+          "trigger": {
+            "enum": [
+              "manual",
+              "scheduled",
+              "scenario"
+            ],
+            "title": "Trigger",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "department_id",
+          "target_date",
+          "model_version",
+          "feature_set",
+          "ot_p10",
+          "ot_p50",
+          "ot_p90",
+          "burden_class",
+          "burden_probs",
+          "thresholds",
+          "trigger",
+          "created_at"
+        ],
+        "title": "ForecastOut",
+        "type": "object"
+      },
       "Health": {
         "properties": {
           "status": {
@@ -122,6 +307,52 @@
           "version"
         ],
         "title": "Health",
+        "type": "object"
+      },
+      "HistoryPoint": {
+        "properties": {
+          "actual": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Approved actual overtime, when logged",
+            "title": "Actual"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "ot_p10": {
+            "title": "Ot P10",
+            "type": "number"
+          },
+          "ot_p50": {
+            "title": "Ot P50",
+            "type": "number"
+          },
+          "ot_p90": {
+            "title": "Ot P90",
+            "type": "number"
+          }
+        },
+        "required": [
+          "date",
+          "ot_p10",
+          "ot_p50",
+          "ot_p90",
+          "model_version"
+        ],
+        "title": "HistoryPoint",
         "type": "object"
       },
       "Invite": {
@@ -1053,6 +1284,32 @@
         },
         "title": "ShiftPlanValues",
         "type": "object"
+      },
+      "Thresholds": {
+        "properties": {
+          "low_max": {
+            "description": "Overtime hours at or below which a day is low burden",
+            "title": "Low Max",
+            "type": "number"
+          },
+          "moderate_max": {
+            "description": "Upper bound of moderate burden",
+            "title": "Moderate Max",
+            "type": "number"
+          },
+          "source": {
+            "description": "simulated_provisional until real-data thresholds exist",
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "low_max",
+          "moderate_max",
+          "source"
+        ],
+        "title": "Thresholds",
+        "type": "object"
       }
     }
   },
@@ -1306,6 +1563,212 @@
         "summary": "Auth Event",
         "tags": [
           "audit"
+        ]
+      }
+    },
+    "/v1/forecasts": {
+      "post": {
+        "description": "Compute from the saved plan for target_date (409 no-plan without one).",
+        "operationId": "create_forecast_v1_forecasts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForecastIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Create Forecast",
+        "tags": [
+          "forecasts"
+        ]
+      }
+    },
+    "/v1/forecasts/history": {
+      "get": {
+        "description": "Latest forecast per day for the last `days` days, with approved actuals.",
+        "operationId": "forecast_history_v1_forecasts_history_get",
+        "parameters": [
+          {
+            "description": "Department the forecast belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the forecast belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 14,
+              "maximum": 90,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/HistoryPoint"
+                  },
+                  "title": "Response Forecast History V1 Forecasts History Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Forecast History",
+        "tags": [
+          "forecasts"
+        ]
+      }
+    },
+    "/v1/forecasts/next-day": {
+      "get": {
+        "description": "Latest forecast for the next workday in the department's time zone (404 no-forecast).",
+        "operationId": "next_day_forecast_v1_forecasts_next_day_get",
+        "parameters": [
+          {
+            "description": "Department the forecast belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the forecast belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Next Day Forecast",
+        "tags": [
+          "forecasts"
+        ]
+      }
+    },
+    "/v1/forecasts/{forecast_id}": {
+      "get": {
+        "description": "One forecast with its drivers. RLS decides visibility; the department must match.",
+        "operationId": "get_forecast_v1_forecasts__forecast_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "forecast_id",
+            "required": true,
+            "schema": {
+              "title": "Forecast Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department the forecast belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the forecast belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Get Forecast",
+        "tags": [
+          "forecasts"
         ]
       }
     },

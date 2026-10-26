@@ -21,6 +21,7 @@ Row = dict[str, Any]
 class Gateway(Protocol):
     async def select(self, token: str, table: str, params: dict[str, str]) -> list[Row]: ...
     async def insert(self, token: str, table: str, row: Row) -> Row: ...
+    async def insert_many(self, token: str, table: str, rows: list[Row]) -> list[Row]: ...
     async def update(
         self, token: str, table: str, params: dict[str, str], patch: Row
     ) -> list[Row]: ...
@@ -72,6 +73,16 @@ class SupabaseGateway:
         self._raise(resp)
         rows: list[Row] = resp.json()
         return rows[0]
+
+    async def insert_many(self, token: str, table: str, rows: list[Row]) -> list[Row]:
+        """One request for many rows (PostgREST accepts a JSON array)."""
+        if not rows:
+            return []
+        headers = {**self._headers(token), "Prefer": "return=representation"}
+        resp = await self.client.post(f"{self.base}/rest/v1/{table}", json=rows, headers=headers)
+        self._raise(resp)
+        out: list[Row] = resp.json()
+        return out
 
     async def update(self, token: str, table: str, params: dict[str, str], patch: Row) -> list[Row]:
         headers = {**self._headers(token), "Prefer": "return=representation"}

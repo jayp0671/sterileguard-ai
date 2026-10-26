@@ -58,6 +58,11 @@ values ('40000000-0000-4000-8000-0000000000a1', 'mx-key-1', 'PUT', '/v1/plans/x'
 insert into public.model_versions (id, version, feature_set, artifact_path, card, metrics, training_dataset_ids)
 values ('40000000-0000-4000-8000-0000000000d1', 'mx-20261026-0000-abc1234', 'full', 'mx/artifact.joblib',
         '{}', '{}', array['40000000-0000-4000-8000-0000000000f3']::uuid[]);
+insert into public.forecasts (id, department_id, target_date, plan_id, model_version, feature_set, ot_p10, ot_p50, ot_p90, trigger, created_by)
+values ('40000000-0000-4000-8000-0000000000d3', '40000000-0000-4000-8000-00000000000a', '2026-11-02',
+        '40000000-0000-4000-8000-0000000000f1', 'mx-v', 'full', 1, 2, 3, 'manual', '40000000-0000-4000-8000-0000000000a2');
+insert into public.forecast_drivers (forecast_id, rank, feature, value, contribution_hours, text_key, default_text)
+values ('40000000-0000-4000-8000-0000000000d3', 1, 'regular_patients', '300', 1.2, 'drivers.regular_patients.pos', 'x');
 
 -- ---------------------------------------------------------------------------
 -- Actors and rules
@@ -183,6 +188,24 @@ insert into rules values
   ('model_versions', 'update', $q$with t as (update public.model_versions set status = 'rejected' where id = '40000000-0000-4000-8000-0000000000d1' returning 1) select count(*) from t$q$,
    array[]::text[]),
   ('model_versions', 'delete', $q$with t as (delete from public.model_versions where id = '40000000-0000-4000-8000-0000000000d1' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  -- forecasts (SG-15): members read; supervisors and dept admins create their own; never edited
+  ('forecasts', 'select', $q$select count(*) from public.forecasts where id = '40000000-0000-4000-8000-0000000000d3'$q$,
+   array['tech_a','sup_a','admin_a','steward_a','platform']),
+  ('forecasts', 'insert', $q$with t as (insert into public.forecasts (department_id, target_date, model_version, feature_set, trigger, created_by) values ('40000000-0000-4000-8000-00000000000a', '2026-11-03', 'v', 'full', 'manual', (select auth.uid())) returning 1) select count(*) from t$q$,
+   array['sup_a','admin_a']),
+  ('forecasts', 'update', $q$with t as (update public.forecasts set ot_p50 = 2.5 where id = '40000000-0000-4000-8000-0000000000d3' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('forecasts', 'delete', $q$with t as (delete from public.forecasts where id = '40000000-0000-4000-8000-0000000000d3' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('forecast_drivers', 'select', $q$select count(*) from public.forecast_drivers where forecast_id = '40000000-0000-4000-8000-0000000000d3'$q$,
+   array['tech_a','sup_a','admin_a','steward_a','platform']),
+  -- drivers can only be added to your own forecast (the fixture forecast belongs to sup_a)
+  ('forecast_drivers', 'insert', $q$with t as (insert into public.forecast_drivers (forecast_id, rank, feature, contribution_hours, text_key, default_text) values ('40000000-0000-4000-8000-0000000000d3', 2, 'mf_cases', 0.5, 'k', 'x') returning 1) select count(*) from t$q$,
+   array['sup_a']),
+  ('forecast_drivers', 'update', $q$with t as (update public.forecast_drivers set default_text = 'y' where forecast_id = '40000000-0000-4000-8000-0000000000d3' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('forecast_drivers', 'delete', $q$with t as (delete from public.forecast_drivers where forecast_id = '40000000-0000-4000-8000-0000000000d3' returning 1) select count(*) from t$q$,
    array[]::text[]);
 
 create temp table matrix as
@@ -245,7 +268,11 @@ insert into audited values
   ('model_versions',
    $q$insert into public.model_versions (id, version, feature_set, artifact_path, card, metrics, training_dataset_ids) values ('40000000-0000-4000-8000-0000000000d2', 'mx-audit', 'core', 'p', '{}', '{}', '{}')$q$,
    $q$update public.model_versions set status = 'rejected' where id = '40000000-0000-4000-8000-0000000000d2'$q$,
-   $q$delete from public.model_versions where id = '40000000-0000-4000-8000-0000000000d2'$q$);
+   $q$delete from public.model_versions where id = '40000000-0000-4000-8000-0000000000d2'$q$),
+  ('forecasts',
+   $q$insert into public.forecasts (id, department_id, target_date, model_version, feature_set, trigger) values ('40000000-0000-4000-8000-0000000000d4', '40000000-0000-4000-8000-00000000000a', '2026-11-05', 'v', 'full', 'manual')$q$,
+   $q$update public.forecasts set ot_p50 = 1 where id = '40000000-0000-4000-8000-0000000000d4'$q$,
+   $q$delete from public.forecasts where id = '40000000-0000-4000-8000-0000000000d4'$q$);
 
 -- One audit row per change, with the right before/after shape.
 create function pg_temp.sgt_audit_delta(stmt text, tbl text, act text)
