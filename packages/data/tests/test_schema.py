@@ -227,6 +227,8 @@ SKIP_DIRS = {
     "__pycache__",
     "coverage",
     "ops",
+    # Gitignored datasets and training runs (their metrics.json lists the model features).
+    "data",
 }
 
 

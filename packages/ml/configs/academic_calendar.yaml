@@ -1,0 +1,7 @@
+# Academic calendar used for week_of_semester (SG-13). Month-day of each term's first day;
+# week 1 starts on that date and the count runs until the next term starts.
+# TO CONFIRM (Leo): exact term start dates for the dental school. These are placeholders.
+term_starts:
+  - "01-20" # spring
+  - "05-26" # summer
+  - "09-02" # fall

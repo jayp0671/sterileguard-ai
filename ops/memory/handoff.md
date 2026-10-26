@@ -80,3 +80,9 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: PRs #2 to #6 (SG-08 to SG-12) merged with all 8 required checks green; stacked branches rebased onto main after each squash merge; fixed sg db types writing Supabase CLI messages into db.ts; RLS matrix verified in CI under pg_prove
 - Next: Sprint 3: SG-13 feature registry and first model on the 5,000-day simulated dataset
 - Gotchas: Vercel preview deployments fail (not a required check); inspect with vercel inspect. Local pgTAP still needs Docker Desktop. Calibration against real days waits on Leo.
+
+## 2026-10-25 · jayp0671 · SG-13
+
+- Done: sg_ml: feature registry (known_at_7am, LeakageError, full/core sets, engineered/calendar/lag/__missing features, coefficients from the calibrated sim config), FieldSpec.monotone in sg_data, baselines (rule, Ridge, logistic both ways), monotone HGB with 80% range, calibrated classifier, RF, Optuna TPE, evaluation JSON + Markdown report, sg ml train/compare/notebook, notebooks 01 and 02, ml-notebooks CI job, ADR-0005. Tuned run on calibrated dataset a76064e0: MAE 0.819 vs Ridge 1.909 (57% better), 80% coverage 0.804, core MAE 6.74
+- Next: SG-14 SHAP drivers and model registry
+- Gotchas: The staging 5,000-day dataset 5fa1a749 was generated from dental_cs.yaml, not the calibrated config (sg sim run defaults to the uncalibrated file); training uses a76064e0 regenerated with --config dental_cs.calibrated.yaml (local parquet only, not uploaded yet). sim parquet now gets a .json lineage sidecar. sklearn 1.9 HGB quantile loss sticks at 0 when many targets tie with the start value and breaks monotonic constraints: see ADR-0005 (served p50 is the squared-error model). week_of_semester term dates are placeholders for Leo. Field-scan test now skips data/ (gitignored run output).

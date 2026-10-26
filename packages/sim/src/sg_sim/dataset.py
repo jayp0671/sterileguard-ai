@@ -4,6 +4,7 @@ persisted to Supabase with dataset lineage and to data/sim/<dataset_id>.parquet.
 from __future__ import annotations
 
 import datetime as dt
+import json
 import os
 import uuid
 from concurrent.futures import ProcessPoolExecutor
@@ -115,6 +116,8 @@ def write_parquet(df: pd.DataFrame, meta: dict[str, Any], root: Path) -> Path:
     out = root / "data" / "sim" / f"{meta['id']}.parquet"
     out.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out, index=False)
+    # Sidecar lineage (config hash, seed) so sg ml train knows which config made the rows.
+    out.with_suffix(".json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     return out
 
 

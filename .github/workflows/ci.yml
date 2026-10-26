@@ -76,6 +76,22 @@ jobs:
       - run: pnpm --filter @sg/web build
       - run: docker build -f apps/api/Dockerfile --build-arg GIT_SHA=${{ github.sha }} -t sg-api:ci .
 
+  ml-notebooks:
+    # SG-13: the course notebooks must run top to bottom. A small simulated fixture (300 days,
+    # fixed seed) is generated, a quick untuned run is trained on it, then both notebooks run.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: uv run python -m sg_sim run --days 300 --seed 7 --workers 2 --no-upload --config packages/sim/configs/dental_cs.calibrated.yaml
+      - run: uv run python -m sg_ml train --dataset latest --seed 7
+      - run: uv run python -m sg_ml notebook --run 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ml-figures
+          path: packages/ml/reports/figures/
+
   db:
     # Required check. On pull requests it runs pgTAP (RLS matrix, SG-12) only when the database
     # or its tooling changed; otherwise it passes quickly so non-DB PRs are not blocked.
