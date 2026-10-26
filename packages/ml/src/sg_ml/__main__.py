@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from sg_ml.data import ROOT, RUNS_DIR
+from sg_ml.data import REPORTS_DIR, ROOT, RUNS_DIR, SIM_DIR
 
 NOTEBOOK_DIR = Path(__file__).resolve().parents[2] / "notebooks"
 
@@ -42,6 +42,39 @@ def _train(args: argparse.Namespace) -> int:
         )
     )
     return 0
+
+
+def _evaluate(args: argparse.Namespace) -> int:
+    """Run the activation gates on a run; write them into metrics.json and the report."""
+    import joblib
+
+    from sg_ml import gates
+    from sg_ml.data import load_dataset
+
+    run_dir = Path(args.runs_dir) / args.run
+    run = json.loads((run_dir / "metrics.json").read_text(encoding="utf-8"))
+    artifact = joblib.load(run_dir / "artifact.joblib")
+    df, _ = load_dataset(run["dataset_ids"][0], Path(args.sim_dir))
+    results = gates.run_gates(run, artifact, df)
+    ok = gates.passed(results)
+    run["gates"] = [r.to_dict() for r in results]
+    run["gates_passed"] = ok
+    (run_dir / "metrics.json").write_text(json.dumps(run, indent=2, default=str), encoding="utf-8")
+    report = Path(args.reports_dir) / f"{run['run_id']}.md"
+    if report.exists():
+        text = report.read_text(encoding="utf-8").split("\n## Activation gates")[0]
+        verdict = "PASSED" if ok else "FAILED"
+        report.write_text(
+            f"{text.rstrip()}\n\n## Activation gates: {verdict}\n\n{gates.table(results)}\n",
+            encoding="utf-8",
+        )
+    if args.json:
+        summary = {"run_id": run["run_id"], "gates_passed": ok, "gates": run["gates"]}
+        print(json.dumps(summary, default=str))
+    else:
+        print(gates.table(results))
+        print(f"\ngates {'passed' if ok else 'FAILED'} for {run['run_id']}")
+    return 0 if ok else 1
 
 
 def _compare(args: argparse.Namespace) -> int:
@@ -180,6 +213,12 @@ def main(argv: list[str] | None = None) -> int:
     nb.add_argument("--run", required=True, help="notebook prefix, e.g. 01")
     nb.add_argument("--timeout", type=int, default=1200)
     nb.add_argument("--save", action="store_true", help="write outputs back into the notebook")
+    ev = sub.add_parser("evaluate")
+    ev.add_argument("--run", required=True)
+    ev.add_argument("--runs-dir", default=str(RUNS_DIR))
+    ev.add_argument("--sim-dir", default=str(SIM_DIR))
+    ev.add_argument("--reports-dir", default=str(REPORTS_DIR))
+    ev.add_argument("--json", action="store_true")
     reg = sub.add_parser("register")
     reg.add_argument("--run", required=True)
     reg.add_argument("--runs-dir", default=str(RUNS_DIR))
@@ -192,6 +231,7 @@ def main(argv: list[str] | None = None) -> int:
     handlers = {
         "train": _train,
         "compare": _compare,
+        "evaluate": _evaluate,
         "notebook": _notebook,
         "register": _register,
         "activate": _activate,

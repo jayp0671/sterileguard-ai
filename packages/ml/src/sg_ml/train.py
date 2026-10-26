@@ -125,9 +125,10 @@ def _fit_band(
     names: Sequence[str],
     params: dict[str, Any],
     seed: int,
+    monotone: bool = True,
 ) -> tuple[QuantileModel, np.ndarray]:
     X, y = build_matrix(F, names), F[TARGET].astype(float)
-    model = QuantileModel().fit(X[tr], y[tr], names, params, seed)
+    model = QuantileModel().fit(X[tr], y[tr], names, params, seed, monotone=monotone)
     return model, model.predict(X[ho])
 
 
@@ -140,6 +141,7 @@ def train(
     *,
     tune_trials: int = 0,
     params: dict[str, Any] | None = None,
+    monotone: bool = True,
 ) -> TrainResult:
     F = add_features(df, ctx).reset_index(drop=True)
     F = F[F[TARGET].notna()].reset_index(drop=True)
@@ -157,7 +159,7 @@ def train(
             )
 
     # Main models
-    quantiles, band = _fit_band(F, tr, ho, names, params, seed)
+    quantiles, band = _fit_band(F, tr, ho, names, params, seed, monotone)
     # The quantile median, reported for comparison only (not monotone, ADR-0005).
     q50 = hgb_regressor(names, params, seed, quantile=0.5).fit(X[tr], jitter_target(y[tr], seed))
     rf = random_forest(names, seed).fit(X[tr], y[tr])

@@ -82,14 +82,16 @@ def hgb_regressor(
     seed: int,
     *,
     quantile: float | None = None,
+    monotone: bool = True,
 ) -> Pipeline:
-    """Monotone-constrained gradient boosting; squared error, or quantile loss when given."""
+    """Monotone-constrained gradient boosting; squared error, or quantile loss when given.
+    monotone=False exists only so the SG-17 gate tests can train a model that breaks them."""
     order = _tree_order(names)
     kw: dict[str, Any] = {"loss": "quantile", "quantile": quantile} if quantile else {}
     model = HistGradientBoostingRegressor(
         **(kw or {"loss": "squared_error"}),
         **params,
-        monotonic_cst=monotone_constraints(order),
+        monotonic_cst=monotone_constraints(order) if monotone else None,
         categorical_features=None,
         early_stopping=True,
         random_state=seed,
@@ -153,14 +155,23 @@ class QuantileModel:
     pipelines: dict[float, Pipeline] = field(default_factory=dict)
 
     def fit(
-        self, X: pd.DataFrame, y: pd.Series, names: Sequence[str], params: dict[str, Any], seed: int
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        names: Sequence[str],
+        params: dict[str, Any],
+        seed: int,
+        *,
+        monotone: bool = True,
     ) -> QuantileModel:
         yj = jitter_target(y, seed)
         for q in QUANTILES:
             if q == 0.5:
-                self.pipelines[q] = hgb_regressor(names, params, seed).fit(X, y)
+                self.pipelines[q] = hgb_regressor(names, params, seed, monotone=monotone).fit(X, y)
             else:
-                self.pipelines[q] = hgb_regressor(names, params, seed, quantile=q).fit(X, yj)
+                self.pipelines[q] = hgb_regressor(
+                    names, params, seed, quantile=q, monotone=monotone
+                ).fit(X, yj)
         return self
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:

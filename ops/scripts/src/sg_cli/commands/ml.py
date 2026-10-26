@@ -34,6 +34,15 @@ def train(
     result.finish()
 
 
+@app.command("evaluate", help="Run the activation gates on a run; exit 1 if a required gate fails.")
+def evaluate(run: str = typer.Option(..., "--run", help="run id under data/runs/")) -> None:
+    result = core.Result("ml", "evaluate")
+    core.run(_ml("evaluate", "--run", run))
+    result.data.update(run=run)
+    result.add(f"gates passed for {run}; register it to make it activatable")
+    result.finish()
+
+
 @app.command("compare", help="Table of metrics across runs.")
 def compare() -> None:
     result = core.Result("ml", "compare")
