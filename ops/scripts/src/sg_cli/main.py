@@ -8,7 +8,18 @@ from typing import Any
 import typer
 
 from sg_cli import core
-from sg_cli.commands import bootstrap, contracts, db, dev, doctor, memory, sim, stubs, testing
+from sg_cli.commands import (
+    bootstrap,
+    contracts,
+    db,
+    dev,
+    doctor,
+    memory,
+    ml,
+    sim,
+    stubs,
+    testing,
+)
 
 GLOBAL_FLAGS = ("--dry-run", "--json")
 
@@ -52,6 +63,7 @@ stubs.register(
     implemented={
         "contracts": contracts.app,
         "db": db.app,
+        "ml": ml.app,
         "sim": sim.app,
         "test": testing.app,
     },

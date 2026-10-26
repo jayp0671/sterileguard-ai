@@ -53,6 +53,11 @@ python_version = "3.12"
 mypy_path = "apps/api/src:packages/data/src:packages/sim/src:packages/ml/src:packages/agents/src:ops/scripts/src"
 explicit_package_bases = true
 
+# Libraries without type information (scikit-learn ships none).
+[[tool.mypy.overrides]]
+module = ["sklearn.*", "joblib", "nbformat", "nbclient", "shap"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib --strict-markers -ra"
 asyncio_mode = "auto"

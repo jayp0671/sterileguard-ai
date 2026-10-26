@@ -144,10 +144,10 @@ def test_task_mark_done() -> None:
 
 
 def test_global_flags_anywhere_and_json(repo: Path) -> None:
-    # Uses a command that is still a stub (sg sim run became real in SG-09).
-    result = runner.invoke(app, ["--json", "--dry-run", "ml", "train"])
+    # Uses a command that is still a stub (sg sim run became real in SG-09, sg ml train in SG-13).
+    result = runner.invoke(app, ["--json", "--dry-run", "fix", "run"])
     assert result.exit_code == 0
-    assert '"ticket": "SG-13"' in result.output and '"dry_run": true' in result.output
+    assert '"ticket": "SG-30"' in result.output and '"dry_run": true' in result.output
 
 
 def test_help_lists_every_group() -> None:

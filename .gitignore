@@ -60,3 +60,6 @@ docs/domain/*real*
 docs/domain/*week*
 *.real.csv
 *.real.xlsx
+
+# Generated notebook figures (sg ml notebook); regenerate for slides
+packages/ml/reports/

@@ -50,6 +50,9 @@ class FieldSpec:
     # UI metadata for inputs (exported through OpenAPI so the web form is generated from it)
     label: str = ""
     group: str = ""
+    # Expected direction of the effect on overtime (SG-13 monotonic constraints, SG-17 gates):
+    # +1 more of it can never lower predicted overtime, -1 can never raise it, 0 unconstrained.
+    monotone: Literal[-1, 0, 1] = 0
 
     @property
     def required(self) -> bool:
@@ -290,6 +293,22 @@ FIELDS: tuple[FieldSpec, ...] = (
     ),
 )
 
+# Effect directions (SG-13). ot_available_staff stays 0: more willing stayers can raise total
+# overtime hours even while the work finishes sooner.
+_MONOTONE: dict[str, Literal[-1, 1]] = {
+    "regular_patients": 1,
+    "mf_cases": 1,
+    "student_clinic_sessions": 1,
+    "carryover_backlog_estimate": 1,
+    "morning_staff_present": -1,
+    "aft_11_staff": -1,
+    "aft_13_staff": -1,
+    "aft_15_staff": -1,
+    "outside_support_staff": -1,
+    "washers_up": -1,
+    "sterilizers_up": -1,
+}
+
 # Short form labels and form sections for the plan inputs (SG-11). Sections: demand,
 # staffing, equipment, carryover.
 _UI: dict[str, tuple[str, str]] = {
@@ -311,6 +330,7 @@ _UI: dict[str, tuple[str, str]] = {
 FIELDS = tuple(
     replace(f, label=_UI[f.name][0], group=_UI[f.name][1]) if f.name in _UI else f for f in FIELDS
 )
+FIELDS = tuple(replace(f, monotone=_MONOTONE.get(f.name, 0)) for f in FIELDS)
 
 BY_NAME: dict[str, FieldSpec] = {f.name: f for f in FIELDS}
 

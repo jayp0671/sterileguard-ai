@@ -3,7 +3,7 @@
 Mirror of ClickUp (SterileGuard workspace, folder SterileGuard AI). ClickUp is the source of truth.
 Edit with `sg memory task add|done`.
 
-Current sprint: Sprint 2 (Oct 19-25) Data, simulator, shell
+Current sprint: Sprint 3 (Oct 26-Nov 1) ML core and midterm
 
 | ID | Title | Lead | Status | PR |
 | --- | --- | --- | --- | --- |
@@ -20,3 +20,9 @@ Current sprint: Sprint 2 (Oct 19-25) Data, simulator, shell
 | SG-10 | Design system, app shell, styled auth | Jay | done; screenshots and web-design-guidelines audit pending | #4 |
 | SG-11 | API security layer and Plan Tomorrow | Jay | done; staging migrated (0006) | #5 |
 | SG-12 | Simulator correctness suite and RLS matrix | Carlos | done; matrix 375/375 on staging | #6 |
+| SG-13 | ML pipeline: features, baselines, GBM with ranges, tuning, evaluation | Leo | in review | |
+| SG-14 | SHAP drivers and model registry with hot swap | Leo, Jay | to do | |
+| SG-15 | Forecast API and Forecast home page | Jay | to do | |
+| SG-16 | Staging deployment, keep-alive, demo seed | Jay, Leo | to do | |
+| SG-17 | ML activation gates and first E2E journeys | Carlos | to do | |
+| SG-18 | Midterm presentation and live demo (Oct 30) | All | to do | |
