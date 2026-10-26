@@ -1658,6 +1658,7 @@ name = "sg-cli"
 version = "0.1.0"
 source = { editable = "ops/scripts" }
 dependencies = [
+    { name = "httpx" },
     { name = "psycopg", extra = ["binary"] },
     { name = "rich" },
     { name = "sqlparse" },
@@ -1666,6 +1667,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx", specifier = ">=0.28" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
     { name = "rich", specifier = ">=14" },
     { name = "sqlparse", specifier = ">=0.5" },

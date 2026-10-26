@@ -105,3 +105,26 @@ def test_openapi_spec_is_deterministic() -> None:
 
     assert spec() == spec()
     assert '"Problem"' in spec()
+
+
+def test_cors_allows_vercel_previews_by_pattern() -> None:
+    from fastapi.testclient import TestClient as Client
+
+    from sg_api.main import create_app
+
+    settings = Settings(
+        env="test",
+        supabase_url="http://db.invalid:54321",
+        cors_origins=["https://sterileguard-staging.vercel.app"],
+        cors_origin_regex=r"^https://sterileguard-ai-[a-z0-9-]+-team\.vercel\.app$",
+    )
+    with Client(create_app(settings)) as c:
+
+        def allowed(origin: str) -> str | None:
+            return c.get("/health", headers={"Origin": origin}).headers.get(
+                "access-control-allow-origin"
+            )
+
+        assert allowed("https://sterileguard-staging.vercel.app")
+        assert allowed("https://sterileguard-ai-git-sg-16-team.vercel.app")
+        assert allowed("https://evil.example.com") is None
