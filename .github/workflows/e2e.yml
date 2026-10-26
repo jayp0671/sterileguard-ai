@@ -1,0 +1,58 @@
+name: e2e
+
+# SG-17: the first end-to-end journeys against each Vercel preview deployment. Vercel reports
+# deployments to GitHub, so this runs on the deployment_status event once a preview succeeds.
+# It needs the demo users from SG-16 (E2E_* secrets); until they exist it reports and skips.
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Deployment URL to test
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment_status.environment != 'Production')
+    runs-on: ubuntu-latest
+    env:
+      E2E_BASE_URL: ${{ inputs.base_url || github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+      E2E_SUPERVISOR_EMAIL: ${{ secrets.E2E_SUPERVISOR_EMAIL }}
+      E2E_SUPERVISOR_PASSWORD: ${{ secrets.E2E_SUPERVISOR_PASSWORD }}
+      E2E_SUPERVISOR_TOTP_SECRET: ${{ secrets.E2E_SUPERVISOR_TOTP_SECRET }}
+      E2E_TECHNICIAN_EMAIL: ${{ secrets.E2E_TECHNICIAN_EMAIL }}
+      E2E_TECHNICIAN_PASSWORD: ${{ secrets.E2E_TECHNICIAN_PASSWORD }}
+      E2E_TECHNICIAN_TOTP_SECRET: ${{ secrets.E2E_TECHNICIAN_TOTP_SECRET }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.deployment.sha || github.sha }}
+      - id: ready
+        run: |
+          if [ -z "$E2E_SUPERVISOR_EMAIL" ] || [ -z "$E2E_TECHNICIAN_EMAIL" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "E2E secrets are not set yet (demo users come from SG-16): skipped." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.ready.outputs.run == 'true'
+        uses: ./.github/actions/setup
+      - if: steps.ready.outputs.run == 'true'
+        run: pnpm --filter @sg/web exec playwright install --with-deps chromium
+      - if: steps.ready.outputs.run == 'true'
+        run: pnpm --filter @sg/web exec playwright test --project=chromium e2e/forecast.supervisor.spec.ts e2e/forecast.technician.spec.ts
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-traces
+          path: |
+            apps/web/test-results/
+            apps/web/playwright-report/

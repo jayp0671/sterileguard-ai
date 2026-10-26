@@ -92,6 +92,44 @@ jobs:
           name: ml-figures
           path: packages/ml/reports/figures/
 
+  ml-gates:
+    # SG-17: no weak or leaky model can pass. Required check; runs the gates only when the ML or
+    # simulator code changed, otherwise passes quickly (same pattern as the db job).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - id: changes
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "ml=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^packages/(ml|sim|data)/'; then
+            echo "ml=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ml=false" >> "$GITHUB_OUTPUT"
+            echo "No ML or simulator changes: skipping the gates." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - if: steps.changes.outputs.ml == 'true'
+        uses: ./.github/actions/setup
+      # 2,000 simulated days with a fixed seed, cached until the simulator changes.
+      - if: steps.changes.outputs.ml == 'true'
+        uses: actions/cache@v4
+        with:
+          path: data/sim
+          key: ml-gates-fixture-${{ hashFiles('packages/sim/**', 'packages/data/src/**') }}
+      - if: steps.changes.outputs.ml == 'true'
+        run: |
+          if ! ls data/sim/*.parquet >/dev/null 2>&1; then
+            uv run python -m sg_sim run --days 2000 --seed 7 --workers 4 --no-upload --config packages/sim/configs/dental_cs.calibrated.yaml
+          fi
+      - if: steps.changes.outputs.ml == 'true'
+        run: uv run python -m sg_ml train --dataset latest --seed 42
+      - if: steps.changes.outputs.ml == 'true'
+        run: |
+          RUN=$(ls data/runs | tail -1)
+          uv run python -m sg_ml evaluate --run "$RUN" | tee -a "$GITHUB_STEP_SUMMARY"
+
   db:
     # Required check. On pull requests it runs pgTAP (RLS matrix, SG-12) only when the database
     # or its tooling changed; otherwise it passes quickly so non-DB PRs are not blocked.

@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 3 (Oct 26-Nov 1) ML core and midterm
-- Branch: sg-15/forecast
+- Branch: sg-17/gates
 - Latest migration: 0008_forecasts.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-17 gates (so a model can be activated), then SG-16 deploy and demo seed
+- Next up (from handoff): Register the gated run on staging, activate it, verify the API picks it up; then SG-16
 
 ## Tickets
 
@@ -26,14 +26,14 @@
 - SG-12 done; matrix 375/375 on staging: Simulator correctness suite and RLS matrix
 - SG-13 done; ADR-0005 and term dates need Leo: ML pipeline: features, baselines, GBM with ranges, tuning, evaluation
 - SG-14 done; staging migrated (0007); ADR-0006 needs Leo: SHAP drivers and model registry with hot swap
-- SG-15 in review; staging migrated (0008): Forecast API and Forecast home page
+- SG-15 done; staging migrated (0008); screenshots wait on SG-16: Forecast API and Forecast home page
 - SG-16 to do: Staging deployment, keep-alive, demo seed
-- SG-17 to do: ML activation gates and first E2E journeys
+- SG-17 in review; E2E waits on SG-16 demo users: ML activation gates and first E2E journeys
 - SG-18 to do: Midterm presentation and live demo (Oct 30)
 
 ## Tests
 
-- affected-python: 205 passed, 0 failed, 2 skipped (fc77580)
+- affected-python: 129 passed, 0 failed, 0 skipped (d2f2f91)
 - db-staging: 537 passed, 0 failed, 0 skipped (fc77580)
 - python: 205 passed, 0 failed, 0 skipped (fc77580)
 
@@ -43,7 +43,8 @@
 
 ## Last 10 commits
 
-- fc77580 jayp0671: feat(ml,api,db): SHAP drivers in plain language and model registry with hot swap [SG-14]
+- d2f2f91 jayp0671: feat(api,web,db): forecast API and the Forecast home page [SG-15]
+- 8faff47 Jay Patel: feat(ml,api,db): SHAP drivers in plain language and model registry with hot swap [SG-14] (#9)
 - 33ec05a Jay Patel: feat(ml): feature registry, baselines, monotone gradient boosting with 80% ranges, evaluation, notebooks [SG-13] (#8)
 - 49f3cfe Jay Patel: chore: close Sprint 2 in repo memory (#7)
 - 7208137 Jay Patel: [SG-12] Tests: simulator correctness suite and full RLS permission matrix (#6)
@@ -52,4 +53,3 @@
 - 0b98790 Jay Patel: [SG-09] SimPy simulator end to end: model, overtime rules, calibration, 5,000-day dataset (#3)
 - 4939f60 Jay Patel: [SG-08] Canonical data schema, shift tables, datasets and append-only audit log (#2)
 - a2e5a5b Jay Patel: chore: Sprint 1 verification fixes (db/doctor env handling, memory logs) (#1)
-- e84217e jayp0671: docs(data): real data intake template, data dictionary, sim parameters, approvals [SG-06]

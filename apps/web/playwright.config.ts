@@ -22,6 +22,10 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   use: {
     baseURL,
+    // Vercel preview protection: the bypass secret lets CI reach a protected preview.
+    extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+      ? { "x-vercel-protection-bypass": process.env.VERCEL_AUTOMATION_BYPASS_SECRET }
+      : undefined,
     trace: "on-first-retry",
     video: "retain-on-failure",
     screenshot: "only-on-failure",
