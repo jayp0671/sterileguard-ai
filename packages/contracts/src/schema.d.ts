@@ -106,6 +106,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/forecasts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Forecast
+         * @description Compute from the saved plan for target_date (409 no-plan without one).
+         */
+        post: operations["create_forecast_v1_forecasts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/forecasts/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Forecast History
+         * @description Latest forecast per day for the last `days` days, with approved actuals.
+         */
+        get: operations["forecast_history_v1_forecasts_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/forecasts/next-day": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Next Day Forecast
+         * @description Latest forecast for the next workday in the department's time zone (404 no-forecast).
+         */
+        get: operations["next_day_forecast_v1_forecasts_next_day_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/forecasts/{forecast_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Forecast
+         * @description One forecast with its drivers. RLS decides visibility; the department must match.
+         */
+        get: operations["get_forecast_v1_forecasts__forecast_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me": {
         parameters: {
             query?: never;
@@ -216,6 +296,28 @@ export interface components {
             /** Reason */
             reason?: string | null;
         };
+        /** DriverOut */
+        DriverOut: {
+            /** Contribution Hours */
+            contribution_hours: number;
+            /** Default Text */
+            default_text: string;
+            /** Feature */
+            feature: string;
+            /** Rank */
+            rank: number;
+            /**
+             * Text Key
+             * @description i18n key drivers.<feature>.<pos|neg>
+             */
+            text_key: string;
+            /** Text Params */
+            text_params: {
+                [key: string]: unknown;
+            };
+            /** Value */
+            value?: string | null;
+        };
         /** FieldError */
         FieldError: {
             /** Loc */
@@ -224,6 +326,73 @@ export interface components {
             msg: string;
             /** Type */
             type: string;
+        };
+        /** ForecastIn */
+        ForecastIn: {
+            /** Department Id */
+            department_id: string;
+            /**
+             * Target Date
+             * Format: date
+             */
+            target_date: string;
+        };
+        /** ForecastOut */
+        ForecastOut: {
+            /**
+             * Burden Class
+             * @enum {string}
+             */
+            burden_class: "low" | "moderate" | "high";
+            /** Burden Probs */
+            burden_probs: {
+                [key: string]: number;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Department Id */
+            department_id: string;
+            /**
+             * Disclaimer
+             * @default Model estimate, not a guarantee.
+             */
+            disclaimer: string;
+            /**
+             * Drivers
+             * @default []
+             */
+            drivers: components["schemas"]["DriverOut"][];
+            /**
+             * Feature Set
+             * @enum {string}
+             */
+            feature_set: "full" | "core";
+            /** Id */
+            id: string;
+            /** Model Version */
+            model_version: string;
+            /** Ot P10 */
+            ot_p10: number;
+            /** Ot P50 */
+            ot_p50: number;
+            /** Ot P90 */
+            ot_p90: number;
+            /** Plan Id */
+            plan_id?: string | null;
+            /**
+             * Target Date
+             * Format: date
+             */
+            target_date: string;
+            thresholds: components["schemas"]["Thresholds"];
+            /**
+             * Trigger
+             * @enum {string}
+             */
+            trigger: "manual" | "scheduled" | "scenario";
         };
         /** Health */
         Health: {
@@ -234,6 +403,27 @@ export interface components {
             status: "ok";
             /** Version */
             version: string;
+        };
+        /** HistoryPoint */
+        HistoryPoint: {
+            /**
+             * Actual
+             * @description Approved actual overtime, when logged
+             */
+            actual?: number | null;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Model Version */
+            model_version: string;
+            /** Ot P10 */
+            ot_p10: number;
+            /** Ot P50 */
+            ot_p50: number;
+            /** Ot P90 */
+            ot_p90: number;
         };
         /** Invite */
         Invite: {
@@ -570,6 +760,24 @@ export interface components {
              */
             washers_up?: number | null;
         };
+        /** Thresholds */
+        Thresholds: {
+            /**
+             * Low Max
+             * @description Overtime hours at or below which a day is low burden
+             */
+            low_max: number;
+            /**
+             * Moderate Max
+             * @description Upper bound of moderate burden
+             */
+            moderate_max: number;
+            /**
+             * Source
+             * @description simulated_provisional until real-data thresholds exist
+             */
+            source: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -766,6 +974,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    create_forecast_v1_forecasts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForecastIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ForecastOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    forecast_history_v1_forecasts_history_get: {
+        parameters: {
+            query: {
+                /** @description Department the forecast belongs to */
+                department_id: string;
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryPoint"][];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    next_day_forecast_v1_forecasts_next_day_get: {
+        parameters: {
+            query: {
+                /** @description Department the forecast belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ForecastOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    get_forecast_v1_forecasts__forecast_id__get: {
+        parameters: {
+            query: {
+                /** @description Department the forecast belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path: {
+                forecast_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ForecastOut"];
                 };
             };
             /** @description Problem */

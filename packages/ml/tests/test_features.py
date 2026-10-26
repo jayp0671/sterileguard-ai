@@ -153,3 +153,25 @@ def test_staffing_list_matches_schema_directions() -> None:
     assert "morning_staff_present" in fx.STAFFING
     assert "ot_available_staff" not in fx.STAFFING
     assert all(fx.REGISTRY[n].monotone == -1 for n in fx.STAFFING)
+
+
+def test_lags_from_history_match_add_lags(rows: pd.DataFrame, ctx: fx.FeatureContext) -> None:
+    df = rows.head(20)
+    F = fx.add_features(df, ctx)
+    history = {
+        pd.Timestamp(d).date(): float(v)
+        for d, v in zip(df["date"], df["ot_labor_hours"], strict=True)
+    }
+    for i in (0, 1, 5, 12, 19):
+        target = pd.Timestamp(df["date"].iloc[i]).date()
+        got = fx.lags_from_history(target, history)
+        for k in ("ot_hours_prev_day", "ot_hours_7d_mean"):
+            want = F[k].iloc[i]
+            if np.isnan(want):
+                assert np.isnan(got[k])
+            else:
+                assert got[k] == pytest.approx(want)
+
+
+def test_context_round_trips_through_the_artifact(ctx: fx.FeatureContext) -> None:
+    assert fx.FeatureContext.from_dict(ctx.to_dict()) == ctx

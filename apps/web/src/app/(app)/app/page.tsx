@@ -1,25 +1,15 @@
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useDepartment } from "@/components/shell/department-context";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ForecastHome } from "./forecast-home";
 
-/** Placeholder home until the Forecast page (SG-15). Proves an aal2 session reads tenancy data. */
-export default async function AppHome() {
-  const supabase = await createClient();
-  const { data: departments } = await supabase.from("departments").select("id, name, slug");
-  return (
-    <main className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="text-2xl font-semibold">Forecast</h1>
-      <p className="mt-2 text-muted-foreground">Coming in SG-15.</p>
-      <h2 className="mt-8 font-medium">Your departments</h2>
-      <ul className="mt-2 list-disc ps-6">
-        {(departments ?? []).map((d) => (
-          <li key={d.id}>{d.name}</li>
-        ))}
-      </ul>
-      <Link href="/app/settings" className="mt-8 inline-block underline">
-        Settings
-      </Link>
-    </main>
-  );
+/**
+ * Forecast home (SG-15). The department is chosen in the shell (remembered per browser), so the
+ * data is fetched client-side with React Query; skeletons hold the layout while it loads.
+ */
+export default function AppHome() {
+  const { departmentId, roles, me } = useDepartment();
+  if (!me) return <Skeleton className="h-96" aria-busy="true" />;
+  return <ForecastHome departmentId={departmentId} roles={roles} />;
 }

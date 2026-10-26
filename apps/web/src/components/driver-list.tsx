@@ -1,11 +1,12 @@
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type Driver = { sentence: string; hours: number };
 
 /**
  * SHAP drivers in plain language. Each row has a sentence and a signed bar around a center
- * axis: right adds overtime, left removes it. The value is printed too, so the bar never
- * carries the meaning alone.
+ * axis: right adds overtime (warning), left removes it (good). An arrow icon and the printed
+ * value carry the direction too, so color is never the only cue.
  */
 export function DriverList({ drivers, className }: { drivers: Driver[]; className?: string }) {
   const max = Math.max(0.1, ...drivers.map((d) => Math.abs(d.hours)));
@@ -24,12 +25,22 @@ export function DriverList({ drivers, className }: { drivers: Driver[]; classNam
               <span
                 className={cn(
                   "absolute inset-y-0 rounded-full",
-                  up ? "left-1/2 bg-status-warning" : "right-1/2 bg-primary",
+                  up ? "left-1/2 bg-status-warning" : "right-1/2 bg-status-good",
                 )}
                 style={{ width: `${(Math.abs(d.hours) / max) * 50}%` }}
               />
             </span>
-            <span className="tabular text-end text-sm">
+            <span
+              className={cn(
+                "tabular inline-flex items-center justify-end gap-1 text-sm",
+                up ? "text-status-warning" : "text-status-good",
+              )}
+            >
+              {up ? (
+                <ArrowUp className="size-3.5" aria-hidden />
+              ) : (
+                <ArrowDown className="size-3.5" aria-hidden />
+              )}
               {up ? "+" : "−"}
               {Math.abs(d.hours).toFixed(1)} h
               <span className="sr-only">{up ? " more overtime" : " less overtime"}</span>
