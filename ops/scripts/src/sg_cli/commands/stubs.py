@@ -29,6 +29,7 @@ STUBS: dict[str, tuple[str, str, list[str]]] = {
             "evaluate",
             "compare",
             "notebook",
+            "models",
             "explain",
             "register",
             "activate",

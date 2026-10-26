@@ -299,6 +299,73 @@
         "title": "Membership",
         "type": "object"
       },
+      "ModelVersionOut": {
+        "properties": {
+          "activated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activated At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "feature_set": {
+            "enum": [
+              "full",
+              "core"
+            ],
+            "title": "Feature Set",
+            "type": "string"
+          },
+          "gates_passed": {
+            "title": "Gates Passed",
+            "type": "boolean"
+          },
+          "loaded": {
+            "default": false,
+            "title": "Loaded",
+            "type": "boolean"
+          },
+          "metrics": {
+            "additionalProperties": true,
+            "title": "Metrics",
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "candidate",
+              "active",
+              "retired",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "feature_set",
+          "status",
+          "gates_passed",
+          "created_at",
+          "metrics"
+        ],
+        "title": "ModelVersionOut",
+        "type": "object"
+      },
       "PlanOut": {
         "properties": {
           "date": {
@@ -703,6 +770,14 @@
               "$ref": "#/components/schemas/Check"
             },
             "title": "Checks",
+            "type": "object"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Models",
             "type": "object"
           },
           "status": {
@@ -1263,6 +1338,87 @@
         "summary": "Me",
         "tags": [
           "me"
+        ]
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "description": "Registered versions with metrics and status, newest first (RLS applies).",
+        "operationId": "list_models_v1_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ModelVersionOut"
+                  },
+                  "title": "Response List Models V1 Models Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "List Models",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/models/{version}/activate": {
+      "post": {
+        "description": "Platform admin only, with a fresh two-factor proof. Refused unless the version passed its\nactivation gates. The previous active version of the feature set is retired; the change is\nwritten to audit_log by the table trigger, and this API instance swaps in the new model.",
+        "operationId": "activate_model_v1_models__version__activate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelVersionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Activate Model",
+        "tags": [
+          "models"
         ]
       }
     },

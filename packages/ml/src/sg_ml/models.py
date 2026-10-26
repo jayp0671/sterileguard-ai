@@ -38,7 +38,10 @@ DEFAULT_PARAMS: dict[str, Any] = {
 
 
 def tree_preprocessor(names: Sequence[str]) -> ColumnTransformer:
-    """Numeric passthrough (trees handle NaN) and ordinal-encoded categoricals."""
+    """Numeric passthrough (trees handle NaN) and ordinal-encoded categoricals.
+
+    The trees treat the ordinal codes as numbers, not as native categorical splits: SHAP's
+    TreeExplainer (0.54) mis-reads HistGradientBoosting categorical splits (SG-14)."""
     cats = categorical(names)
     nums = [n for n in names if n not in cats]
     ct = ColumnTransformer(
@@ -87,7 +90,7 @@ def hgb_regressor(
         **(kw or {"loss": "squared_error"}),
         **params,
         monotonic_cst=monotone_constraints(order),
-        categorical_features=categorical(order) or None,
+        categorical_features=None,
         early_stopping=True,
         random_state=seed,
     )
@@ -95,7 +98,6 @@ def hgb_regressor(
 
 
 def hgb_classifier(names: Sequence[str], params: dict[str, Any], seed: int) -> Any:
-    order = _tree_order(names)
     base = Pipeline(
         [
             ("pre", tree_preprocessor(names)),
@@ -103,7 +105,7 @@ def hgb_classifier(names: Sequence[str], params: dict[str, Any], seed: int) -> A
                 "model",
                 HistGradientBoostingClassifier(
                     **params,
-                    categorical_features=categorical(order) or None,
+                    categorical_features=None,
                     early_stopping=True,
                     random_state=seed,
                 ),

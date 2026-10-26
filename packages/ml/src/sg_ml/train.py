@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import shutil
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,7 @@ from sklearn.model_selection import TimeSeriesSplit
 
 from sg_ml import baselines, evaluate
 from sg_ml.data import REPORTS_DIR, RUNS_DIR
+from sg_ml.explain import Explainer, background_sample, beeswarm
 from sg_ml.features import (
     FEATURE_SETS,
     TARGET,
@@ -47,6 +49,8 @@ class TrainResult:
     run: dict[str, Any]
     artifact: dict[str, Any]
     holdout: pd.DataFrame
+    # Holdout inputs for the SHAP beeswarm written by save_run.
+    holdout_X: pd.DataFrame | None = None
 
 
 def time_split(F: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, str]:
@@ -194,6 +198,12 @@ def train(
         name: evaluate.classification_metrics(c_ho, p, cls) for name, (p, cls) in probas.items()
     }
 
+    # SHAP on the served central estimate (SG-14): global importance, staffing directions.
+    explainer = Explainer(quantiles.pipelines[0.5], names)
+    shap_sample = X[ho].iloc[:: max(1, int(ho.sum()) // 500)]
+    shap_global = explainer.global_importance(shap_sample)
+    shap_direction = explainer.direction_check(shap_sample)
+
     # Both feature sets are always trained and reported on the same holdout.
     feature_sets: dict[str, dict[str, float]] = {}
     for other in FEATURE_SETS:
@@ -228,6 +238,8 @@ def train(
             "feature_sets": feature_sets,
         },
         "rule_baseline": {"a": rule.a_, "b": rule.b_},
+        "shap_global": shap_global,
+        "shap_direction": shap_direction,
     }
     artifact: dict[str, Any] = {
         "pipeline_p10": quantiles.pipelines[0.1],
@@ -243,6 +255,7 @@ def train(
         "params": params,
         "seed": seed,
         "dataset_ids": run["dataset_ids"],
+        "explainer_background": background_sample(X[tr], seed),
     }
     holdout = pd.DataFrame(
         {
@@ -260,7 +273,7 @@ def train(
             },
         }
     )
-    return TrainResult(run, artifact, holdout)
+    return TrainResult(run, artifact, holdout, holdout_X=shap_sample)
 
 
 def save_run(
@@ -272,6 +285,10 @@ def save_run(
     (out / "metrics.json").write_text(json.dumps(result.run, indent=2), encoding="utf-8")
     result.holdout.to_parquet(out / "holdout.parquet", index=False)
     reports_dir.mkdir(parents=True, exist_ok=True)
+    if result.holdout_X is not None:
+        explainer = Explainer(result.artifact["pipeline_p50"], result.artifact["feature_list"])
+        beeswarm(explainer, result.holdout_X, out / "shap_beeswarm.png")
+        shutil.copyfile(out / "shap_beeswarm.png", reports_dir / f"{result.run['run_id']}_shap.png")
     (reports_dir / f"{result.run['run_id']}.md").write_text(
         evaluate.report_markdown(result.run), encoding="utf-8"
     )

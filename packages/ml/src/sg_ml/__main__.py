@@ -8,6 +8,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 from sg_ml.data import ROOT, RUNS_DIR
 
@@ -100,6 +101,68 @@ def _notebook(args: argparse.Namespace) -> int:
     return 0
 
 
+def _backend() -> Any:
+    """Service-role registry backend. `sg ml` sets these from the sg db guards (never prod)."""
+    from sg_ml.registry import PostgresBackend
+
+    missing = [
+        v
+        for v in ("SG_ML_DB_URL", "SG_ML_SUPABASE_URL", "SG_ML_SERVICE_KEY")
+        if not os.environ.get(v)
+    ]
+    if missing:
+        raise SystemExit(
+            f"missing {', '.join(missing)}: run through `sg ml ... --env local|staging`"
+        )
+    return PostgresBackend(
+        os.environ["SG_ML_DB_URL"],
+        os.environ["SG_ML_SUPABASE_URL"],
+        os.environ["SG_ML_SERVICE_KEY"],
+        os.environ.get("SG_ML_BUCKET", "models"),
+    )
+
+
+def _register(args: argparse.Namespace) -> int:
+    from sg_ml.registry import register
+
+    reg = register(Path(args.runs_dir) / args.run, _backend())
+    print(
+        json.dumps(
+            {"version": reg.version, "artifact_path": reg.artifact_path, **reg.row}, default=str
+        )
+    )
+    return 0
+
+
+def _activate(args: argparse.Namespace) -> int:
+    from sg_ml.registry import RegistryError
+
+    try:
+        row = _backend().activate(args.version, os.environ.get("SG_ML_ACTOR") or None)
+    except RegistryError as exc:
+        print(json.dumps({"error": str(exc)}), file=sys.stderr)
+        return 1
+    print(json.dumps(row, default=str))
+    return 0
+
+
+def _rollback(args: argparse.Namespace) -> int:
+    from sg_ml.registry import RegistryError
+
+    try:
+        row = _backend().rollback(args.feature_set, os.environ.get("SG_ML_ACTOR") or None)
+    except RegistryError as exc:
+        print(json.dumps({"error": str(exc)}), file=sys.stderr)
+        return 1
+    print(json.dumps(row, default=str))
+    return 0
+
+
+def _models(args: argparse.Namespace) -> int:
+    print(json.dumps(_backend().list(), default=str))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="sg ml")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -117,8 +180,25 @@ def main(argv: list[str] | None = None) -> int:
     nb.add_argument("--run", required=True, help="notebook prefix, e.g. 01")
     nb.add_argument("--timeout", type=int, default=1200)
     nb.add_argument("--save", action="store_true", help="write outputs back into the notebook")
+    reg = sub.add_parser("register")
+    reg.add_argument("--run", required=True)
+    reg.add_argument("--runs-dir", default=str(RUNS_DIR))
+    act = sub.add_parser("activate")
+    act.add_argument("version")
+    rb = sub.add_parser("rollback")
+    rb.add_argument("--feature-set", choices=["full", "core"], default="full")
+    sub.add_parser("models")
     args = p.parse_args(argv)
-    return {"train": _train, "compare": _compare, "notebook": _notebook}[args.cmd](args)
+    handlers = {
+        "train": _train,
+        "compare": _compare,
+        "notebook": _notebook,
+        "register": _register,
+        "activate": _activate,
+        "rollback": _rollback,
+        "models": _models,
+    }
+    return handlers[args.cmd](args)
 
 
 if __name__ == "__main__":

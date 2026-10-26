@@ -123,6 +123,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Models
+         * @description Registered versions with metrics and status, newest first (RLS applies).
+         */
+        get: operations["list_models_v1_models_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/models/{version}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Activate Model
+         * @description Platform admin only, with a fresh two-factor proof. Refused unless the version passed its
+         *     activation gates. The previous active version of the feature set is retired; the change is
+         *     written to audit_log by the table trigger, and this API instance swaps in the new model.
+         */
+        post: operations["activate_model_v1_models__version__activate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/plans/{plan_date}": {
         parameters: {
             query?: never;
@@ -263,6 +305,39 @@ export interface components {
             department_name: string;
             /** Roles */
             roles: ("technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin")[];
+        };
+        /** ModelVersionOut */
+        ModelVersionOut: {
+            /** Activated At */
+            activated_at?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Feature Set
+             * @enum {string}
+             */
+            feature_set: "full" | "core";
+            /** Gates Passed */
+            gates_passed: boolean;
+            /**
+             * Loaded
+             * @default false
+             */
+            loaded: boolean;
+            /** Metrics */
+            metrics: {
+                [key: string]: unknown;
+            };
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "candidate" | "active" | "retired" | "rejected";
+            /** Version */
+            version: string;
         };
         /** PlanOut */
         PlanOut: {
@@ -408,6 +483,13 @@ export interface components {
             /** Checks */
             checks: {
                 [key: string]: components["schemas"]["Check"];
+            };
+            /**
+             * Models
+             * @default {}
+             */
+            models: {
+                [key: string]: string;
             };
             /**
              * Status
@@ -714,6 +796,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    list_models_v1_models_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelVersionOut"][];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    activate_model_v1_models__version__activate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelVersionOut"];
                 };
             };
             /** @description Problem */

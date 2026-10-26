@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -35,7 +36,11 @@ def test_ready_returns_200_when_db_and_model_ok(
         return health.Check(ok=True)
 
     monkeypatch.setattr(health, "check_database", ok)
-    client.app.state.model = object()  # type: ignore[attr-defined]
+    from sg_api.services.models import ModelService
+
+    service = ModelService(source=None)
+    service.swap({"full": SimpleNamespace(version="v-test")})  # type: ignore[dict-item]
+    client.app.state.model_service = service  # type: ignore[attr-defined]
     resp = client.get("/ready")
     assert resp.status_code == 200
     assert resp.json()["status"] == "ready"

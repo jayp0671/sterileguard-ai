@@ -145,6 +145,23 @@ def report_markdown(run: dict[str, Any]) -> str:
         ]
         for name, r in m["feature_sets"].items():
             lines.append(f"| {name} | {r['mae']:.3f} | {r['coverage_80']:.3f} |")
+    if run.get("shap_global"):
+        lines += [
+            "",
+            "## Global importance (mean |SHAP|, hours)",
+            "",
+            "| Feature | Mean abs SHAP |",
+            "| --- | --- |",
+            *(f"| {g['feature']} | {g['mean_abs_shap']:.3f} |" for g in run["shap_global"]),
+            "",
+            f"![SHAP beeswarm]({run['run_id']}_shap.png)",
+            "",
+            "Staffing directions (SHAP slope per unit, must be <= 0; mean SHAP in brackets): "
+            + ", ".join(
+                f"{k} {v['slope']:+.3f} ({v['mean_shap']:+.3f})"
+                for k, v in run.get("shap_direction", {}).items()
+            ),
+        ]
     lines += ["", "## Hyperparameters", "", "```json", _json(run["params"]), "```", ""]
     return "\n".join(lines)
 
