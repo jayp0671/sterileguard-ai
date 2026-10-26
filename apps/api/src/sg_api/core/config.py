@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: ["http://localhost:3000"]
     )
+    # Vercel preview deployments of this project, e.g.
+    # ^https://sterileguard-ai-[a-z0-9-]+-jays-projects-8a6490ad\.vercel\.app$ (SG-16).
+    cors_origin_regex: str | None = None
     nim_api_key: str | None = None
     model_bucket: str = "models"
     internal_token: str = ""

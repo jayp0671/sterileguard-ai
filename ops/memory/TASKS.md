@@ -23,6 +23,6 @@ Current sprint: Sprint 3 (Oct 26-Nov 1) ML core and midterm
 | SG-13 | ML pipeline: features, baselines, GBM with ranges, tuning, evaluation | Leo | done; ADR-0005 and term dates need Leo | #8 |
 | SG-14 | SHAP drivers and model registry with hot swap | Leo, Jay | done; staging migrated (0007); ADR-0006 needs Leo | #9 |
 | SG-15 | Forecast API and Forecast home page | Jay | done; staging migrated (0008); screenshots wait on SG-16 | #10 |
-| SG-16 | Staging deployment, keep-alive, demo seed | Jay, Leo | to do | |
-| SG-17 | ML activation gates and first E2E journeys | Carlos | in review; E2E waits on SG-16 demo users | |
+| SG-16 | Staging deployment, keep-alive, demo seed | Jay, Leo | in review; account setup and demo users need Jay | |
+| SG-17 | ML activation gates and first E2E journeys | Carlos | gates done; E2E waits on SG-16 demo users | #11 |
 | SG-18 | Midterm presentation and live demo (Oct 30) | All | to do | |

@@ -1,3 +1,6 @@
+# pnpm downloads and uses this Node version for scripts (vitest 5 and jsdom 30 need Node 22+).
+# It lives here rather than in .npmrc because Vercel rejects use-node-version there (SG-16).
+useNodeVersion: 24.22.1
 packages:
   - "apps/web"
   - "packages/contracts"
