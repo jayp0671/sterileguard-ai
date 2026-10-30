@@ -22,7 +22,11 @@ data or real names in a demo. Every number on screen is a model estimate, not a 
    `ops/secrets/demo-totp.json`, never on a slide or in a screenshot).
 2. Have the authenticator app ready with the supervisor's TOTP entry (from the same file).
 3. Close notifications, chat apps and other tabs. Browser zoom 100%, light theme.
-4. Keep the backup screen recording open in a second window.
+4. Keep the backup screen recording open in a second window: `ops/reports/demo/midterm-backup-walkthrough.webm`
+   (gitignored; recorded Oct 30 from the real Plan and Forecast screens on staging demo data; no
+   narration, so narrate over it). Screenshots for slides are beside it.
+5. The deck is the "SterileGuard AI Midterm" artifact (Jay's claude.ai account; share it with the
+   team before presenting). Placeholders to fill: Carlos's last name, the calibration plot.
 
 ## Live demo script (2 minutes or less)
 
