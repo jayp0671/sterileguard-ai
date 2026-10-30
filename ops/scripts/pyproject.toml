@@ -7,7 +7,6 @@ dependencies = [
     "typer>=0.19",
     "rich>=14",
     "httpx>=0.28",
-    "huggingface_hub>=0.35",
     "psycopg[binary]>=3.2",
     "sqlparse>=0.5",
 ]

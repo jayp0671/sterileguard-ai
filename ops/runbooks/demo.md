@@ -6,8 +6,8 @@ data or real names in a demo. Every number on screen is a model estimate, not a 
 
 ## 30 minutes before
 
-1. Open the API URL in a browser: `https://jayp671-sterileguard-api.hf.space/health`. A sleeping
-   free Space takes a minute or two to wake; do this **at least 3 minutes** before presenting.
+1. Open the API URL in a browser: `https://sterileguard-api.onrender.com/health`. A sleeping
+   free Render service takes about a minute to wake; do this **at least 3 minutes** before presenting.
 2. `/ready` must show `"status": "ready"` and `"models": {"full": "<version>"}`.
 3. Reset the demo state (identical every time):
    ```
