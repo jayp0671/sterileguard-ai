@@ -25,4 +25,4 @@ Current sprint: Sprint 3 (Oct 26-Nov 1) ML core and midterm
 | SG-15 | Forecast API and Forecast home page | Jay | done; staging migrated (0008); screenshots wait on SG-16 | #10 |
 | SG-16 | Staging deployment, keep-alive, demo seed | Jay, Leo | in review; account setup and demo users need Jay | |
 | SG-17 | ML activation gates and first E2E journeys | Carlos | gates done; E2E waits on SG-16 demo users | #11 |
-| SG-18 | Midterm presentation and live demo (Oct 30) | All | to do | |
+| SG-18 | Midterm presentation and live demo (Oct 30) | All | deck and backup video ready; rehearsal and Canvas submission are the team's | |

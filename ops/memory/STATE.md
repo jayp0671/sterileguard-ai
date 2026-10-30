@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 3 (Oct 26-Nov 1) ML core and midterm
-- Branch: sg-16/staging-demo
+- Branch: chore/sprint-3-midterm
 - Latest migration: 0008_forecasts.sql
 - Active model: none yet (SG-14)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Jay: create the HF Space and secrets, set Vercel root dir and env vars, set GitHub secrets/vars, DEMO_EMAIL_BASE then sg demo seed-demo --env staging (users), E2E_* secrets; then sg release smoke --env staging and the SG-17 e2e run; SG-18 deck
+- Next up (from handoff): Team: share the deck, fill placeholders (Carlos's last name, calibration plot), rehearse with a timer, submit on Canvas. Jay: SG-16 account steps (HF Space + secrets, Vercel root dir + env vars, GitHub secrets, demo users) for a live demo; otherwise present with the backup video
 
 ## Tickets
 
@@ -29,11 +29,11 @@
 - SG-15 done; staging migrated (0008); screenshots wait on SG-16: Forecast API and Forecast home page
 - SG-16 in review; account setup and demo users need Jay: Staging deployment, keep-alive, demo seed
 - SG-17 gates done; E2E waits on SG-16 demo users: ML activation gates and first E2E journeys
-- SG-18 to do: Midterm presentation and live demo (Oct 30)
+- SG-18 deck and backup video ready; rehearsal and Canvas submission are the team's: Midterm presentation and live demo (Oct 30)
 
 ## Tests
 
-- affected-python: 81 passed, 0 failed, 0 skipped (de605a9)
+- affected-python: 226 passed, 0 failed, 2 skipped (ea10ba0)
 - db-staging: 537 passed, 0 failed, 0 skipped (fc77580)
 - python: 226 passed, 0 failed, 0 skipped (de605a9)
 
@@ -43,7 +43,8 @@
 
 ## Last 10 commits
 
-- de605a9 jayp0671: feat(ml,ci,e2e): activation gates and the first end-to-end journeys [SG-17]
+- ee0f405 Jay Patel: feat(deploy,demo): staging deployment pipeline, keep-alive and the demo organization seed [SG-16] (#12)
+- d392d1f Jay Patel: feat(ml,ci,e2e): activation gates and the first end-to-end journeys [SG-17] (#11)
 - 9e7b450 Jay Patel: feat(api,web,db): forecast API and the Forecast home page [SG-15] (#10)
 - 8faff47 Jay Patel: feat(ml,api,db): SHAP drivers in plain language and model registry with hot swap [SG-14] (#9)
 - 33ec05a Jay Patel: feat(ml): feature registry, baselines, monotone gradient boosting with 80% ranges, evaluation, notebooks [SG-13] (#8)
@@ -52,4 +53,3 @@
 - a49e354 Jay Patel: [SG-11] API security layer (JWT, roles, rate limits, idempotency) and Plan Tomorrow feature (#5)
 - 1200842 Jay Patel: [SG-10] Design system, tokens, core components, app shell, and styled auth screens (#4)
 - 0b98790 Jay Patel: [SG-09] SimPy simulator end to end: model, overtime rules, calibration, 5,000-day dataset (#3)
-- 4939f60 Jay Patel: [SG-08] Canonical data schema, shift tables, datasets and append-only audit log (#2)
