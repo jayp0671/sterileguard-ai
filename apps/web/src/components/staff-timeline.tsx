@@ -10,7 +10,9 @@ const toMin = (hhmm: string) => {
   return Number(h) * 60 + Number(m);
 };
 const pos = (hhmm: string) => ((toMin(hhmm) - DAY_START) / (DAY_END - DAY_START)) * 100;
-const HOURS = ["07:00", "11:00", "13:00", "15:00", "19:00", "23:00"];
+// Every 4 hours: 2-hour ticks (11:00, 13:00, 15:00) overlapped when the card is narrow, as on
+// the Forecast page. Window starts are still read from each track's position and label.
+const HOURS = ["07:00", "11:00", "15:00", "19:00", "23:00"];
 
 /**
  * Shift windows on a 07:00 to 23:00 scale: one track per window with its head count, the
