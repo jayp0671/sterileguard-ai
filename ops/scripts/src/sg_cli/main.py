@@ -13,6 +13,7 @@ from sg_cli.commands import (
     contracts,
     db,
     demo,
+    deploy,
     dev,
     doctor,
     memory,
@@ -60,6 +61,7 @@ app.command("doctor", help="Check tools, versions and env vars.")(doctor.doctor)
 app.command("bootstrap", help="Install everything and prepare a local stack.")(bootstrap.bootstrap)
 app.command("dev", help="Run Supabase, web (3000) and API (8000) together.")(dev.dev)
 app.add_typer(memory.app, name="memory", help="Repo memory: sync, handoff, adr, task.")
+app.add_typer(deploy.app, name="deploy", help="Configure and deploy environments.")
 stubs.register(
     app,
     implemented={

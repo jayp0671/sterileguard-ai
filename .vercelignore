@@ -1,0 +1,15 @@
+# Files the Vercel CLI must not upload (sg deploy staging deploys from the repo root; the
+# project's Root Directory is apps/web). Git deployments clone the repo and ignore this file.
+.venv
+node_modules
+data
+.env*
+ops/secrets
+ops/reports
+apps/web/.next
+apps/web/test-results
+apps/web/playwright-report
+**/__pycache__
+**/.pytest_cache
+packages/ml/reports
+supabase/.temp

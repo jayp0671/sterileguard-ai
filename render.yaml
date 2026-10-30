@@ -1,0 +1,43 @@
+# Render Blueprint (SG-16, ADR-0007): the staging API as a free Docker web service.
+# Create it once from the Render dashboard: New > Blueprint > this repo. Render asks for the two
+# `sync: false` values on that first run only; everything else is defined here.
+services:
+  - type: web
+    name: sterileguard-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    # Deploy from main after CI passes.
+    autoDeployTrigger: checksPass
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/data/**
+        - packages/ml/**
+        - packages/sim/**
+        - packages/agents/**
+        - pyproject.toml
+        - uv.lock
+        - render.yaml
+    envVars:
+      - key: ENV
+        value: staging
+      - key: SUPABASE_URL
+        value: https://hhmrrvgvrjyrwvrrolzv.supabase.co
+      - key: SUPABASE_JWKS_URL
+        value: https://hhmrrvgvrjyrwvrrolzv.supabase.co/auth/v1/.well-known/jwks.json
+      - key: CORS_ORIGINS
+        value: https://sterileguard-ai.vercel.app,http://localhost:3000
+      - key: CORS_ORIGIN_REGEX
+        value: ^https://sterileguard-ai-[a-z0-9-]+-jays-projects-8a6490ad\.vercel\.app$
+      - key: MODEL_BUCKET
+        value: models
+      - key: INTERNAL_TOKEN
+        generateValue: true
+      # Staging Supabase anon key and service-role key: pasted once when the Blueprint is created.
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
