@@ -17,7 +17,7 @@ from sg_api.core.logging import configure_logging
 from sg_api.core.middleware import HEADER, RequestIdMiddleware
 from sg_api.core.ratelimit import RateLimitMiddleware
 from sg_api.db.service_client import ServiceClient
-from sg_api.routers import admin, audit, forecasts, health, me, models, plans, scenarios
+from sg_api.routers import admin, audit, forecasts, health, me, models, plans, scenarios, shifts
 from sg_api.services.models import ModelService, SupabaseModelSource
 
 v1 = APIRouter(prefix="/v1")
@@ -29,6 +29,7 @@ v1.include_router(models.router)
 v1.include_router(models.internal)
 v1.include_router(plans.router)
 v1.include_router(scenarios.router)
+v1.include_router(shifts.router)
 
 # Every route documents the problem+json error shape so clients get a typed ApiError.
 ERRORS: dict[int | str, dict[str, object]] = {
