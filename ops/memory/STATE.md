@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm video due Nov 8
-- Branch: sg-20/shift-actuals
-- Latest migration: 0010_shift_reopen.sql
+- Branch: sg-21/imports
+- Latest migration: 0011_imports.sql
 - Active model: 20261026-0105-de605a9 (full, staging; gates passed; run 20261026-002617-full-s42)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-20 shift actuals (PR next), then SG-21 imports (migration 0011), SG-22. Screenshots of the live Scenarios page for the PR and the midterm deck need a signed-in supervisor (Jay)
+- Next up (from handoff): SG-21 imports and Presidio guard (PR #23), SG-22 fixtures and Schemathesis
 
 ## Tickets
 
@@ -31,28 +31,29 @@
 - SG-17 gates done; E2E specs written, never run (need demo users + E2E_* secrets): ML activation gates and first E2E journeys
 - SG-18 deck updated, live demo works; placeholders, narrated video and Canvas are the team's: Midterm presentation and live demo (moved to Nov 8, video)
 - SG-19 done; staging migrated (0009); ADR-0008 needs Leo; screenshots need a signed-in supervisor: Staffing scenario engine, API, Scenarios page
-- SG-20 to do: Shift actuals: API, Log a shift, history, approvals, backfill
+- SG-20 done; staging migrated (0010); screenshots need a signed-in user: Shift actuals: API, Log a shift, history, approvals, backfill
 - SG-21 to do: Import pipeline v1 and PHI guard
 - SG-22 to do: Tests: messy fixtures, import and PHI tests, contract fuzzing
 
 ## Tests
 
-- affected-python: 171 passed, 0 failed, 0 skipped (b680b50)
-- db-staging: 589 passed, 0 failed, 0 skipped (c4ac54f)
+- affected-python: 308 passed, 0 failed, 2 skipped (c974120)
+- db-staging: 659 passed, 0 failed, 0 skipped (172bff7)
 
 ## Deployed URLs
 
 - Staging web: https://sterileguard-ai.vercel.app (Vercel Hobby, Root Directory apps/web; every push to main deploys; PRs get previews)
 - Staging API: https://sterileguard-api.onrender.com (Render free web service from render.yaml, deploys from main after CI passes; sleeps after 15 idle minutes, about 1 minute to wake)
-- Staging database: Supabase project sterileguard-ai (ref hhmrrvgvrjyrwvrrolzv), migrations through 0010 (0009 scenarios, 0010 shift reopen)
+- Staging database: Supabase project sterileguard-ai (ref hhmrrvgvrjyrwvrrolzv), migrations through 0011 (0009 scenarios, 0010 shift reopen, 0011 imports)
 - Keep-alive: .github/workflows/keepalive.yml every 6 hours (API /health and one Supabase query)
 - Demo login: Jay's own account is supervisor of Dental Central Sterile (dental-cs); no shared demo users or E2E_* secrets yet
 - Production: not created (SG-34)
 
 ## Last 10 commits
 
-- 39ad707 jayp0671: feat(web): Log a shift form with autosaved drafts and the shift history with approvals [SG-20]
-- c4ac54f jayp0671: feat(api,db): shift actuals API with approvals, reopen, backfill and the notes guard [SG-20]
+- c974120 jayp0671: feat(db,cli,api): imports migration 0011, sg data import/profile, Presidio guard in the API [SG-21]
+- 172bff7 jayp0671: feat(data): import pipeline v1 and the Presidio PHI guard [SG-21]
+- ca0ba7a Jay Patel: [SG-20] Shift actuals: API, Log a shift, history, approvals, backfill (#22)
 - ca6dcdc Jay Patel: [SG-19] Staffing scenario engine, API and Scenarios page (#21)
 - 134bba8 Jay Patel: chore: close Sprint 3 (memory, ENVIRONMENTS.md, demo polish) (#20)
 - f3727e4 Jay Patel: chore(db): demo department defaults to 2 staff willing to stay [SG-16] (#19)
@@ -60,4 +61,3 @@
 - c189ae9 Jay Patel: fix(web): always build on Vercel; drop the ignored build step [SG-16] (#17)
 - d327f83 Jay Patel: fix(web): Vercel skips a build only when nothing changed since the last successful deploy [SG-16] (#16)
 - 110174e Jay Patel: [SG-16] Deploy staging: API on Render (free), sg deploy staging for Vercel and GitHub (#15)
-- ee0cf9f Jay Patel: chore: midterm materials in repo memory and the demo runbook [SG-18] (#14)
