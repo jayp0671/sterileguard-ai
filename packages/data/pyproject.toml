@@ -4,9 +4,17 @@ version = "0.1.0"
 description = "Canonical schema, import pipeline, cleaning."
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "charset-normalizer>=3.4",
+    "en-core-web-sm",
+    "openpyxl>=3.1",
     "pandas>=2.2",
     "pandera>=0.24",
+    "presidio-analyzer>=2.2",
     "pydantic>=2.11",
+    "python-dateutil>=2.9",
+    "rapidfuzz>=3.10",
+    "spacy>=3.8,<3.9",
+    "xlrd>=2.0",
 ]
 
 [build-system]
@@ -15,3 +23,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sg_data"]
+
+[tool.uv.sources]
+# spaCy's small English model (PHI guard, SG-21). Official release from explosion/spacy-models.
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" }
