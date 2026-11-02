@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -10,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 from sg_api import __version__
+from sg_api.core import text_guard
 from sg_api.core.config import Settings, get_settings
 from sg_api.core.errors import PROBLEM_JSON, Problem, install_error_handlers
 from sg_api.core.idempotency import IdempotencyMiddleware
@@ -54,7 +56,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         service: ModelService = app.state.model_service
         await service.refresh()
         service.start()
+        # Load the PHI guard's spaCy model in the background so the first note is not slow.
+        warming = asyncio.create_task(text_guard.warm()) if settings.env != "test" else None
         yield
+        if warming is not None and not warming.done():
+            warming.cancel()
         await service.stop()
 
     app = FastAPI(

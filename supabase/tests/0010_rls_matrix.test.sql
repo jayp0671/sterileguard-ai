@@ -66,6 +66,12 @@ values ('40000000-0000-4000-8000-0000000000d3', 1, 'regular_patients', '300', 1.
 insert into public.scenarios (id, department_id, target_date, forecast_id, model_version, request, result, created_by)
 values ('40000000-0000-4000-8000-0000000000d5', '40000000-0000-4000-8000-00000000000a', '2026-11-02',
         '40000000-0000-4000-8000-0000000000d3', 'mx-v', '{}', '{"options": []}', '40000000-0000-4000-8000-0000000000a2');
+insert into public.import_jobs (id, department_id, original_filename, content_hash, created_by)
+values ('40000000-0000-4000-8000-0000000000e5', '40000000-0000-4000-8000-00000000000a', 'mx.csv', 'h',
+        '40000000-0000-4000-8000-0000000000a4');
+insert into public.mapping_templates (id, department_id, column_signature, mapping, created_by)
+values ('40000000-0000-4000-8000-0000000000e6', '40000000-0000-4000-8000-00000000000a', 'sig-1', '{}',
+        '40000000-0000-4000-8000-0000000000a4');
 
 -- ---------------------------------------------------------------------------
 -- Actors and rules
@@ -221,7 +227,25 @@ insert into rules values
   ('scenarios', 'update result', $q$with t as (update public.scenarios set result = '{"options": [1]}' where id = '40000000-0000-4000-8000-0000000000d5' returning 1) select count(*) from t$q$,
    array[]::text[]),
   ('scenarios', 'delete', $q$with t as (delete from public.scenarios where id = '40000000-0000-4000-8000-0000000000d5' returning 1) select count(*) from t$q$,
-   array[]::text[]);
+   array[]::text[]),
+  -- import_jobs (SG-21): data stewards and dept admins of the department; never deleted
+  ('import_jobs', 'select', $q$select count(*) from public.import_jobs where id = '40000000-0000-4000-8000-0000000000e5'$q$,
+   array['admin_a','steward_a']),
+  ('import_jobs', 'insert', $q$with t as (insert into public.import_jobs (department_id, original_filename, content_hash, created_by) values ('40000000-0000-4000-8000-00000000000a', 'n.csv', 'h2', (select auth.uid())) returning 1) select count(*) from t$q$,
+   array['admin_a','steward_a']),
+  ('import_jobs', 'update', $q$with t as (update public.import_jobs set status = 'cancelled' where id = '40000000-0000-4000-8000-0000000000e5' returning 1) select count(*) from t$q$,
+   array['admin_a','steward_a']),
+  ('import_jobs', 'delete', $q$with t as (delete from public.import_jobs where id = '40000000-0000-4000-8000-0000000000e5' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  -- mapping_templates (SG-21): stewards and dept admins; only dept admins delete
+  ('mapping_templates', 'select', $q$select count(*) from public.mapping_templates where id = '40000000-0000-4000-8000-0000000000e6'$q$,
+   array['admin_a','steward_a']),
+  ('mapping_templates', 'insert', $q$with t as (insert into public.mapping_templates (department_id, column_signature, mapping, created_by) values ('40000000-0000-4000-8000-00000000000a', 'sig-2', '{}', (select auth.uid())) returning 1) select count(*) from t$q$,
+   array['admin_a','steward_a']),
+  ('mapping_templates', 'update', $q$with t as (update public.mapping_templates set mapping = '{"a": null}' where id = '40000000-0000-4000-8000-0000000000e6' returning 1) select count(*) from t$q$,
+   array['admin_a','steward_a']),
+  ('mapping_templates', 'delete', $q$with t as (delete from public.mapping_templates where id = '40000000-0000-4000-8000-0000000000e6' returning 1) select count(*) from t$q$,
+   array['admin_a']);
 
 create temp table matrix as
 select r.tbl, r.op, a.actor, r.stmt, a.claims, a.db_role, a.actor = any (r.allowed) as expected
@@ -291,7 +315,15 @@ insert into audited values
   ('scenarios',
    $q$insert into public.scenarios (id, department_id, target_date, model_version, request, result) values ('40000000-0000-4000-8000-0000000000d6', '40000000-0000-4000-8000-00000000000a', '2026-11-05', 'v', '{}', '{}')$q$,
    $q$update public.scenarios set applied = true, applied_option_id = 'm+1' where id = '40000000-0000-4000-8000-0000000000d6'$q$,
-   $q$delete from public.scenarios where id = '40000000-0000-4000-8000-0000000000d6'$q$);
+   $q$delete from public.scenarios where id = '40000000-0000-4000-8000-0000000000d6'$q$),
+  ('import_jobs',
+   $q$insert into public.import_jobs (id, department_id, original_filename, content_hash) values ('40000000-0000-4000-8000-0000000000e7', '40000000-0000-4000-8000-00000000000a', 'a.csv', 'h3')$q$,
+   $q$update public.import_jobs set status = 'parsed' where id = '40000000-0000-4000-8000-0000000000e7'$q$,
+   $q$delete from public.import_jobs where id = '40000000-0000-4000-8000-0000000000e7'$q$),
+  ('mapping_templates',
+   $q$insert into public.mapping_templates (id, department_id, column_signature, mapping) values ('40000000-0000-4000-8000-0000000000e8', '40000000-0000-4000-8000-00000000000a', 'sig-3', '{}')$q$,
+   $q$update public.mapping_templates set mapping = '{"b": null}' where id = '40000000-0000-4000-8000-0000000000e8'$q$,
+   $q$delete from public.mapping_templates where id = '40000000-0000-4000-8000-0000000000e8'$q$);
 
 -- One audit row per change, with the right before/after shape.
 create function pg_temp.sgt_audit_delta(stmt text, tbl text, act text)

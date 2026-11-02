@@ -230,7 +230,7 @@ def test_backfill_rules(api: TestClient, gw: ShiftGateway) -> None:
         (f"call {FAKE_EMAIL} about the late cart", "EMAIL_ADDRESS"),
         (f"reached charge desk at {FAKE_PHONE}", "PHONE_NUMBER"),
         ("tray tagged 123-45-6789", "US_SSN"),
-        ("chart MRN 00482913 came back", "ID_NUMBER"),
+        ("chart MRN 00482913 came back", "MRN"),
     ],
 )
 def test_notes_with_identifiers_are_rejected_without_echo(

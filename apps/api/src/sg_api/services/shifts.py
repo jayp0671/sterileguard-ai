@@ -234,7 +234,7 @@ async def create(
     day: dt.date = body.shift_date
     if day > plans.today_in(tz):
         raise ApiError(422, "a shift can be logged on or after its date, not before")
-    require_clean(body.notes, NOTES)
+    await require_clean(body.notes, NOTES)
     existing = await gw.select(
         token,
         "shift_actuals",
@@ -296,7 +296,7 @@ async def update(
     patch = body.model_dump(exclude_unset=True, exclude={"department_id"})
     if TARGET in patch and patch[TARGET] is None:
         raise ApiError(422, f"{TARGET} cannot be empty")
-    require_clean(patch.get(NOTES), NOTES)
+    await require_clean(patch.get(NOTES), NOTES)
     if not patch:
         return await _with_forecast(gw, token, row, user_id)
     saved = await gw.update(token, "shift_actuals", {"id": f"eq.{shift_id}"}, patch)
@@ -327,7 +327,7 @@ async def transition(
     else:
         if row["status"] != "approved":
             raise ApiError(409, "only an approved row can be reopened", BAD_TRANSITION)
-        require_clean(reason, "reason")
+        await require_clean(reason, "reason")
         patch = {
             "status": "submitted",
             "approved_by": None,

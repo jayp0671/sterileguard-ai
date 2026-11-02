@@ -6,7 +6,7 @@ URL or the active model changes. No secrets here: keys live in .env and the host
 - Active model: 20261026-0105-de605a9 (full, staging; gates passed; run 20261026-002617-full-s42)
 - Staging web: https://sterileguard-ai.vercel.app (Vercel Hobby, Root Directory apps/web; every push to main deploys; PRs get previews)
 - Staging API: https://sterileguard-api.onrender.com (Render free web service from render.yaml, deploys from main after CI passes; sleeps after 15 idle minutes, about 1 minute to wake)
-- Staging database: Supabase project sterileguard-ai (ref hhmrrvgvrjyrwvrrolzv), migrations through 0010 (0009 scenarios, 0010 shift reopen)
+- Staging database: Supabase project sterileguard-ai (ref hhmrrvgvrjyrwvrrolzv), migrations through 0011 (0009 scenarios, 0010 shift reopen, 0011 imports)
 - Keep-alive: .github/workflows/keepalive.yml every 6 hours (API /health and one Supabase query)
 - Demo login: Jay's own account is supervisor of Dental Central Sterile (dental-cs); no shared demo users or E2E_* secrets yet
 - Production: not created (SG-34)

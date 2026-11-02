@@ -11,6 +11,7 @@ from sg_cli import core
 from sg_cli.commands import (
     bootstrap,
     contracts,
+    data,
     db,
     demo,
     deploy,
@@ -66,6 +67,7 @@ stubs.register(
     app,
     implemented={
         "contracts": contracts.app,
+        "data": data.app,
         "db": db.app,
         "demo": demo.app,
         "ml": ml.app,
