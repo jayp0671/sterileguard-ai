@@ -159,7 +159,8 @@ def _fixed_zip_times(data: bytes) -> bytes:
         for info in src.infolist():
             fixed = zipfile.ZipInfo(info.filename, date_time=(2026, 11, 2, 0, 0, 0))
             fixed.compress_type = zipfile.ZIP_DEFLATED
-            fixed.external_attr = info.external_attr
+            fixed.create_system = 0  # same header bytes on Windows and Linux
+            fixed.external_attr = 0
             body = src.read(info.filename)
             if info.filename == "docProps/core.xml":
                 # openpyxl writes the save time as dcterms:modified

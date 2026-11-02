@@ -7,6 +7,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import logging
+import zipfile
 from pathlib import Path
 from typing import Any
 
@@ -46,13 +47,21 @@ def test_enough_fixtures() -> None:
         assert (FIXTURES / load(exp)["file"]).exists()
 
 
+def _content(path: Path) -> object:
+    """CSV bytes, or each workbook entry uncompressed (zlib output differs across builds)."""
+    if path.suffix != ".xlsx":
+        return path.read_bytes()
+    with zipfile.ZipFile(path) as z:
+        return {n: z.read(n) for n in sorted(z.namelist())}
+
+
 def test_generator_is_deterministic(tmp_path: Path) -> None:
     from sg_data.synth_messy import generate
 
     generate(tmp_path, seed=7)
     for exp in EXPECTED:
         name = load(exp)["file"]
-        assert (tmp_path / name).read_bytes() == (FIXTURES / name).read_bytes(), name
+        assert _content(tmp_path / name) == _content(FIXTURES / name), name
         assert (tmp_path / exp.name).read_text(encoding="utf-8") == exp.read_text(encoding="utf-8")
 
 
