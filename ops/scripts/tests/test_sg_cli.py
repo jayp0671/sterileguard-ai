@@ -196,3 +196,17 @@ def test_db_url_guards_local_and_hosted(monkeypatch: pytest.MonkeyPatch, tmp_pat
     monkeypatch.setenv("SUPABASE_DB_URL_STAGING", "postgresql://u:p@127.0.0.1:54322/postgres")
     with pytest.raises(SystemExit):
         db.db_url("staging")
+
+
+def test_state_reads_environments_file(tmp_path: Path) -> None:
+    from sg_cli.commands import memory
+
+    mem = tmp_path / "ops" / "memory"
+    mem.mkdir(parents=True)
+    (mem / "ENVIRONMENTS.md").write_text(
+        "# Environments\n\n- Active model: v-1 (full)\n- Staging web: https://example.test\n\n"
+        "## Gotchas\n\n- not a bullet for STATE\n",
+        encoding="utf-8",
+    )
+    lines = memory.environment_lines(mem)
+    assert lines == ["- Active model: v-1 (full)", "- Staging web: https://example.test"]

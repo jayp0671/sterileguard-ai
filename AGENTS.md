@@ -56,7 +56,8 @@ Hugging Face Space, Supabase (Postgres, Auth, Storage), scikit-learn, SimPy, NVI
 
 - `docs/PLAN.md` technical plan (source of truth). `docs/adr/` decisions. `docs/domain/` domain
   reference. `docs/testing.md` test strategy. `docs/ai-usage-log.md` AI usage.
-- `ops/memory/` STATE, TASKS, handoff, DECISIONS, CONVENTIONS, GLOSSARY.
+- `ops/memory/` STATE, TASKS, handoff, DECISIONS, CONVENTIONS, GLOSSARY, ENVIRONMENTS (deployed
+  URLs, active model, where each setting lives).
 - `ops/runbooks/` auth settings, deploy, restore, data import.
 - `supabase/` migrations, seed, pgTAP tests.
 - Conventions: `ops/memory/CONVENTIONS.md`. Domain terms: `ops/memory/GLOSSARY.md`.
