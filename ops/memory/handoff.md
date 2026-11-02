@@ -134,3 +134,15 @@ Add entries with `sg memory handoff --ticket SG-XX --done "..." --next "..." --g
 - Done: Shift actuals API (list with forecast join, create with backfill, patch, submit, approve, reopen with reason, detail with audit trail, CSV export behind fresh TOTP), migration 0010_shift_reopen (reopen_reason, created_by_role; staging pgTAP 3/3), Log a shift form at /app/log (4 steps, end-time helper, localStorage plus server drafts, backfill for supervisors), Shift history at /app/history (DataTable, filters, bulk approve, export, drawer). PR #22 merged
 - Next: SG-21 imports and Presidio guard (PR #23), SG-22 fixtures and Schemathesis
 - Gotchas: Reopen reason needs a column (only triggers write audit_log), so a migration was added and imports moved to 0011. Routes are /app/log and /app/history (nav and sitemap), not the ticket's /app/shifts*. A data steward cannot insert plans or actuals under RLS, so imports commit through the CLI for now (ADR-0009).
+
+## 2026-11-02 · jayp0671 · SG-21
+
+- Done: Import pipeline v1 (parse, profile, mapping, transform, validate, commit), Presidio PHI guard with custom recognizers (also behind API notes), migration 0011_imports (staging matrix 590/590), sg data import/profile, data-import runbook, ADR-0009. PR #23 merged
+- Next: SG-22 (PR next); Leo runs week 1 through sg data profile
+- Gotchas: Commits run from the CLI: RLS does not let data stewards write plans or actuals (SG-24 needs a commit function). spaCy small model, warmed at API startup.
+
+## 2026-11-02 · jayp0671 · SG-22
+
+- Done: sg data synth-messy (17 synthetic fixtures with expected.json, deterministic bytes), parametrized fixture tests (mapping 100% for exact cases, >=90% overall, transforms, errors, PHI cells, no fake identifier in rows, reports or logs), Schemathesis contract fuzzing in process (25 operations, clean at 50 examples), contract.yml (nightly and API PRs, 200 examples), sg db types --env/--check and the db.ts drift check in CI, db.ts regenerated from staging. Fixes found by fuzzing: department_id declared as UUID everywhere, 405 Allow header lists every route's methods; 'dt' date synonym
+- Next: Sprint 4 close; SG-17 E2E once demo users exist
+- Gotchas: Schemathesis runs against the ASGI app with an in-memory gateway, not a local server (no local Supabase); /ready is excluded (503 by design). Fuzzed emails use a normal domain: the validator rejects reserved TLDs.

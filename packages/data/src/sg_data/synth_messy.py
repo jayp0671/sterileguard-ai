@@ -13,6 +13,8 @@ import datetime as dt
 import io
 import json
 import random
+import re
+import zipfile
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -77,7 +79,8 @@ class Gen:
         self.fake.seed_instance(seed)
 
     def days(self, n: int = 6) -> list[Day]:
-        out, d = [], START
+        out: list[Day] = []
+        d = START
         while len(out) < n:
             if d.weekday() < 5:
                 out.append(
@@ -145,7 +148,26 @@ def to_xlsx(
     wb.properties.creator = "sg data synth-messy"
     buf = io.BytesIO()
     wb.save(buf)
-    return buf.getvalue()
+    return _fixed_zip_times(buf.getvalue())
+
+
+def _fixed_zip_times(data: bytes) -> bytes:
+    """openpyxl stamps each zip entry with the current time; pin it so bytes are stable."""
+    src = zipfile.ZipFile(io.BytesIO(data))
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as dst:
+        for info in src.infolist():
+            fixed = zipfile.ZipInfo(info.filename, date_time=(2026, 11, 2, 0, 0, 0))
+            fixed.compress_type = zipfile.ZIP_DEFLATED
+            fixed.external_attr = info.external_attr
+            body = src.read(info.filename)
+            if info.filename == "docProps/core.xml":
+                # openpyxl writes the save time as dcterms:modified
+                body = re.sub(
+                    rb"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", b"2026-11-02T00:00:00Z", body
+                )
+            dst.writestr(fixed, body)
+    return out.getvalue()
 
 
 def hm(hours: float) -> str:

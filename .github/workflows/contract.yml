@@ -1,0 +1,41 @@
+name: contract
+
+# SG-22: Schemathesis fuzzing of every API operation against the generated OpenAPI contract
+# (no 5xx, responses match their documented status, content type and schema). Runs nightly and
+# on pull requests that touch the API. test-py runs the same test with fewer examples.
+on:
+  schedule:
+    - cron: "41 6 * * *"
+  pull_request:
+    paths:
+      - "apps/api/**"
+      - "packages/contracts/openapi.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  UV_PYTHON: "3.12"
+  NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
+  NEXT_PUBLIC_API_URL: http://localhost:8000
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - name: Schemathesis (200 examples per operation)
+        env:
+          SG_FUZZ_EXAMPLES: "200"
+        run: |
+          mkdir -p ops/reports/test
+          uv run pytest apps/api/tests/test_contract_fuzz.py -q -p no:cacheprovider \
+            --junitxml=ops/reports/test/contract-fuzz.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: contract-report
+          path: ops/reports/test/

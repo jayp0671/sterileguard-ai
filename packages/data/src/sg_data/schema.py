@@ -78,7 +78,7 @@ FIELDS: tuple[FieldSpec, ...] = (
         "input",
         "Calendar date of the shift",
         unit="YYYY-MM-DD",
-        synonyms=("day", "shift date", "shift_date", "plan date"),
+        synonyms=("day", "dt", "shift date", "shift_date", "plan date", "date of shift"),
     ),
     FieldSpec(
         "regular_patients",

@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from sg_api.core.errors import ApiError
 from sg_api.core.logging import get_logger
+from sg_api.core.roles import UUID_PATTERN
 from sg_api.services.models import LoadedModel, ModelService
 from sg_api.services.plans import PLAN_FIELDS, department, today_in
 from sg_api.services.supabase import Gateway, Row
@@ -69,7 +70,7 @@ class ForecastOut(BaseModel):
 
 
 class ForecastIn(BaseModel):
-    department_id: str
+    department_id: str = Field(pattern=UUID_PATTERN)
     target_date: dt.date
 
 
