@@ -143,7 +143,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" != "pull_request" ]; then
             echo "db=true" >> "$GITHUB_OUTPUT"
-          elif git diff --name-only "origin/${{ github.base_ref }}...HEAD"               | grep -qE '^(supabase/|ops/scripts/src/sg_cli/(pgtap\.py|commands/db\.py))'; then
+          elif git diff --name-only "origin/${{ github.base_ref }}...HEAD"               | grep -qE '^(supabase/|packages/contracts/src/db\.ts|ops/scripts/src/sg_cli/(pgtap\.py|commands/db\.py))'; then
             echo "db=true" >> "$GITHUB_OUTPUT"
           else
             echo "db=false" >> "$GITHUB_OUTPUT"
@@ -157,6 +157,9 @@ jobs:
         run: uv run sg test db
       - if: steps.changes.outputs.db == 'true'
         run: uv run sg db lint
+      # SG-22: the committed DB types (packages/contracts/src/db.ts) match the migrated schema.
+      - if: steps.changes.outputs.db == 'true'
+        run: uv run sg db types --check
 
   secrets:
     runs-on: ubuntu-latest

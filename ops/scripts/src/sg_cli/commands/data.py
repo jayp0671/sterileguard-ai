@@ -255,3 +255,23 @@ def import_cmd(
             result.add(f"skipped existing days: {', '.join(outcome.skipped_dates)}")
     result.data.update(commit=json.loads(json.dumps(outcome.to_dict(), default=str)))
     result.finish()
+
+
+@app.command(
+    "synth-messy", help="Write messy synthetic import fixtures with expected.json (SG-22)."
+)
+def synth_messy(
+    out: Path = typer.Option(Path("packages/data/tests/fixtures/messy"), "--out"),
+    seed: int = typer.Option(7, "--seed"),
+) -> None:
+    from sg_data.synth_messy import generate
+
+    result = core.Result("data", "synth-messy")
+    target = out if out.is_absolute() else core.repo_root() / out
+    if core.OPTIONS.dry_run:
+        result.add(f"would write fixtures to {target}")
+    else:
+        files = generate(target, seed)
+        result.add(f"wrote {len(files) // 2} files and their expected.json to {target}")
+        result.data.update(files=[p.name for p in files])
+    result.finish()

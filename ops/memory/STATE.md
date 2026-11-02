@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm video due Nov 8
-- Branch: sg-21/imports
+- Branch: sg-22/import-contract-tests
 - Latest migration: 0011_imports.sql
 - Active model: 20261026-0105-de605a9 (full, staging; gates passed; run 20261026-002617-full-s42)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): SG-21 imports and Presidio guard (PR #23), SG-22 fixtures and Schemathesis
+- Next up (from handoff): Sprint 4 close; SG-17 E2E once demo users exist
 
 ## Tickets
 
@@ -32,12 +32,12 @@
 - SG-18 deck updated, live demo works; placeholders, narrated video and Canvas are the team's: Midterm presentation and live demo (moved to Nov 8, video)
 - SG-19 done; staging migrated (0009); ADR-0008 needs Leo; screenshots need a signed-in supervisor: Staffing scenario engine, API, Scenarios page
 - SG-20 done; staging migrated (0010); screenshots need a signed-in user: Shift actuals: API, Log a shift, history, approvals, backfill
-- SG-21 to do: Import pipeline v1 and PHI guard
-- SG-22 to do: Tests: messy fixtures, import and PHI tests, contract fuzzing
+- SG-21 done; staging migrated (0011); ADR-0009 needs Leo: Import pipeline v1 and PHI guard
+- SG-22 done; contract job nightly: Tests: messy fixtures, import and PHI tests, contract fuzzing
 
 ## Tests
 
-- affected-python: 308 passed, 0 failed, 2 skipped (c974120)
+- affected-python: 326 passed, 2 failed, 2 skipped (f00d863)
 - db-staging: 659 passed, 0 failed, 0 skipped (172bff7)
 
 ## Deployed URLs
@@ -51,8 +51,8 @@
 
 ## Last 10 commits
 
-- c974120 jayp0671: feat(db,cli,api): imports migration 0011, sg data import/profile, Presidio guard in the API [SG-21]
-- 172bff7 jayp0671: feat(data): import pipeline v1 and the Presidio PHI guard [SG-21]
+- d5adc7a jayp0671: wip(data): messy fixture generator, fixture tests, db types drift check [SG-22]
+- 6cfff7c Jay Patel: [SG-21] Import pipeline v1 and PHI guard (#23)
 - ca0ba7a Jay Patel: [SG-20] Shift actuals: API, Log a shift, history, approvals, backfill (#22)
 - ca6dcdc Jay Patel: [SG-19] Staffing scenario engine, API and Scenarios page (#21)
 - 134bba8 Jay Patel: chore: close Sprint 3 (memory, ENVIRONMENTS.md, demo polish) (#20)

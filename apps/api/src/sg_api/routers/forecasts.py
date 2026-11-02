@@ -6,7 +6,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query
 
 from sg_api.core.errors import ApiError
-from sg_api.core.roles import ALL_ROLES, DepartmentAccess, require_role
+from sg_api.core.roles import ALL_ROLES, UUID_PATTERN, DepartmentAccess, require_role
 from sg_api.deps import get_gateway
 from sg_api.routers.models import get_model_service
 from sg_api.services import forecasts
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/forecasts", tags=["forecasts"])
 
 READ = require_role(*ALL_ROLES)
 WRITE = require_role("supervisor", "dept_admin")
-DEPARTMENT = Query(..., description="Department the forecast belongs to")
+DEPARTMENT = Query(..., pattern=UUID_PATTERN, description="Department the forecast belongs to")
 
 
 @router.post("", response_model=forecasts.ForecastOut, status_code=201)

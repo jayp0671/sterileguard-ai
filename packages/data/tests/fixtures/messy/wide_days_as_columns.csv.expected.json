@@ -1,0 +1,44 @@
+{
+  "file": "wide_days_as_columns.csv",
+  "kind": "messy",
+  "options": {},
+  "mapping": {
+    "date": "date",
+    "Patients": "regular_patients",
+    "Staff present": "morning_staff_present",
+    "OT hours": "ot_labor_hours",
+    "MF cases": "mf_cases"
+  },
+  "valid_rows": 5,
+  "rows": [
+    {
+      "date": "2026-10-12",
+      "regular_patients": 332,
+      "ot_labor_hours": 6
+    },
+    {
+      "date": "2026-10-13",
+      "regular_patients": 268,
+      "ot_labor_hours": 4.75
+    },
+    {
+      "date": "2026-10-14",
+      "regular_patients": 379,
+      "ot_labor_hours": 0
+    },
+    {
+      "date": "2026-10-15",
+      "regular_patients": 357,
+      "ot_labor_hours": 2.25
+    },
+    {
+      "date": "2026-10-16",
+      "regular_patients": 358,
+      "ot_labor_hours": 0.5
+    }
+  ],
+  "error_rows": [],
+  "dropped_columns": [],
+  "phi_cells": [],
+  "fake_strings": []
+}

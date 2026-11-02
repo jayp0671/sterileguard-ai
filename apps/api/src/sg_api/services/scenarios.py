@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from sg_api.core.errors import ApiError
 from sg_api.core.logging import get_logger
+from sg_api.core.roles import UUID_PATTERN
 from sg_api.services import forecasts
 from sg_api.services.models import ModelService
 from sg_api.services.plans import department, today_in
@@ -54,7 +55,7 @@ class TargetIn(BaseModel):
 
 
 class ScenarioIn(BaseModel):
-    department_id: str
+    department_id: str = Field(pattern=UUID_PATTERN)
     target_date: dt.date
     levers: dict[Lever, LeverBounds] | None = Field(
         None, description="Absolute headcount bounds per lever; defaults to +0..+2 staff"
@@ -66,7 +67,7 @@ class ScenarioIn(BaseModel):
 
 
 class ApplyIn(BaseModel):
-    department_id: str
+    department_id: str = Field(pattern=UUID_PATTERN)
     option_id: str = Field(min_length=1, max_length=64)
 
 

@@ -8,14 +8,14 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 
-from sg_api.core.roles import ALL_ROLES, DepartmentAccess, require_role
+from sg_api.core.roles import ALL_ROLES, UUID_PATTERN, DepartmentAccess, require_role
 from sg_api.deps import get_gateway
 from sg_api.services import plans
 from sg_api.services.supabase import Gateway
 
 router = APIRouter(prefix="/plans", tags=["plans"])
 
-DEPARTMENT = Query(..., description="Department the plan belongs to")
+DEPARTMENT = Query(..., pattern=UUID_PATTERN, description="Department the plan belongs to")
 READ = require_role(*ALL_ROLES)
 WRITE = require_role("supervisor", "dept_admin")
 

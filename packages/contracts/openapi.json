@@ -43,6 +43,7 @@
       "ApplyIn": {
         "properties": {
           "department_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             "title": "Department Id",
             "type": "string"
           },
@@ -151,6 +152,7 @@
       "DepartmentIn": {
         "properties": {
           "department_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             "title": "Department Id",
             "type": "string"
           }
@@ -248,6 +250,7 @@
       "ForecastIn": {
         "properties": {
           "department_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             "title": "Department Id",
             "type": "string"
           },
@@ -1243,6 +1246,7 @@
       "ReopenIn": {
         "properties": {
           "department_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             "title": "Department Id",
             "type": "string"
           },
@@ -1263,6 +1267,7 @@
       "ScenarioIn": {
         "properties": {
           "department_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             "title": "Department Id",
             "type": "string"
           },
@@ -1456,6 +1461,7 @@
       "ShiftCreate": {
         "properties": {
           "department_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             "title": "Department Id",
             "type": "string"
           },
@@ -1963,6 +1969,7 @@
       "ShiftPatch": {
         "properties": {
           "department_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             "title": "Department Id",
             "type": "string"
           },
@@ -2921,6 +2928,7 @@
             "required": true,
             "schema": {
               "description": "Department the forecast belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }
@@ -2983,6 +2991,7 @@
             "required": true,
             "schema": {
               "description": "Department the forecast belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }
@@ -3038,6 +3047,7 @@
             "required": true,
             "schema": {
               "description": "Department the forecast belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }
@@ -3206,6 +3216,7 @@
             "required": true,
             "schema": {
               "description": "Department the plan belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }
@@ -3259,6 +3270,7 @@
             "required": true,
             "schema": {
               "description": "Department the plan belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }
@@ -3368,6 +3380,7 @@
             "required": true,
             "schema": {
               "description": "Department the scenario belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }
@@ -3468,6 +3481,7 @@
             "required": true,
             "schema": {
               "description": "Department the shift belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }
@@ -3653,6 +3667,7 @@
             "required": true,
             "schema": {
               "description": "Department the shift belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }
@@ -3704,6 +3719,7 @@
             "required": true,
             "schema": {
               "description": "Department the shift belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Department Id",
               "type": "string"
             }

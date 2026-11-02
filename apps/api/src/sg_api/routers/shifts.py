@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response
 
 from sg_api.core.auth import check_recent_totp
-from sg_api.core.roles import ALL_ROLES, DepartmentAccess, require_role
+from sg_api.core.roles import ALL_ROLES, UUID_PATTERN, DepartmentAccess, require_role
 from sg_api.deps import get_gateway
 from sg_api.services import shifts
 from sg_api.services.supabase import Gateway
@@ -21,7 +21,7 @@ READ = require_role(*ALL_ROLES)
 LOG = require_role("technician", "supervisor", "dept_admin")
 LEADS = require_role("supervisor", "dept_admin")
 ADMIN = require_role("dept_admin")
-DEPARTMENT = Query(..., description="Department the shift belongs to")
+DEPARTMENT = Query(..., pattern=UUID_PATTERN, description="Department the shift belongs to")
 
 
 @router.get("", response_model=shifts.ShiftPage)

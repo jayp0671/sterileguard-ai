@@ -81,6 +81,10 @@ def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(StarletteHTTPException)
     async def _http(request: Request, exc: StarletteHTTPException) -> JSONResponse:
         headers: dict[str, Any] | None = getattr(exc, "headers", None)
+        if exc.status_code == 405:
+            # Starlette lists only the methods of the first route that matched the path; a
+            # path served by several routes (GET and PATCH /v1/shifts/{id}) needs them all.
+            headers = {**(headers or {}), "Allow": ", ".join(_allowed(request))}
         return problem_response(request, exc.status_code, str(exc.detail), headers=headers)
 
     @app.exception_handler(ApiError)
@@ -91,3 +95,16 @@ def install_error_handlers(app: FastAPI) -> None:
     async def _unhandled(request: Request, exc: Exception) -> JSONResponse:
         log.exception("unhandled_error", path=request.url.path)
         return problem_response(request, 500, "Internal server error")
+
+
+def _allowed(request: Request) -> list[str]:
+    """Every method any route serves for this path."""
+    from starlette.routing import Match, Route
+
+    methods: set[str] = set()
+    for route in request.app.routes:
+        if isinstance(route, Route) and route.methods:
+            match, _ = route.matches({**request.scope, "method": next(iter(route.methods))})
+            if match == Match.FULL:
+                methods |= set(route.methods)
+    return sorted(methods)

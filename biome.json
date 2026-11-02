@@ -15,6 +15,7 @@
       "!packages/contracts/src/*.d.ts",
       "!packages/contracts/openapi.json",
       "!packages/contracts/src/db.ts",
+      "!packages/data/tests/fixtures/messy",
       "!apps/web/src/components/ui",
       "!.claude/skills/webapp-testing",
       "!.agents/skills/webapp-testing",

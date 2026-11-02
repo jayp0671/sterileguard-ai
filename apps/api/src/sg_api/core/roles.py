@@ -22,6 +22,9 @@ from sg_api.deps import current_user, get_gateway
 from sg_api.services.supabase import Gateway
 
 FORBIDDEN_ROLE = "https://sterileguard.dev/problems/forbidden-role"
+# Department ids are UUIDs; the contract says so, so fuzzers and clients know an empty or
+# malformed id is invalid input (422), not a reason the server refused valid data.
+UUID_PATTERN = r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
 ALL_ROLES = ("technician", "supervisor", "dept_admin", "data_steward", "platform_admin")
 
 _memberships: TTLCache[str, list[dict[str, Any]]] = TTLCache(maxsize=2048, ttl=60)

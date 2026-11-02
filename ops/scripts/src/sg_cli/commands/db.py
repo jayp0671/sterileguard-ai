@@ -110,27 +110,48 @@ def seed(env: str = typer.Option("local", "--env", help="local | staging")) -> N
     result.finish()
 
 
-@app.command("types", help="Generate packages/contracts/src/db.ts from the local schema.")
-def types() -> None:
+@app.command("types", help="Generate packages/contracts/src/db.ts from a database schema.")
+def types(
+    env: str = typer.Option(
+        "local", "--env", help="local | staging (staging when Docker is not available)"
+    ),
+    check: bool = typer.Option(False, "--check", help="Fail if db.ts differs (SG-22 drift check)"),
+) -> None:
     result = core.Result("db", "types")
     out = core.repo_root() / "packages" / "contracts" / "src" / "db.ts"
+    if env not in ("local", "staging"):
+        raise typer.BadParameter("--env must be local or staging")
+    target = ["--local"] if env == "local" else ["--db-url", db_url(env)]
+    # The local default includes graphql_public; name both so local and staging output match.
+    cmd = [*SUPABASE, "gen", "types", "typescript", *target, "--schema", "public,graphql_public"]
     if core.OPTIONS.dry_run:
-        core.run([*SUPABASE, "gen", "types", "typescript", "--local"])
-    else:
-        # stdout only: the CLI prints progress and hints on stderr, which must not land in db.ts.
-        exe = core.which(SUPABASE[0]) or SUPABASE[0]
-        proc = subprocess.run(
-            [exe, *SUPABASE[1:], "gen", "types", "typescript", "--local"],
-            cwd=core.repo_root(),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            check=False,
+        result.add(
+            "would run: supabase gen types typescript "
+            + ("--local" if env == "local" else "--db-url ***")
         )
-        if proc.returncode != 0:
-            raise core.CommandError(["supabase", "gen", "types"], proc.returncode)
-        out.write_text(proc.stdout.rstrip() + "\n", encoding="utf-8", newline="\n")
-    result.add(f"wrote {out.relative_to(core.repo_root())}")
+        result.finish()
+        return
+    # stdout only: the CLI prints progress and hints on stderr, which must not land in db.ts.
+    exe = core.which(SUPABASE[0]) or SUPABASE[0]
+    proc = subprocess.run(
+        [exe, *cmd[1:]],
+        cwd=core.repo_root(),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+    if proc.returncode != 0:
+        raise core.CommandError(["supabase", "gen", "types"], proc.returncode)
+    generated = proc.stdout.rstrip() + "\n"
+    rel = out.relative_to(core.repo_root())
+    if check:
+        current = out.read_text(encoding="utf-8") if out.exists() else ""
+        result.ok = current.replace("\r\n", "\n") == generated
+        result.add(f"{rel} is up to date" if result.ok else f"{rel} drifted: run sg db types")
+    else:
+        out.write_text(generated, encoding="utf-8", newline="\n")
+        result.add(f"wrote {rel}")
     result.finish()
 
 

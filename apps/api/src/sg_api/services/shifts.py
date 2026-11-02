@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field, create_model
 
 from sg_api.core.errors import ApiError
 from sg_api.core.logging import get_logger
+from sg_api.core.roles import UUID_PATTERN
 from sg_api.core.text_guard import require_clean
 from sg_api.services import plans
 from sg_api.services.supabase import Gateway, Row
@@ -42,7 +43,7 @@ PAGE_MAX = 100
 ShiftCreate: Any = create_model(
     "ShiftCreate",
     __base__=ShiftActualIn,
-    department_id=(str, ...),
+    department_id=(str, Field(pattern=UUID_PATTERN)),
     shift_date=(dt.date, ...),
     plan=(
         plans.ShiftPlanIn | None,
@@ -51,7 +52,7 @@ ShiftCreate: Any = create_model(
 )
 
 _PATCH_FIELDS: dict[str, Any] = {
-    "department_id": (str, ...),
+    "department_id": (str, Field(pattern=UUID_PATTERN)),
     **{
         name: (field.annotation | None, Field(None, description=field.description))
         for name, field in ShiftActualIn.model_fields.items()
@@ -61,12 +62,12 @@ ShiftPatch: Any = create_model("ShiftPatch", **_PATCH_FIELDS)
 
 
 class ReopenIn(BaseModel):
-    department_id: str
+    department_id: str = Field(pattern=UUID_PATTERN)
     reason: str = Field(min_length=3, max_length=500)
 
 
 class DepartmentIn(BaseModel):
-    department_id: str
+    department_id: str = Field(pattern=UUID_PATTERN)
 
 
 class ForecastRef(BaseModel):

@@ -8,7 +8,7 @@ import datetime as dt
 
 from fastapi import APIRouter, Depends, Query
 
-from sg_api.core.roles import ALL_ROLES, DepartmentAccess, require_role
+from sg_api.core.roles import ALL_ROLES, UUID_PATTERN, DepartmentAccess, require_role
 from sg_api.deps import get_gateway
 from sg_api.routers.models import get_model_service
 from sg_api.services import scenarios
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/scenarios", tags=["scenarios"])
 
 READ = require_role(*ALL_ROLES)
 WRITE = require_role("supervisor", "dept_admin")
-DEPARTMENT = Query(..., description="Department the scenario belongs to")
+DEPARTMENT = Query(..., pattern=UUID_PATTERN, description="Department the scenario belongs to")
 
 
 @router.post("", response_model=scenarios.ScenarioOut, status_code=201)
