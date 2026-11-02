@@ -24,6 +24,42 @@
         "title": "AppRole",
         "type": "string"
       },
+      "AppliedOut": {
+        "properties": {
+          "forecast": {
+            "$ref": "#/components/schemas/ForecastOut"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioOut"
+          }
+        },
+        "required": [
+          "scenario",
+          "forecast"
+        ],
+        "title": "AppliedOut",
+        "type": "object"
+      },
+      "ApplyIn": {
+        "properties": {
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "option_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Option Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "department_id",
+          "option_id"
+        ],
+        "title": "ApplyIn",
+        "type": "object"
+      },
       "AuthEvent": {
         "properties": {
           "event": {
@@ -444,6 +480,28 @@
         "title": "InviteCreate",
         "type": "object"
       },
+      "LeverBounds": {
+        "properties": {
+          "max": {
+            "maximum": 30.0,
+            "minimum": 0.0,
+            "title": "Max",
+            "type": "integer"
+          },
+          "min": {
+            "maximum": 30.0,
+            "minimum": 0.0,
+            "title": "Min",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "min",
+          "max"
+        ],
+        "title": "LeverBounds",
+        "type": "object"
+      },
       "Me": {
         "properties": {
           "aal": {
@@ -595,6 +653,80 @@
           "metrics"
         ],
         "title": "ModelVersionOut",
+        "type": "object"
+      },
+      "OptionOut": {
+        "properties": {
+          "added_staff_hours": {
+            "title": "Added Staff Hours",
+            "type": "number"
+          },
+          "burden_probs": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Burden Probs",
+            "type": "object"
+          },
+          "changes": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Changes",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "low_confidence": {
+            "description": "Staffing outside what the model saw in training",
+            "title": "Low Confidence",
+            "type": "boolean"
+          },
+          "meets_target": {
+            "title": "Meets Target",
+            "type": "boolean"
+          },
+          "ot_p10": {
+            "title": "Ot P10",
+            "type": "number"
+          },
+          "ot_p50": {
+            "title": "Ot P50",
+            "type": "number"
+          },
+          "ot_p90": {
+            "title": "Ot P90",
+            "type": "number"
+          },
+          "values": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Values",
+            "type": "object"
+          },
+          "what_if": {
+            "description": "Changes staff willing to stay; never recommended",
+            "title": "What If",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "values",
+          "changes",
+          "ot_p10",
+          "ot_p50",
+          "ot_p90",
+          "burden_probs",
+          "added_staff_hours",
+          "meets_target",
+          "low_confidence",
+          "what_if"
+        ],
+        "title": "OptionOut",
         "type": "object"
       },
       "PlanOut": {
@@ -1027,6 +1159,199 @@
         "title": "Ready",
         "type": "object"
       },
+      "ScenarioIn": {
+        "properties": {
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "levers": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/LeverBounds"
+                },
+                "propertyNames": {
+                  "enum": [
+                    "morning_staff_present",
+                    "aft_11_staff",
+                    "aft_13_staff",
+                    "outside_support_staff",
+                    "ot_available_staff"
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Absolute headcount bounds per lever; defaults to +0..+2 staff",
+            "title": "Levers"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TargetIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Defaults to the department alert threshold, else the top of Moderate"
+          },
+          "target_date": {
+            "format": "date",
+            "title": "Target Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "department_id",
+          "target_date"
+        ],
+        "title": "ScenarioIn",
+        "type": "object"
+      },
+      "ScenarioOut": {
+        "properties": {
+          "applied": {
+            "default": false,
+            "title": "Applied",
+            "type": "boolean"
+          },
+          "applied_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied At"
+          },
+          "applied_option_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Option Id"
+          },
+          "base": {
+            "$ref": "#/components/schemas/OptionOut"
+          },
+          "bounds": {
+            "additionalProperties": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "title": "Bounds",
+            "type": "object"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "disclaimer": {
+            "default": "Model estimate, not a guarantee.",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "forecast_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Id"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "minimum_change_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Change Id"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/OptionOut"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "pareto_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Pareto Ids",
+            "type": "array"
+          },
+          "target": {
+            "$ref": "#/components/schemas/TargetOut"
+          },
+          "target_date": {
+            "format": "date",
+            "title": "Target Date",
+            "type": "string"
+          },
+          "window_hours": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Window Hours",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "department_id",
+          "target_date",
+          "model_version",
+          "base",
+          "options",
+          "pareto_ids",
+          "minimum_change_id",
+          "target",
+          "message",
+          "bounds",
+          "window_hours",
+          "created_at"
+        ],
+        "title": "ScenarioOut",
+        "type": "object"
+      },
       "ShiftPlanValues": {
         "properties": {
           "academic_event": {
@@ -1283,6 +1608,52 @@
           }
         },
         "title": "ShiftPlanValues",
+        "type": "object"
+      },
+      "TargetIn": {
+        "properties": {
+          "type": {
+            "enum": [
+              "p50_hours",
+              "p_high"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "value": {
+            "maximum": 60.0,
+            "minimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "title": "TargetIn",
+        "type": "object"
+      },
+      "TargetOut": {
+        "properties": {
+          "type": {
+            "enum": [
+              "p50_hours",
+              "p_high"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "title": "TargetOut",
         "type": "object"
       },
       "Thresholds": {
@@ -2000,6 +2371,159 @@
         "summary": "Put Plan",
         "tags": [
           "plans"
+        ]
+      }
+    },
+    "/v1/scenarios": {
+      "post": {
+        "description": "Evaluate every staffing option within the bounds for the saved plan of target_date,\nstore the run and return the options, the Pareto front and the minimum change.",
+        "operationId": "run_scenario_v1_scenarios_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Run Scenario",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/v1/scenarios/latest": {
+      "get": {
+        "description": "The most recent run for a date (404 no-scenario).",
+        "operationId": "latest_scenario_v1_scenarios_latest_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "target_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Target Date",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department the scenario belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the scenario belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Latest Scenario",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/v1/scenarios/{scenario_id}/apply": {
+      "post": {
+        "description": "Copy the option's staffing into the plan, recompute the forecast and mark the run\napplied (409 plan-changed when the plan was edited after the run).",
+        "operationId": "apply_scenario_v1_scenarios__scenario_id__apply_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppliedOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Apply Scenario",
+        "tags": [
+          "scenarios"
         ]
       }
     }

@@ -107,6 +107,7 @@ def build_card(run: dict[str, Any], version: str, created_at: str) -> dict[str, 
         "limitations": LIMITATIONS,
         "shap_global_top10": run.get("shap_global", [])[:10],
         "sim_config_hash": run.get("sim_config_hash"),
+        "staffing_support": run.get("staffing_support"),
     }
 
 

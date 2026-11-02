@@ -11,7 +11,6 @@ import { StaffTimeline } from "@/components/staff-timeline";
 import { EmptyState, ErrorState, PageHeader } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   type ForecastOut,
   useComputeForecast,
@@ -106,17 +105,14 @@ export function ForecastHome({
                 {canCompute ? "Edit plan" : "View plan"}
               </Link>
             </Button>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span tabIndex={0} className="inline-flex">
-                  <Button variant="ghost" className="min-h-11" disabled>
-                    <FlaskConical aria-hidden />
-                    Try staffing scenarios
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>Staffing scenarios arrive in the next release.</TooltipContent>
-            </Tooltip>
+            {canCompute ? (
+              <Button asChild variant="ghost" className="min-h-11">
+                <Link href="/app/scenarios">
+                  <FlaskConical aria-hidden />
+                  Try staffing scenarios
+                </Link>
+              </Button>
+            ) : null}
           </>
         }
       />

@@ -263,6 +263,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run Scenario
+         * @description Evaluate every staffing option within the bounds for the saved plan of target_date,
+         *     store the run and return the options, the Pareto front and the minimum change.
+         */
+        post: operations["run_scenario_v1_scenarios_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scenarios/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Latest Scenario
+         * @description The most recent run for a date (404 no-scenario).
+         */
+        get: operations["latest_scenario_v1_scenarios_latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/scenarios/{scenario_id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Apply Scenario
+         * @description Copy the option's staffing into the plan, recompute the forecast and mark the run
+         *     applied (409 plan-changed when the plan was edited after the run).
+         */
+        post: operations["apply_scenario_v1_scenarios__scenario_id__apply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -281,6 +343,18 @@ export interface components {
          * @enum {string}
          */
         AppRole: "technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin";
+        /** AppliedOut */
+        AppliedOut: {
+            forecast: components["schemas"]["ForecastOut"];
+            scenario: components["schemas"]["ScenarioOut"];
+        };
+        /** ApplyIn */
+        ApplyIn: {
+            /** Department Id */
+            department_id: string;
+            /** Option Id */
+            option_id: string;
+        };
         /** AuthEvent */
         AuthEvent: {
             /**
@@ -469,6 +543,13 @@ export interface components {
             email: string;
             role: components["schemas"]["AppRole"];
         };
+        /** LeverBounds */
+        LeverBounds: {
+            /** Max */
+            max: number;
+            /** Min */
+            min: number;
+        };
         /** Me */
         Me: {
             /** Aal */
@@ -528,6 +609,43 @@ export interface components {
             status: "candidate" | "active" | "retired" | "rejected";
             /** Version */
             version: string;
+        };
+        /** OptionOut */
+        OptionOut: {
+            /** Added Staff Hours */
+            added_staff_hours: number;
+            /** Burden Probs */
+            burden_probs: {
+                [key: string]: number;
+            };
+            /** Changes */
+            changes: {
+                [key: string]: number;
+            };
+            /** Id */
+            id: string;
+            /**
+             * Low Confidence
+             * @description Staffing outside what the model saw in training
+             */
+            low_confidence: boolean;
+            /** Meets Target */
+            meets_target: boolean;
+            /** Ot P10 */
+            ot_p10: number;
+            /** Ot P50 */
+            ot_p50: number;
+            /** Ot P90 */
+            ot_p90: number;
+            /** Values */
+            values: {
+                [key: string]: number;
+            };
+            /**
+             * What If
+             * @description Changes staff willing to stay; never recommended
+             */
+            what_if: boolean;
         };
         /** PlanOut */
         PlanOut: {
@@ -687,6 +805,78 @@ export interface components {
              */
             status: "ready" | "not_ready";
         };
+        /** ScenarioIn */
+        ScenarioIn: {
+            /** Department Id */
+            department_id: string;
+            /**
+             * Levers
+             * @description Absolute headcount bounds per lever; defaults to +0..+2 staff
+             */
+            levers?: {
+                [key: string]: components["schemas"]["LeverBounds"];
+            } | null;
+            /** @description Defaults to the department alert threshold, else the top of Moderate */
+            target?: components["schemas"]["TargetIn"] | null;
+            /**
+             * Target Date
+             * Format: date
+             */
+            target_date: string;
+        };
+        /** ScenarioOut */
+        ScenarioOut: {
+            /**
+             * Applied
+             * @default false
+             */
+            applied: boolean;
+            /** Applied At */
+            applied_at?: string | null;
+            /** Applied Option Id */
+            applied_option_id?: string | null;
+            base: components["schemas"]["OptionOut"];
+            /** Bounds */
+            bounds: {
+                [key: string]: number[];
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Department Id */
+            department_id: string;
+            /**
+             * Disclaimer
+             * @default Model estimate, not a guarantee.
+             */
+            disclaimer: string;
+            /** Forecast Id */
+            forecast_id?: string | null;
+            /** Id */
+            id: string;
+            /** Message */
+            message: string;
+            /** Minimum Change Id */
+            minimum_change_id: string | null;
+            /** Model Version */
+            model_version: string;
+            /** Options */
+            options: components["schemas"]["OptionOut"][];
+            /** Pareto Ids */
+            pareto_ids: string[];
+            target: components["schemas"]["TargetOut"];
+            /**
+             * Target Date
+             * Format: date
+             */
+            target_date: string;
+            /** Window Hours */
+            window_hours: {
+                [key: string]: number;
+            };
+        };
         /** ShiftPlanValues */
         ShiftPlanValues: {
             /**
@@ -759,6 +949,26 @@ export interface components {
              * @description Washer-disinfectors working at 7:00 AM
              */
             washers_up?: number | null;
+        };
+        /** TargetIn */
+        TargetIn: {
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "p50_hours" | "p_high";
+            /** Value */
+            value: number;
+        };
+        /** TargetOut */
+        TargetOut: {
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "p50_hours" | "p_high";
+            /** Value */
+            value: number;
         };
         /** Thresholds */
         Thresholds: {
@@ -1276,6 +1486,110 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlanOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    run_scenario_v1_scenarios_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScenarioIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    latest_scenario_v1_scenarios_latest_get: {
+        parameters: {
+            query: {
+                target_date: string;
+                /** @description Department the scenario belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    apply_scenario_v1_scenarios__scenario_id__apply_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppliedOut"];
                 };
             };
             /** @description Problem */

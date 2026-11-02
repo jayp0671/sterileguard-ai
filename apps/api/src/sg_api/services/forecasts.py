@@ -130,6 +130,13 @@ async def approved_actuals(
     return out
 
 
+def plan_row(plan: Row, day: dt.date, history: dict[dt.date, float]) -> dict[str, Any]:
+    """The raw model row for a saved plan: inputs, __missing flags, the date and both lags."""
+    values = {k: plan.get(k) for k in PLAN_FIELDS}
+    flags = {k: v for k, v in plan.items() if k.endswith("__missing")}
+    return {**values, **flags, "date": pd.Timestamp(day), **lags_from_history(day, history)}
+
+
 def feature_frame(
     model: LoadedModel,
     plan: Row,
@@ -137,13 +144,9 @@ def feature_frame(
     settings: dict[str, Any],
     history: dict[dt.date, float],
 ) -> pd.DataFrame:
-    values = {k: plan.get(k) for k in PLAN_FIELDS}
-    flags = {k: v for k, v in plan.items() if k.endswith("__missing")}
-    row = pd.DataFrame([{**values, **flags, "date": pd.Timestamp(day)}])
+    row = pd.DataFrame([plan_row(plan, day, history)])
     ctx = FeatureContext.from_dict(model.artifact["context"])
     frame = add_features(row, ctx, settings, lags=False)
-    for k, v in lags_from_history(day, history).items():
-        frame[k] = v
     return build_matrix(frame, model.feature_list)
 
 
