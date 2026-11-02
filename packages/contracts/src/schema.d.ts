@@ -325,6 +325,132 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/shifts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Shifts
+         * @description Newest first, each row with the forecast for its date (p10/p50/p90) when one exists.
+         */
+        get: operations["list_shifts_v1_shifts_get"];
+        put?: never;
+        /**
+         * Log Shift
+         * @description A draft for a date on or before today (409 actual-exists if the date is logged). With
+         *     `plan`, supervisors backfill a real past day: a final plan is created too.
+         */
+        post: operations["log_shift_v1_shifts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shifts/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Shifts
+         * @description CSV export: needs a two-factor check in the last 5 minutes, and is audited.
+         */
+        get: operations["export_shifts_v1_shifts_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shifts/{shift_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Shift
+         * @description One row; department admins also get its audit trail.
+         */
+        get: operations["get_shift_v1_shifts__shift_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Shift
+         * @description The author edits while draft or submitted; supervisors edit any row not approved.
+         */
+        patch: operations["edit_shift_v1_shifts__shift_id__patch"];
+        trace?: never;
+    };
+    "/v1/shifts/{shift_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Shift
+         * @description Supervisors and department admins approve a submitted row; it is then locked.
+         */
+        post: operations["approve_shift_v1_shifts__shift_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shifts/{shift_id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reopen Shift
+         * @description Department admins only. The reason is stored on the row, so the audit row keeps it.
+         */
+        post: operations["reopen_shift_v1_shifts__shift_id__reopen_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/shifts/{shift_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Shift */
+        post: operations["submit_shift_v1_shifts__shift_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -355,6 +481,25 @@ export interface components {
             /** Option Id */
             option_id: string;
         };
+        /** AuditEntry */
+        AuditEntry: {
+            /** Action */
+            action: string;
+            /** Actor Role */
+            actor_role?: string | null;
+            /**
+             * Changes
+             * @description field -> [before, after]
+             */
+            changes: {
+                [key: string]: unknown[];
+            };
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+        };
         /** AuthEvent */
         AuthEvent: {
             /**
@@ -369,6 +514,11 @@ export interface components {
             ok: boolean;
             /** Reason */
             reason?: string | null;
+        };
+        /** DepartmentIn */
+        DepartmentIn: {
+            /** Department Id */
+            department_id: string;
         };
         /** DriverOut */
         DriverOut: {
@@ -467,6 +617,17 @@ export interface components {
              * @enum {string}
              */
             trigger: "manual" | "scheduled" | "scenario";
+        };
+        /** ForecastRef */
+        ForecastRef: {
+            /** Model Version */
+            model_version: string;
+            /** Ot P10 */
+            ot_p10: number;
+            /** Ot P50 */
+            ot_p50: number;
+            /** Ot P90 */
+            ot_p90: number;
         };
         /** Health */
         Health: {
@@ -805,6 +966,13 @@ export interface components {
              */
             status: "ready" | "not_ready";
         };
+        /** ReopenIn */
+        ReopenIn: {
+            /** Department Id */
+            department_id: string;
+            /** Reason */
+            reason: string;
+        };
         /** ScenarioIn */
         ScenarioIn: {
             /** Department Id */
@@ -876,6 +1044,294 @@ export interface components {
             window_hours: {
                 [key: string]: number;
             };
+        };
+        /** ShiftCreate */
+        ShiftCreate: {
+            /** Department Id */
+            department_id: string;
+            /**
+             * Emergency Intake Patients
+             * @description Emergency and intake patients
+             */
+            emergency_intake_patients?: number | null;
+            /**
+             * Equipment Downtime Minutes
+             * @description Washer and sterilizer downtime
+             */
+            equipment_downtime_minutes?: number | null;
+            /**
+             * Notes
+             * @description Short operational notes, never names
+             */
+            notes?: string | null;
+            /**
+             * Ot Labor Hours
+             * @description Hours past 3:00 PM, summed over morning staff
+             */
+            ot_labor_hours: number;
+            /** @description Backfill: the day's plan inputs, when no plan exists */
+            plan?: components["schemas"]["ShiftPlanIn"] | null;
+            /**
+             * Returned Unused Estimate
+             * @description Issued but unused sets returned
+             */
+            returned_unused_estimate?: number | null;
+            /**
+             * Shift Date
+             * Format: date
+             */
+            shift_date: string;
+        };
+        /** ShiftDetail */
+        ShiftDetail: {
+            /** Approved At */
+            approved_at?: string | null;
+            /**
+             * Audit
+             * @description dept_admin and platform_admin only
+             */
+            audit?: components["schemas"]["AuditEntry"][] | null;
+            /**
+             * Author Role
+             * @description The author's role when the row was logged
+             */
+            author_role?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Department Id */
+            department_id: string;
+            /** Emergency Intake Patients */
+            emergency_intake_patients?: number | null;
+            /** Equipment Downtime Minutes */
+            equipment_downtime_minutes?: number | null;
+            /**
+             * Error
+             * @description Actual minus predicted p50, hours
+             */
+            error?: number | null;
+            forecast?: components["schemas"]["ForecastRef"] | null;
+            /** Id */
+            id: string;
+            /**
+             * Inside Range
+             * @description Actual inside the 80% range
+             */
+            inside_range?: boolean | null;
+            /**
+             * Mine
+             * @description The caller wrote this row
+             */
+            mine: boolean;
+            /** Notes */
+            notes?: string | null;
+            /** Ot Labor Hours */
+            ot_labor_hours: number;
+            /** Reopen Reason */
+            reopen_reason?: string | null;
+            /** Returned Unused Estimate */
+            returned_unused_estimate?: number | null;
+            /**
+             * Shift Date
+             * Format: date
+             */
+            shift_date: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "real" | "simulated";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "submitted" | "approved";
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ShiftOut */
+        ShiftOut: {
+            /** Approved At */
+            approved_at?: string | null;
+            /**
+             * Author Role
+             * @description The author's role when the row was logged
+             */
+            author_role?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Department Id */
+            department_id: string;
+            /** Emergency Intake Patients */
+            emergency_intake_patients?: number | null;
+            /** Equipment Downtime Minutes */
+            equipment_downtime_minutes?: number | null;
+            /**
+             * Error
+             * @description Actual minus predicted p50, hours
+             */
+            error?: number | null;
+            forecast?: components["schemas"]["ForecastRef"] | null;
+            /** Id */
+            id: string;
+            /**
+             * Inside Range
+             * @description Actual inside the 80% range
+             */
+            inside_range?: boolean | null;
+            /**
+             * Mine
+             * @description The caller wrote this row
+             */
+            mine: boolean;
+            /** Notes */
+            notes?: string | null;
+            /** Ot Labor Hours */
+            ot_labor_hours: number;
+            /** Reopen Reason */
+            reopen_reason?: string | null;
+            /** Returned Unused Estimate */
+            returned_unused_estimate?: number | null;
+            /**
+             * Shift Date
+             * Format: date
+             */
+            shift_date: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "real" | "simulated";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "submitted" | "approved";
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ShiftPage */
+        ShiftPage: {
+            /** Has More */
+            has_more: boolean;
+            /** Items */
+            items: components["schemas"]["ShiftOut"][];
+            /** Next Offset */
+            next_offset?: number | null;
+        };
+        /** ShiftPatch */
+        ShiftPatch: {
+            /** Department Id */
+            department_id: string;
+            /**
+             * Emergency Intake Patients
+             * @description Emergency and intake patients
+             */
+            emergency_intake_patients?: number | null;
+            /**
+             * Equipment Downtime Minutes
+             * @description Washer and sterilizer downtime
+             */
+            equipment_downtime_minutes?: number | null;
+            /**
+             * Notes
+             * @description Short operational notes, never names
+             */
+            notes?: string | null;
+            /**
+             * Ot Labor Hours
+             * @description Hours past 3:00 PM, summed over morning staff
+             */
+            ot_labor_hours?: number | null;
+            /**
+             * Returned Unused Estimate
+             * @description Issued but unused sets returned
+             */
+            returned_unused_estimate?: number | null;
+        };
+        /** ShiftPlanIn */
+        ShiftPlanIn: {
+            /**
+             * Academic Event
+             * @description Academic calendar event
+             */
+            academic_event?: ("none" | "exam" | "break" | "semester_start") | null;
+            /**
+             * Aft 11 Staff
+             * @description Staff starting about 11:00 AM
+             */
+            aft_11_staff?: number | null;
+            /**
+             * Aft 13 Staff
+             * @description Staff starting about 1:00 PM
+             */
+            aft_13_staff?: number | null;
+            /**
+             * Aft 15 Staff
+             * @description Staff starting at the regular afternoon start (3:00 PM)
+             */
+            aft_15_staff?: number | null;
+            /**
+             * Carryover Backlog Estimate
+             * @description Work waiting at 7:00 AM (0 light, 1 normal, 2 heavy)
+             */
+            carryover_backlog_estimate?: number | null;
+            /**
+             * Is Holiday
+             * @description Holiday or school closed
+             */
+            is_holiday?: boolean | null;
+            /**
+             * Mf Cases
+             * @description Maxillofacial surgery cases scheduled
+             */
+            mf_cases?: number | null;
+            /**
+             * Morning Staff Present
+             * @description Dental Central Sterile staff present for the morning operation
+             */
+            morning_staff_present: number;
+            /**
+             * Ot Available Staff
+             * @description Morning staff who agreed to stay for overtime
+             */
+            ot_available_staff?: number | null;
+            /**
+             * Outside Support Staff
+             * @description Outside-department helpers (until about 8 PM)
+             */
+            outside_support_staff?: number | null;
+            /**
+             * Regular Patients
+             * @description Scheduled regular patients (emergency and intake excluded)
+             */
+            regular_patients: number;
+            /**
+             * Sterilizers Up
+             * @description Sterilizers working at 7:00 AM
+             */
+            sterilizers_up?: number | null;
+            /**
+             * Student Clinic Sessions
+             * @description Scheduled student clinic sessions
+             */
+            student_clinic_sessions?: number | null;
+            /**
+             * Washers Up
+             * @description Washer-disinfectors working at 7:00 AM
+             */
+            washers_up?: number | null;
         };
         /** ShiftPlanValues */
         ShiftPlanValues: {
@@ -1590,6 +2046,292 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AppliedOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    list_shifts_v1_shifts_get: {
+        parameters: {
+            query: {
+                /** @description Department the shift belongs to */
+                department_id: string;
+                from?: string | null;
+                to?: string | null;
+                status?: ("draft" | "submitted" | "approved") | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftPage"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    log_shift_v1_shifts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShiftCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    export_shifts_v1_shifts_export_get: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+                /** @description Department the shift belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CSV of the date range */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": unknown;
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    get_shift_v1_shifts__shift_id__get: {
+        parameters: {
+            query: {
+                /** @description Department the shift belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftDetail"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    edit_shift_v1_shifts__shift_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShiftPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    approve_shift_v1_shifts__shift_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DepartmentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    reopen_shift_v1_shifts__shift_id__reopen_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReopenIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    submit_shift_v1_shifts__shift_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DepartmentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShiftOut"];
                 };
             };
             /** @description Problem */

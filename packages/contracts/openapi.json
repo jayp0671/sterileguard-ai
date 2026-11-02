@@ -60,6 +60,46 @@
         "title": "ApplyIn",
         "type": "object"
       },
+      "AuditEntry": {
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "actor_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Role"
+          },
+          "changes": {
+            "additionalProperties": {
+              "items": {},
+              "type": "array"
+            },
+            "description": "field -> [before, after]",
+            "title": "Changes",
+            "type": "object"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "title": "Occurred At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "occurred_at",
+          "action",
+          "changes"
+        ],
+        "title": "AuditEntry",
+        "type": "object"
+      },
       "AuthEvent": {
         "properties": {
           "event": {
@@ -106,6 +146,19 @@
           "ok"
         ],
         "title": "Check",
+        "type": "object"
+      },
+      "DepartmentIn": {
+        "properties": {
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "department_id"
+        ],
+        "title": "DepartmentIn",
         "type": "object"
       },
       "DriverOut": {
@@ -324,6 +377,34 @@
           "created_at"
         ],
         "title": "ForecastOut",
+        "type": "object"
+      },
+      "ForecastRef": {
+        "properties": {
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "ot_p10": {
+            "title": "Ot P10",
+            "type": "number"
+          },
+          "ot_p50": {
+            "title": "Ot P50",
+            "type": "number"
+          },
+          "ot_p90": {
+            "title": "Ot P90",
+            "type": "number"
+          }
+        },
+        "required": [
+          "ot_p10",
+          "ot_p50",
+          "ot_p90",
+          "model_version"
+        ],
+        "title": "ForecastRef",
         "type": "object"
       },
       "Health": {
@@ -1159,6 +1240,26 @@
         "title": "Ready",
         "type": "object"
       },
+      "ReopenIn": {
+        "properties": {
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "department_id",
+          "reason"
+        ],
+        "title": "ReopenIn",
+        "type": "object"
+      },
       "ScenarioIn": {
         "properties": {
           "department_id": {
@@ -1350,6 +1451,834 @@
           "created_at"
         ],
         "title": "ScenarioOut",
+        "type": "object"
+      },
+      "ShiftCreate": {
+        "properties": {
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "emergency_intake_patients": {
+            "anyOf": [
+              {
+                "maximum": 200.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Emergency and intake patients",
+            "tier": 3,
+            "title": "Emergency Intake Patients",
+            "unit": "patients"
+          },
+          "equipment_downtime_minutes": {
+            "anyOf": [
+              {
+                "maximum": 900.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Washer and sterilizer downtime",
+            "tier": 3,
+            "title": "Equipment Downtime Minutes",
+            "unit": "minutes"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Short operational notes, never names",
+            "tier": 3,
+            "title": "Notes"
+          },
+          "ot_labor_hours": {
+            "description": "Hours past 3:00 PM, summed over morning staff",
+            "maximum": 60.0,
+            "minimum": 0.0,
+            "tier": 1,
+            "title": "Ot Labor Hours",
+            "type": "number",
+            "unit": "hours"
+          },
+          "plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ShiftPlanIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Backfill: the day's plan inputs, when no plan exists"
+          },
+          "returned_unused_estimate": {
+            "anyOf": [
+              {
+                "maximum": 2000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Issued but unused sets returned",
+            "tier": 3,
+            "title": "Returned Unused Estimate",
+            "unit": "sets"
+          },
+          "shift_date": {
+            "format": "date",
+            "title": "Shift Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ot_labor_hours",
+          "department_id",
+          "shift_date"
+        ],
+        "title": "ShiftCreate",
+        "type": "object"
+      },
+      "ShiftDetail": {
+        "properties": {
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "audit": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AuditEntry"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "dept_admin and platform_admin only",
+            "title": "Audit"
+          },
+          "author_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The author's role when the row was logged",
+            "title": "Author Role"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "emergency_intake_patients": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Emergency Intake Patients"
+          },
+          "equipment_downtime_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipment Downtime Minutes"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Actual minus predicted p50, hours",
+            "title": "Error"
+          },
+          "forecast": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ForecastRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "inside_range": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Actual inside the 80% range",
+            "title": "Inside Range"
+          },
+          "mine": {
+            "description": "The caller wrote this row",
+            "title": "Mine",
+            "type": "boolean"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "ot_labor_hours": {
+            "title": "Ot Labor Hours",
+            "type": "number"
+          },
+          "reopen_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reopen Reason"
+          },
+          "returned_unused_estimate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Returned Unused Estimate"
+          },
+          "shift_date": {
+            "format": "date",
+            "title": "Shift Date",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "real",
+              "simulated"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "submitted",
+              "approved"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "department_id",
+          "shift_date",
+          "ot_labor_hours",
+          "status",
+          "source",
+          "mine",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ShiftDetail",
+        "type": "object"
+      },
+      "ShiftOut": {
+        "properties": {
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "author_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The author's role when the row was logged",
+            "title": "Author Role"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "emergency_intake_patients": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Emergency Intake Patients"
+          },
+          "equipment_downtime_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipment Downtime Minutes"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Actual minus predicted p50, hours",
+            "title": "Error"
+          },
+          "forecast": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ForecastRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "inside_range": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Actual inside the 80% range",
+            "title": "Inside Range"
+          },
+          "mine": {
+            "description": "The caller wrote this row",
+            "title": "Mine",
+            "type": "boolean"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "ot_labor_hours": {
+            "title": "Ot Labor Hours",
+            "type": "number"
+          },
+          "reopen_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reopen Reason"
+          },
+          "returned_unused_estimate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Returned Unused Estimate"
+          },
+          "shift_date": {
+            "format": "date",
+            "title": "Shift Date",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "real",
+              "simulated"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "submitted",
+              "approved"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "department_id",
+          "shift_date",
+          "ot_labor_hours",
+          "status",
+          "source",
+          "mine",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ShiftOut",
+        "type": "object"
+      },
+      "ShiftPage": {
+        "properties": {
+          "has_more": {
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ShiftOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_offset": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Offset"
+          }
+        },
+        "required": [
+          "items",
+          "has_more"
+        ],
+        "title": "ShiftPage",
+        "type": "object"
+      },
+      "ShiftPatch": {
+        "properties": {
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "emergency_intake_patients": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Emergency and intake patients",
+            "title": "Emergency Intake Patients"
+          },
+          "equipment_downtime_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Washer and sterilizer downtime",
+            "title": "Equipment Downtime Minutes"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Short operational notes, never names",
+            "title": "Notes"
+          },
+          "ot_labor_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Hours past 3:00 PM, summed over morning staff",
+            "title": "Ot Labor Hours"
+          },
+          "returned_unused_estimate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Issued but unused sets returned",
+            "title": "Returned Unused Estimate"
+          }
+        },
+        "required": [
+          "department_id"
+        ],
+        "title": "ShiftPatch",
+        "type": "object"
+      },
+      "ShiftPlanIn": {
+        "properties": {
+          "academic_event": {
+            "anyOf": [
+              {
+                "enum": [
+                  "none",
+                  "exam",
+                  "break",
+                  "semester_start"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Academic calendar event",
+            "tier": 2,
+            "title": "Academic Event",
+            "x-group": "demand",
+            "x-label": "Academic event"
+          },
+          "aft_11_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting about 11:00 AM",
+            "tier": 2,
+            "title": "Aft 11 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "11:00 AM start"
+          },
+          "aft_13_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting about 1:00 PM",
+            "tier": 2,
+            "title": "Aft 13 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "1:00 PM start"
+          },
+          "aft_15_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staff starting at the regular afternoon start (3:00 PM)",
+            "tier": 2,
+            "title": "Aft 15 Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "3:00 PM start"
+          },
+          "carryover_backlog_estimate": {
+            "anyOf": [
+              {
+                "maximum": 2.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Work waiting at 7:00 AM (0 light, 1 normal, 2 heavy)",
+            "tier": 2,
+            "title": "Carryover Backlog Estimate",
+            "unit": "scale 0-2",
+            "x-group": "carryover",
+            "x-label": "Backlog at 7:00 AM"
+          },
+          "is_holiday": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Holiday or school closed",
+            "tier": 2,
+            "title": "Is Holiday",
+            "x-group": "demand",
+            "x-label": "Holiday or school closed"
+          },
+          "mf_cases": {
+            "anyOf": [
+              {
+                "maximum": 80.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Maxillofacial surgery cases scheduled",
+            "tier": 2,
+            "title": "Mf Cases",
+            "unit": "cases",
+            "x-group": "demand",
+            "x-label": "MF cases"
+          },
+          "morning_staff_present": {
+            "description": "Dental Central Sterile staff present for the morning operation",
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "tier": 1,
+            "title": "Morning Staff Present",
+            "type": "integer",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "7:00 AM staff"
+          },
+          "ot_available_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Morning staff who agreed to stay for overtime",
+            "tier": 2,
+            "title": "Ot Available Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "Staff willing to stay for overtime"
+          },
+          "outside_support_staff": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Outside-department helpers (until about 8 PM)",
+            "tier": 2,
+            "title": "Outside Support Staff",
+            "unit": "people",
+            "x-group": "staffing",
+            "x-label": "Outside support"
+          },
+          "regular_patients": {
+            "description": "Scheduled regular patients (emergency and intake excluded)",
+            "maximum": 800.0,
+            "minimum": 0.0,
+            "tier": 1,
+            "title": "Regular Patients",
+            "type": "integer",
+            "unit": "patients",
+            "x-group": "demand",
+            "x-label": "Regular patients"
+          },
+          "sterilizers_up": {
+            "anyOf": [
+              {
+                "maximum": 10.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sterilizers working at 7:00 AM",
+            "tier": 2,
+            "title": "Sterilizers Up",
+            "unit": "machines",
+            "x-group": "equipment",
+            "x-label": "Sterilizers working"
+          },
+          "student_clinic_sessions": {
+            "anyOf": [
+              {
+                "maximum": 40.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Scheduled student clinic sessions",
+            "tier": 2,
+            "title": "Student Clinic Sessions",
+            "unit": "sessions",
+            "x-group": "demand",
+            "x-label": "Student clinic sessions"
+          },
+          "washers_up": {
+            "anyOf": [
+              {
+                "maximum": 10.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Washer-disinfectors working at 7:00 AM",
+            "tier": 2,
+            "title": "Washers Up",
+            "unit": "machines",
+            "x-group": "equipment",
+            "x-label": "Washers working"
+          }
+        },
+        "required": [
+          "regular_patients",
+          "morning_staff_present"
+        ],
+        "title": "ShiftPlanIn",
         "type": "object"
       },
       "ShiftPlanValues": {
@@ -2524,6 +3453,501 @@
         "summary": "Apply Scenario",
         "tags": [
           "scenarios"
+        ]
+      }
+    },
+    "/v1/shifts": {
+      "get": {
+        "description": "Newest first, each row with the forecast for its date (p10/p50/p90) when one exists.",
+        "operationId": "list_shifts_v1_shifts_get",
+        "parameters": [
+          {
+            "description": "Department the shift belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the shift belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "draft",
+                    "submitted",
+                    "approved"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "List Shifts",
+        "tags": [
+          "shifts"
+        ]
+      },
+      "post": {
+        "description": "A draft for a date on or before today (409 actual-exists if the date is logged). With\n`plan`, supervisors backfill a real past day: a final plan is created too.",
+        "operationId": "log_shift_v1_shifts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShiftCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Log Shift",
+        "tags": [
+          "shifts"
+        ]
+      }
+    },
+    "/v1/shifts/export": {
+      "get": {
+        "description": "CSV export: needs a two-factor check in the last 5 minutes, and is audited.",
+        "operationId": "export_shifts_v1_shifts_export_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "From",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "To",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department the shift belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the shift belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/csv": {}
+            },
+            "description": "CSV of the date range"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Export Shifts",
+        "tags": [
+          "shifts"
+        ]
+      }
+    },
+    "/v1/shifts/{shift_id}": {
+      "get": {
+        "description": "One row; department admins also get its audit trail.",
+        "operationId": "get_shift_v1_shifts__shift_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shift_id",
+            "required": true,
+            "schema": {
+              "title": "Shift Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department the shift belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the shift belongs to",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Get Shift",
+        "tags": [
+          "shifts"
+        ]
+      },
+      "patch": {
+        "description": "The author edits while draft or submitted; supervisors edit any row not approved.",
+        "operationId": "edit_shift_v1_shifts__shift_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shift_id",
+            "required": true,
+            "schema": {
+              "title": "Shift Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShiftPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Edit Shift",
+        "tags": [
+          "shifts"
+        ]
+      }
+    },
+    "/v1/shifts/{shift_id}/approve": {
+      "post": {
+        "description": "Supervisors and department admins approve a submitted row; it is then locked.",
+        "operationId": "approve_shift_v1_shifts__shift_id__approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shift_id",
+            "required": true,
+            "schema": {
+              "title": "Shift Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepartmentIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Approve Shift",
+        "tags": [
+          "shifts"
+        ]
+      }
+    },
+    "/v1/shifts/{shift_id}/reopen": {
+      "post": {
+        "description": "Department admins only. The reason is stored on the row, so the audit row keeps it.",
+        "operationId": "reopen_shift_v1_shifts__shift_id__reopen_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shift_id",
+            "required": true,
+            "schema": {
+              "title": "Shift Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReopenIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Reopen Shift",
+        "tags": [
+          "shifts"
+        ]
+      }
+    },
+    "/v1/shifts/{shift_id}/submit": {
+      "post": {
+        "operationId": "submit_shift_v1_shifts__shift_id__submit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shift_id",
+            "required": true,
+            "schema": {
+              "title": "Shift Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepartmentIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Submit Shift",
+        "tags": [
+          "shifts"
         ]
       }
     }
