@@ -39,6 +39,7 @@ from sg_ml.models import (
     jitter_target,
     random_forest,
 )
+from sg_ml.scenarios import staffing_support
 
 HOLDOUT_SHARE = 0.2
 CV_SPLITS = 5
@@ -242,6 +243,7 @@ def train(
         "rule_baseline": {"a": rule.a_, "b": rule.b_},
         "shap_global": shap_global,
         "shap_direction": shap_direction,
+        "staffing_support": staffing_support(F[tr]),
     }
     artifact: dict[str, Any] = {
         "pipeline_p10": quantiles.pipelines[0.1],
@@ -258,6 +260,8 @@ def train(
         "seed": seed,
         "dataset_ids": run["dataset_ids"],
         "explainer_background": background_sample(X[tr], seed),
+        # Lever ranges seen in training: scenarios outside them are low confidence (SG-19).
+        "staffing_support": staffing_support(F[tr]),
     }
     holdout = pd.DataFrame(
         {

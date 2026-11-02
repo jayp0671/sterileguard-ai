@@ -63,6 +63,9 @@ values ('40000000-0000-4000-8000-0000000000d3', '40000000-0000-4000-8000-0000000
         '40000000-0000-4000-8000-0000000000f1', 'mx-v', 'full', 1, 2, 3, 'manual', '40000000-0000-4000-8000-0000000000a2');
 insert into public.forecast_drivers (forecast_id, rank, feature, value, contribution_hours, text_key, default_text)
 values ('40000000-0000-4000-8000-0000000000d3', 1, 'regular_patients', '300', 1.2, 'drivers.regular_patients.pos', 'x');
+insert into public.scenarios (id, department_id, target_date, forecast_id, model_version, request, result, created_by)
+values ('40000000-0000-4000-8000-0000000000d5', '40000000-0000-4000-8000-00000000000a', '2026-11-02',
+        '40000000-0000-4000-8000-0000000000d3', 'mx-v', '{}', '{"options": []}', '40000000-0000-4000-8000-0000000000a2');
 
 -- ---------------------------------------------------------------------------
 -- Actors and rules
@@ -206,6 +209,18 @@ insert into rules values
   ('forecast_drivers', 'update', $q$with t as (update public.forecast_drivers set default_text = 'y' where forecast_id = '40000000-0000-4000-8000-0000000000d3' returning 1) select count(*) from t$q$,
    array[]::text[]),
   ('forecast_drivers', 'delete', $q$with t as (delete from public.forecast_drivers where forecast_id = '40000000-0000-4000-8000-0000000000d3' returning 1) select count(*) from t$q$,
+   array[]::text[],
+  -- scenarios (SG-19): members read; supervisors and dept admins run and apply; only the
+  -- applied_* columns can change, and runs are never deleted
+  ('scenarios', 'select', $q$select count(*) from public.scenarios where id = '40000000-0000-4000-8000-0000000000d5'$q$,
+   array['tech_a','sup_a','admin_a','steward_a','platform']),
+  ('scenarios', 'insert', $q$with t as (insert into public.scenarios (department_id, target_date, model_version, request, result, created_by) values ('40000000-0000-4000-8000-00000000000a', '2026-11-03', 'v', '{}', '{}', (select auth.uid())) returning 1) select count(*) from t$q$,
+   array['sup_a','admin_a']),
+  ('scenarios', 'update', $q$with t as (update public.scenarios set applied = true, applied_option_id = 'm+1', applied_at = now(), applied_by = (select auth.uid()) where id = '40000000-0000-4000-8000-0000000000d5' returning 1) select count(*) from t$q$,
+   array['sup_a','admin_a']),
+  ('scenarios', 'update result', $q$with t as (update public.scenarios set result = '{"options": [1]}' where id = '40000000-0000-4000-8000-0000000000d5' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('scenarios', 'delete', $q$with t as (delete from public.scenarios where id = '40000000-0000-4000-8000-0000000000d5' returning 1) select count(*) from t$q$,
    array[]::text[]);
 
 create temp table matrix as
@@ -272,7 +287,11 @@ insert into audited values
   ('forecasts',
    $q$insert into public.forecasts (id, department_id, target_date, model_version, feature_set, trigger) values ('40000000-0000-4000-8000-0000000000d4', '40000000-0000-4000-8000-00000000000a', '2026-11-05', 'v', 'full', 'manual')$q$,
    $q$update public.forecasts set ot_p50 = 1 where id = '40000000-0000-4000-8000-0000000000d4'$q$,
-   $q$delete from public.forecasts where id = '40000000-0000-4000-8000-0000000000d4'$q$);
+   $q$delete from public.forecasts where id = '40000000-0000-4000-8000-0000000000d4'$q$),
+  ('scenarios',
+   $q$insert into public.scenarios (id, department_id, target_date, model_version, request, result) values ('40000000-0000-4000-8000-0000000000d6', '40000000-0000-4000-8000-00000000000a', '2026-11-05', 'v', '{}', '{}')$q$,
+   $q$update public.scenarios set applied = true, applied_option_id = 'm+1' where id = '40000000-0000-4000-8000-0000000000d6'$q$,
+   $q$delete from public.scenarios where id = '40000000-0000-4000-8000-0000000000d6'$q$);
 
 -- One audit row per change, with the right before/after shape.
 create function pg_temp.sgt_audit_delta(stmt text, tbl text, act text)
