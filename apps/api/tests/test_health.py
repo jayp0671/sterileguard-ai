@@ -128,3 +128,14 @@ def test_cors_allows_vercel_previews_by_pattern() -> None:
         assert allowed("https://sterileguard-staging.vercel.app")
         assert allowed("https://sterileguard-ai-git-sg-16-team.vercel.app")
         assert allowed("https://evil.example.com") is None
+
+
+def test_real_token_verifier_is_built_from_settings() -> None:
+    """The production dependency (not overridden as in other tests) must not crash: Settings is
+    unhashable, and an lru_cache keyed on it made every /v1 request a 500 on staging."""
+    from sg_api.core import auth
+
+    settings = Settings(env="test", supabase_url="http://db.invalid:54321")
+    first = auth.get_verifier(settings)
+    assert first is auth.get_verifier(settings)
+    assert first.issuer == "http://db.invalid:54321/auth/v1"

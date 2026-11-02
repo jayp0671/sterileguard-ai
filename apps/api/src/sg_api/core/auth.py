@@ -76,13 +76,14 @@ class TokenVerifier:
         )
 
 
+# Settings is not hashable, so the verifier (and its JWKS cache) is kept per issuer and JWKS URL.
 @lru_cache
-def _verifier(settings: Settings) -> TokenVerifier:
-    return TokenVerifier(settings)
+def _verifier(supabase_url: str, jwks_url: str) -> TokenVerifier:
+    return TokenVerifier(Settings(supabase_url=supabase_url, supabase_jwks_url=jwks_url))
 
 
 def get_verifier(settings: Settings = Depends(get_settings)) -> TokenVerifier:
-    return _verifier(settings)
+    return _verifier(settings.supabase_url, settings.supabase_jwks_url)
 
 
 def bearer_token(request: Request) -> str | None:
