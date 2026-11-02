@@ -209,7 +209,7 @@ insert into rules values
   ('forecast_drivers', 'update', $q$with t as (update public.forecast_drivers set default_text = 'y' where forecast_id = '40000000-0000-4000-8000-0000000000d3' returning 1) select count(*) from t$q$,
    array[]::text[]),
   ('forecast_drivers', 'delete', $q$with t as (delete from public.forecast_drivers where forecast_id = '40000000-0000-4000-8000-0000000000d3' returning 1) select count(*) from t$q$,
-   array[]::text[],
+   array[]::text[]),
   -- scenarios (SG-19): members read; supervisors and dept admins run and apply; only the
   -- applied_* columns can change, and runs are never deleted
   ('scenarios', 'select', $q$select count(*) from public.scenarios where id = '40000000-0000-4000-8000-0000000000d5'$q$,
