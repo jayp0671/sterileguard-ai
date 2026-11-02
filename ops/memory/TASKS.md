@@ -26,7 +26,7 @@ Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm vi
 | SG-16 | Staging deployment, keep-alive, demo seed | Jay, Leo | done; web on Vercel, API on Render (ADR-0007); shared demo users not created | #12, #15-#19 |
 | SG-17 | ML activation gates and first E2E journeys | Carlos | gates done; E2E specs written, never run (need demo users + E2E_* secrets) | #11 |
 | SG-18 | Midterm presentation and live demo (moved to Nov 8, video) | All | deck updated, live demo works; placeholders, narrated video and Canvas are the team's | #14 |
-| SG-19 | Staffing scenario engine, API, Scenarios page | Leo, Jay | to do | |
+| SG-19 | Staffing scenario engine, API, Scenarios page | Leo, Jay | done; staging migrated (0009); ADR-0008 needs Leo; screenshots need a signed-in supervisor | #21 |
 | SG-20 | Shift actuals: API, Log a shift, history, approvals, backfill | Jay | to do | |
 | SG-21 | Import pipeline v1 and PHI guard | Leo | to do | |
 | SG-22 | Tests: messy fixtures, import and PHI tests, contract fuzzing | Carlos | to do | |

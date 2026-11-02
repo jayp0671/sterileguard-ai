@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm video due Nov 8
-- Branch: chore/sprint-3-close
-- Latest migration: 0008_forecasts.sql
+- Branch: sg-20/shift-actuals
+- Latest migration: 0010_shift_reopen.sql
 - Active model: 20261026-0105-de605a9 (full, staging; gates passed; run 20261026-002617-full-s42)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Sprint 4 (Nov 2-8): SG-19 scenarios (main innovation; migration 0009, ticket says 0008), SG-20 shift actuals, SG-21 import + PHI guard (migration 0010, ticket says 0009), SG-22 tests. Also: shared demo users (sg demo seed-demo, Jay runs it) to run SG-17 E2E and record the live walkthrough; midterm video due Nov 8 (team narrates; Leo's calibration plot, Carlos's last name in the deck)
+- Next up (from handoff): SG-20 shift actuals (PR next), then SG-21 imports (migration 0011), SG-22. Screenshots of the live Scenarios page for the PR and the midterm deck need a signed-in supervisor (Jay)
 
 ## Tickets
 
@@ -30,35 +30,34 @@
 - SG-16 done; web on Vercel, API on Render (ADR-0007); shared demo users not created: Staging deployment, keep-alive, demo seed
 - SG-17 gates done; E2E specs written, never run (need demo users + E2E_* secrets): ML activation gates and first E2E journeys
 - SG-18 deck updated, live demo works; placeholders, narrated video and Canvas are the team's: Midterm presentation and live demo (moved to Nov 8, video)
-- SG-19 to do: Staffing scenario engine, API, Scenarios page
+- SG-19 done; staging migrated (0009); ADR-0008 needs Leo; screenshots need a signed-in supervisor: Staffing scenario engine, API, Scenarios page
 - SG-20 to do: Shift actuals: API, Log a shift, history, approvals, backfill
 - SG-21 to do: Import pipeline v1 and PHI guard
 - SG-22 to do: Tests: messy fixtures, import and PHI tests, contract fuzzing
 
 ## Tests
 
-- affected-python: 82 passed, 0 failed, 0 skipped (7b1589d)
-- db-staging: 537 passed, 0 failed, 0 skipped (fc77580)
-- python: 226 passed, 0 failed, 0 skipped (de605a9)
+- affected-python: 171 passed, 0 failed, 0 skipped (b680b50)
+- db-staging: 589 passed, 0 failed, 0 skipped (c4ac54f)
 
 ## Deployed URLs
 
 - Staging web: https://sterileguard-ai.vercel.app (Vercel Hobby, Root Directory apps/web; every push to main deploys; PRs get previews)
 - Staging API: https://sterileguard-api.onrender.com (Render free web service from render.yaml, deploys from main after CI passes; sleeps after 15 idle minutes, about 1 minute to wake)
-- Staging database: Supabase project sterileguard-ai (ref hhmrrvgvrjyrwvrrolzv), migrations through 0008
+- Staging database: Supabase project sterileguard-ai (ref hhmrrvgvrjyrwvrrolzv), migrations through 0010 (0009 scenarios, 0010 shift reopen)
 - Keep-alive: .github/workflows/keepalive.yml every 6 hours (API /health and one Supabase query)
 - Demo login: Jay's own account is supervisor of Dental Central Sterile (dental-cs); no shared demo users or E2E_* secrets yet
 - Production: not created (SG-34)
 
 ## Last 10 commits
 
-- c48187a jayp0671: chore(db): demo department defaults to 4 student clinic sessions [SG-16]
-- d2e52c6 jayp0671: fix(web): drop the Model performance link until that page exists [SG-15]
+- 39ad707 jayp0671: feat(web): Log a shift form with autosaved drafts and the shift history with approvals [SG-20]
+- c4ac54f jayp0671: feat(api,db): shift actuals API with approvals, reopen, backfill and the notes guard [SG-20]
+- ca6dcdc Jay Patel: [SG-19] Staffing scenario engine, API and Scenarios page (#21)
+- 134bba8 Jay Patel: chore: close Sprint 3 (memory, ENVIRONMENTS.md, demo polish) (#20)
 - f3727e4 Jay Patel: chore(db): demo department defaults to 2 staff willing to stay [SG-16] (#19)
 - bc4ef12 Jay Patel: fix(api): token verifier cache crashed every authenticated request [SG-04] (#18)
 - c189ae9 Jay Patel: fix(web): always build on Vercel; drop the ignored build step [SG-16] (#17)
 - d327f83 Jay Patel: fix(web): Vercel skips a build only when nothing changed since the last successful deploy [SG-16] (#16)
 - 110174e Jay Patel: [SG-16] Deploy staging: API on Render (free), sg deploy staging for Vercel and GitHub (#15)
 - ee0cf9f Jay Patel: chore: midterm materials in repo memory and the demo runbook [SG-18] (#14)
-- 90907f6 Jay Patel: fix(web): staffing timeline hour labels no longer overlap [SG-15] (#13)
-- ee0f405 Jay Patel: feat(deploy,demo): staging deployment pipeline, keep-alive and the demo organization seed [SG-16] (#12)
