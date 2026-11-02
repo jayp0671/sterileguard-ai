@@ -65,6 +65,15 @@ def last_handoff_next(handoff_md: str) -> str:
     return nexts[-1].strip() if nexts else "see handoff.md"
 
 
+def environment_lines(mem: Path) -> list[str]:
+    """The top-level bullets of ENVIRONMENTS.md (committed, so every machine sees the same)."""
+    path = mem / "ENVIRONMENTS.md"
+    if not path.exists():
+        return []
+    body = path.read_text("utf-8").split("\n## ", 1)[0]
+    return [ln.rstrip() for ln in body.splitlines() if ln.startswith("- ")]
+
+
 def build_state(root: Path) -> str:
     mem = root / "ops" / "memory"
     tasks = (mem / "TASKS.md").read_text("utf-8") if (mem / "TASKS.md").exists() else ""
@@ -73,12 +82,15 @@ def build_state(root: Path) -> str:
     log = _git(root, "log", "-10", "--format=%h|%an|%s")
     out = [STATE_HEADER, "", "# STATE", "", f"- Current sprint: {current_sprint(tasks)}"]
     out += [f"- Branch: {branch}", f"- Latest migration: {latest_migration(root)}"]
-    out += ["- Active model: none yet (SG-14)", "- Last autofix: none yet (SG-30)"]
+    env_lines = environment_lines(mem)
+    model = next((ln for ln in env_lines if ln.startswith("- Active model:")), None)
+    out += [model or "- Active model: none yet (SG-14)", "- Last autofix: none yet (SG-30)"]
     out += [f"- Next up (from handoff): {last_handoff_next(handoff)}", "", "## Tickets", ""]
     rows = task_rows(tasks)
     out += [f"- {r[0]} {r[3] if len(r) > 3 else ''}: {r[1]}" for r in rows] or ["- none"]
     out += ["", "## Tests", "", *test_summary(root), "", "## Deployed URLs", ""]
-    urls = [f"- {v}: {core.env_value(v)}" for v in URL_VARS if core.env_value(v)]
+    urls = [ln for ln in env_lines if not ln.startswith("- Active model:")]
+    urls += [f"- {v}: {core.env_value(v)}" for v in URL_VARS if core.env_value(v)]
     out += urls or ["- none deployed yet"]
     out += ["", "## Last 10 commits", ""]
     commits = [line.split("|", 2) for line in log.splitlines() if line.count("|") >= 2]

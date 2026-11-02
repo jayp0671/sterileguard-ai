@@ -33,6 +33,7 @@ values (
     "sterilizers": 2,
     "mf_cases_default": 20,
     "ot_available_default": 2,
+    "student_clinic_sessions_default": 4,
     "burden_thresholds": null,
     "alert_threshold_hours": null,
     "retention_days_drafts": 90

@@ -1,7 +1,6 @@
 "use client";
 
 import { HelpCircle } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { type Driver, DriverList } from "@/components/driver-list";
 import { Button } from "@/components/ui/button";
@@ -73,9 +72,6 @@ export function WhyDrawer() {
             These are explanations of the model, not causes: the model learned them from simulated
             days and checks them against real days as they are logged.
           </p>
-          <Link href="/app/model" className="font-medium text-primary underline">
-            Model performance
-          </Link>
         </div>
       </SheetContent>
     </Sheet>
