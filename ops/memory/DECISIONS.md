@@ -11,3 +11,5 @@ Index of architecture decision records in `docs/adr/`. Create one with `sg memor
 | 0005 | [Forecast range and central estimate](../../docs/adr/0005-forecast-range-and-central-estimate.md) | proposed |
 | 0006 | [SHAP explainer and the staffing direction check](../../docs/adr/0006-shap-explainer-and-direction-check.md) | proposed |
 | 0007 | [Host the API on Render instead of a Hugging Face Space](../../docs/adr/0007-api-host-render.md) | accepted |
+| 0008 | [Staffing scenario engine: support check, volunteer what-ifs, apply](../../docs/adr/0008-scenario-engine-rules.md) | proposed |
+| 0009 | [Import pipeline v1 and the PHI guard](../../docs/adr/0009-import-pipeline-and-phi-guard.md) | proposed |
