@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm video due Nov 8
-- Branch: sg-22/import-contract-tests
+- Branch: chore/sprint-4-close
 - Latest migration: 0011_imports.sql
 - Active model: 20261026-0105-de605a9 (full, staging; gates passed; run 20261026-002617-full-s42)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Sprint 4 close; SG-17 E2E once demo users exist
+- Next up (from handoff): Sprint 5 (Nov 9-15): SG-23 NIM agents, SG-24 imports UI and model performance (needs a steward commit function, ADR-0009), SG-25 admin and Trust Center, SG-26 role journeys. Before Nov 8: Jay runs sg demo seed-demo --env staging, then the agent runs SG-17 E2E, adds E2E_* secrets, takes Scenarios screenshots for the PRs and the deck slide
 
 ## Tickets
 
@@ -37,7 +37,7 @@
 
 ## Tests
 
-- affected-python: 326 passed, 2 failed, 2 skipped (f00d863)
+- affected-python: 353 passed, 0 failed, 2 skipped (5d299ab)
 - db-staging: 659 passed, 0 failed, 0 skipped (172bff7)
 
 ## Deployed URLs
@@ -51,6 +51,9 @@
 
 ## Last 10 commits
 
+- e05b931 jayp0671: chore(memory): Sprint 4 close: ADR-0008 and 0009 in the decision log, TASKS PR links
+- 5d299ab jayp0671: test(data): fixtures stable across OSes; Biome skips generated fixtures [SG-22]
+- bc36f1c jayp0671: test(data,api): messy import fixtures, contract fuzzing, DB type drift check [SG-22]
 - d5adc7a jayp0671: wip(data): messy fixture generator, fixture tests, db types drift check [SG-22]
 - 6cfff7c Jay Patel: [SG-21] Import pipeline v1 and PHI guard (#23)
 - ca0ba7a Jay Patel: [SG-20] Shift actuals: API, Log a shift, history, approvals, backfill (#22)
@@ -58,6 +61,3 @@
 - 134bba8 Jay Patel: chore: close Sprint 3 (memory, ENVIRONMENTS.md, demo polish) (#20)
 - f3727e4 Jay Patel: chore(db): demo department defaults to 2 staff willing to stay [SG-16] (#19)
 - bc4ef12 Jay Patel: fix(api): token verifier cache crashed every authenticated request [SG-04] (#18)
-- c189ae9 Jay Patel: fix(web): always build on Vercel; drop the ignored build step [SG-16] (#17)
-- d327f83 Jay Patel: fix(web): Vercel skips a build only when nothing changed since the last successful deploy [SG-16] (#16)
-- 110174e Jay Patel: [SG-16] Deploy staging: API on Render (free), sg deploy staging for Vercel and GitHub (#15)
