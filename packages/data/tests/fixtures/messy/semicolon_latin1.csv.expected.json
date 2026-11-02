@@ -1,0 +1,49 @@
+{
+  "file": "semicolon_latin1.csv",
+  "kind": "exact",
+  "options": {},
+  "mapping": {
+    "Date": "date",
+    "Patients": "regular_patients",
+    "Staff present": "morning_staff_present",
+    "Overtime": "ot_labor_hours",
+    "Notes": "notes"
+  },
+  "valid_rows": 6,
+  "rows": [
+    {
+      "date": "2026-10-12",
+      "regular_patients": 332,
+      "ot_labor_hours": 6
+    },
+    {
+      "date": "2026-10-13",
+      "regular_patients": 268,
+      "ot_labor_hours": 4.75
+    },
+    {
+      "date": "2026-10-14",
+      "regular_patients": 379,
+      "ot_labor_hours": 0
+    },
+    {
+      "date": "2026-10-15",
+      "regular_patients": 357,
+      "ot_labor_hours": 2.25
+    },
+    {
+      "date": "2026-10-16",
+      "regular_patients": 358,
+      "ot_labor_hours": 0.5
+    },
+    {
+      "date": "2026-10-19",
+      "regular_patients": 410,
+      "ot_labor_hours": 6
+    }
+  ],
+  "error_rows": [],
+  "dropped_columns": [],
+  "phi_cells": [],
+  "fake_strings": []
+}

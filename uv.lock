@@ -2301,6 +2301,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "faker" },
     { name = "hypothesis" },
     { name = "ipykernel" },
     { name = "mypy" },
@@ -2321,6 +2322,7 @@ requires-dist = [{ name = "sg-cli", editable = "ops/scripts" }]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "faker", specifier = ">=37" },
     { name = "hypothesis", specifier = ">=6.140" },
     { name = "ipykernel", specifier = ">=7.4.0" },
     { name = "mypy", specifier = ">=1.18" },

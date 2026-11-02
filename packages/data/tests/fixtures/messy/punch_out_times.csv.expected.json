@@ -1,0 +1,44 @@
+{
+  "file": "punch_out_times.csv",
+  "kind": "exact",
+  "options": {},
+  "mapping": {
+    "Date": "date",
+    "Clock out": null,
+    "Patients": "regular_patients",
+    "Staff present": "morning_staff_present"
+  },
+  "valid_rows": 4,
+  "rows": [
+    {
+      "date": "2026-10-12",
+      "regular_patients": 332,
+      "ot_labor_hours": 6.5
+    },
+    {
+      "date": "2026-10-13",
+      "regular_patients": 268,
+      "ot_labor_hours": 5.5
+    },
+    {
+      "date": "2026-10-14",
+      "regular_patients": 379,
+      "ot_labor_hours": 9.0
+    },
+    {
+      "date": "2026-10-15",
+      "regular_patients": 357,
+      "ot_labor_hours": 10.5
+    }
+  ],
+  "error_rows": [],
+  "dropped_columns": [
+    "Employee"
+  ],
+  "phi_cells": [],
+  "fake_strings": [
+    "Mario Hernandez",
+    "Debra Jones",
+    "Amanda Diaz"
+  ]
+}

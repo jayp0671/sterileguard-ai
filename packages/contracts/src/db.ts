@@ -1,3 +1,4 @@
+
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
@@ -38,14 +39,14 @@ export type Database = {
                   ]
                 },"datasets": {
                   Row: {
-                    "config_hash": string | null,"content_hash": string,"created_at": string,"created_by": string | null,"department_id": string,"id": string,"name": string,"row_count": number,"seed": number | null,"source": string
+                    "config_hash": string | null,"content_hash": string,"created_at": string,"created_by": string | null,"department_id": string,"id": string,"import_job_id": string | null,"name": string,"row_count": number,"seed": number | null,"source": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "config_hash"?: string | null,"content_hash": string,"created_at"?: string,"created_by"?: string | null,"department_id": string,"id"?: string,"name": string,"row_count": number,"seed"?: number | null,"source": string
+                    "config_hash"?: string | null,"content_hash": string,"created_at"?: string,"created_by"?: string | null,"department_id": string,"id"?: string,"import_job_id"?: string | null,"name": string,"row_count": number,"seed"?: number | null,"source": string
                   }
                   Update: {
-                    "config_hash"?: string | null,"content_hash"?: string,"created_at"?: string,"created_by"?: string | null,"department_id"?: string,"id"?: string,"name"?: string,"row_count"?: number,"seed"?: number | null,"source"?: string
+                    "config_hash"?: string | null,"content_hash"?: string,"created_at"?: string,"created_by"?: string | null,"department_id"?: string,"id"?: string,"import_job_id"?: string | null,"name"?: string,"row_count"?: number,"seed"?: number | null,"source"?: string
                   }
                   Relationships: [
                     {
@@ -53,6 +54,12 @@ export type Database = {
       columns: ["department_id"]
 isOneToOne: false
       referencedRelation: "departments"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "datasets_import_job_id_fkey"
+      columns: ["import_job_id"]
+isOneToOne: false
+      referencedRelation: "import_jobs"
       referencedColumns: ["id"]
     }
                   ]
@@ -96,6 +103,86 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"forecast_drivers": {
+                  Row: {
+                    "contribution_hours": number,"default_text": string,"feature": string,"forecast_id": string,"rank": number,"text_key": string,"text_params": NonNullable<Json>,"value": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "contribution_hours": number,"default_text": string,"feature": string,"forecast_id": string,"rank": number,"text_key": string,"text_params"?: NonNullable<Json>,"value"?: string | null
+                  }
+                  Update: {
+                    "contribution_hours"?: number,"default_text"?: string,"feature"?: string,"forecast_id"?: string,"rank"?: number,"text_key"?: string,"text_params"?: NonNullable<Json>,"value"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "forecast_drivers_forecast_id_fkey"
+      columns: ["forecast_id"]
+isOneToOne: false
+      referencedRelation: "forecasts"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"forecasts": {
+                  Row: {
+                    "burden_class": string | null,"burden_probs": Json | null,"created_at": string,"created_by": string | null,"department_id": string,"feature_set": string,"id": string,"model_version": string,"ot_p10": number | null,"ot_p50": number | null,"ot_p90": number | null,"plan_id": string | null,"target_date": string,"thresholds": Json | null,"trigger": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "burden_class"?: string | null,"burden_probs"?: Json | null,"created_at"?: string,"created_by"?: string | null,"department_id": string,"feature_set": string,"id"?: string,"model_version": string,"ot_p10"?: number | null,"ot_p50"?: number | null,"ot_p90"?: number | null,"plan_id"?: string | null,"target_date": string,"thresholds"?: Json | null,"trigger": string
+                  }
+                  Update: {
+                    "burden_class"?: string | null,"burden_probs"?: Json | null,"created_at"?: string,"created_by"?: string | null,"department_id"?: string,"feature_set"?: string,"id"?: string,"model_version"?: string,"ot_p10"?: number | null,"ot_p50"?: number | null,"ot_p90"?: number | null,"plan_id"?: string | null,"target_date"?: string,"thresholds"?: Json | null,"trigger"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "forecasts_department_id_fkey"
+      columns: ["department_id"]
+isOneToOne: false
+      referencedRelation: "departments"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "forecasts_plan_id_fkey"
+      columns: ["plan_id"]
+isOneToOne: false
+      referencedRelation: "shift_plans"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"idempotency_keys": {
+                  Row: {
+                    "body_hash": string,"created_at": string,"key": string,"method": string,"path": string,"response": NonNullable<Json>,"status": number,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body_hash": string,"created_at"?: string,"key": string,"method": string,"path": string,"response": NonNullable<Json>,"status": number,"user_id": string
+                  }
+                  Update: {
+                    "body_hash"?: string,"created_at"?: string,"key"?: string,"method"?: string,"path"?: string,"response"?: NonNullable<Json>,"status"?: number,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"import_jobs": {
+                  Row: {
+                    "approved_by": string | null,"content_hash": string,"created_at": string,"created_by": string | null,"department_id": string,"id": string,"mapping": Json | null,"original_filename": string,"parse_report": Json | null,"phi_findings": Json | null,"rows_committed": number | null,"status": string,"storage_path": string | null,"updated_at": string,"validation_report": Json | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "approved_by"?: string | null,"content_hash": string,"created_at"?: string,"created_by"?: string | null,"department_id": string,"id"?: string,"mapping"?: Json | null,"original_filename": string,"parse_report"?: Json | null,"phi_findings"?: Json | null,"rows_committed"?: number | null,"status"?: string,"storage_path"?: string | null,"updated_at"?: string,"validation_report"?: Json | null
+                  }
+                  Update: {
+                    "approved_by"?: string | null,"content_hash"?: string,"created_at"?: string,"created_by"?: string | null,"department_id"?: string,"id"?: string,"mapping"?: Json | null,"original_filename"?: string,"parse_report"?: Json | null,"phi_findings"?: Json | null,"rows_committed"?: number | null,"status"?: string,"storage_path"?: string | null,"updated_at"?: string,"validation_report"?: Json | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "import_jobs_department_id_fkey"
+      columns: ["department_id"]
+isOneToOne: false
+      referencedRelation: "departments"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"invites": {
                   Row: {
                     "accepted_at": string | null,"created_at": string,"department_id": string,"email": string,"expires_at": string,"id": string,"invited_by": string,"revoked_at": string | null,"role": Database["public"]['Enums']["app_role"]
@@ -110,6 +197,26 @@ isOneToOne: false
                   Relationships: [
                     {
       foreignKeyName: "invites_department_id_fkey"
+      columns: ["department_id"]
+isOneToOne: false
+      referencedRelation: "departments"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"mapping_templates": {
+                  Row: {
+                    "column_signature": string,"created_at": string,"created_by": string | null,"department_id": string,"id": string,"mapping": NonNullable<Json>
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "column_signature": string,"created_at"?: string,"created_by"?: string | null,"department_id": string,"id"?: string,"mapping": NonNullable<Json>
+                  }
+                  Update: {
+                    "column_signature"?: string,"created_at"?: string,"created_by"?: string | null,"department_id"?: string,"id"?: string,"mapping"?: NonNullable<Json>
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "mapping_templates_department_id_fkey"
       columns: ["department_id"]
 isOneToOne: false
       referencedRelation: "departments"
@@ -135,6 +242,20 @@ isOneToOne: false
       referencedRelation: "departments"
       referencedColumns: ["id"]
     }
+                  ]
+                },"model_versions": {
+                  Row: {
+                    "activated_at": string | null,"activated_by": string | null,"artifact_path": string,"card": NonNullable<Json>,"code_sha": string | null,"created_at": string,"data_hash": string | null,"feature_set": string,"gates_passed": boolean,"id": string,"metrics": NonNullable<Json>,"status": string,"training_dataset_ids": (string)[],"version": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "activated_at"?: string | null,"activated_by"?: string | null,"artifact_path": string,"card": NonNullable<Json>,"code_sha"?: string | null,"created_at"?: string,"data_hash"?: string | null,"feature_set": string,"gates_passed"?: boolean,"id"?: string,"metrics": NonNullable<Json>,"status"?: string,"training_dataset_ids": (string)[],"version": string
+                  }
+                  Update: {
+                    "activated_at"?: string | null,"activated_by"?: string | null,"artifact_path"?: string,"card"?: NonNullable<Json>,"code_sha"?: string | null,"created_at"?: string,"data_hash"?: string | null,"feature_set"?: string,"gates_passed"?: boolean,"id"?: string,"metrics"?: NonNullable<Json>,"status"?: string,"training_dataset_ids"?: (string)[],"version"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 },"organizations": {
                   Row: {
@@ -164,16 +285,42 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
-                },"shift_actuals": {
+                },"scenarios": {
                   Row: {
-                    "approved_at": string | null,"approved_by": string | null,"created_at": string,"created_by": string | null,"dataset_id": string | null,"department_id": string,"emergency_intake_patients": number | null,"equipment_downtime_minutes": number | null,"id": string,"notes": string | null,"ot_labor_hours": number,"returned_unused_estimate": number | null,"shift_date": string,"source": string,"status": string,"submitted_by": string | null,"updated_at": string
+                    "applied": boolean,"applied_at": string | null,"applied_by": string | null,"applied_option_id": string | null,"created_at": string,"created_by": string | null,"department_id": string,"forecast_id": string | null,"id": string,"model_version": string,"request": NonNullable<Json>,"result": NonNullable<Json>,"target_date": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "approved_at"?: string | null,"approved_by"?: string | null,"created_at"?: string,"created_by"?: string | null,"dataset_id"?: string | null,"department_id": string,"emergency_intake_patients"?: number | null,"equipment_downtime_minutes"?: number | null,"id"?: string,"notes"?: string | null,"ot_labor_hours": number,"returned_unused_estimate"?: number | null,"shift_date": string,"source": string,"status"?: string,"submitted_by"?: string | null,"updated_at"?: string
+                    "applied"?: boolean,"applied_at"?: string | null,"applied_by"?: string | null,"applied_option_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"department_id": string,"forecast_id"?: string | null,"id"?: string,"model_version": string,"request": NonNullable<Json>,"result": NonNullable<Json>,"target_date": string
                   }
                   Update: {
-                    "approved_at"?: string | null,"approved_by"?: string | null,"created_at"?: string,"created_by"?: string | null,"dataset_id"?: string | null,"department_id"?: string,"emergency_intake_patients"?: number | null,"equipment_downtime_minutes"?: number | null,"id"?: string,"notes"?: string | null,"ot_labor_hours"?: number,"returned_unused_estimate"?: number | null,"shift_date"?: string,"source"?: string,"status"?: string,"submitted_by"?: string | null,"updated_at"?: string
+                    "applied"?: boolean,"applied_at"?: string | null,"applied_by"?: string | null,"applied_option_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"department_id"?: string,"forecast_id"?: string | null,"id"?: string,"model_version"?: string,"request"?: NonNullable<Json>,"result"?: NonNullable<Json>,"target_date"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "scenarios_department_id_fkey"
+      columns: ["department_id"]
+isOneToOne: false
+      referencedRelation: "departments"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "scenarios_forecast_id_fkey"
+      columns: ["forecast_id"]
+isOneToOne: false
+      referencedRelation: "forecasts"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"shift_actuals": {
+                  Row: {
+                    "approved_at": string | null,"approved_by": string | null,"created_at": string,"created_by": string | null,"created_by_role": string | null,"dataset_id": string | null,"department_id": string,"emergency_intake_patients": number | null,"equipment_downtime_minutes": number | null,"id": string,"notes": string | null,"ot_labor_hours": number,"reopen_reason": string | null,"reopened_at": string | null,"reopened_by": string | null,"returned_unused_estimate": number | null,"shift_date": string,"source": string,"status": string,"submitted_by": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "approved_at"?: string | null,"approved_by"?: string | null,"created_at"?: string,"created_by"?: string | null,"created_by_role"?: string | null,"dataset_id"?: string | null,"department_id": string,"emergency_intake_patients"?: number | null,"equipment_downtime_minutes"?: number | null,"id"?: string,"notes"?: string | null,"ot_labor_hours": number,"reopen_reason"?: string | null,"reopened_at"?: string | null,"reopened_by"?: string | null,"returned_unused_estimate"?: number | null,"shift_date": string,"source": string,"status"?: string,"submitted_by"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "approved_at"?: string | null,"approved_by"?: string | null,"created_at"?: string,"created_by"?: string | null,"created_by_role"?: string | null,"dataset_id"?: string | null,"department_id"?: string,"emergency_intake_patients"?: number | null,"equipment_downtime_minutes"?: number | null,"id"?: string,"notes"?: string | null,"ot_labor_hours"?: number,"reopen_reason"?: string | null,"reopened_at"?: string | null,"reopened_by"?: string | null,"returned_unused_estimate"?: number | null,"shift_date"?: string,"source"?: string,"status"?: string,"submitted_by"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -225,6 +372,32 @@ isOneToOne: false
             "accept_pending_invites":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
+"activate_model_version":
+{ Args: { "p_actor": string,"p_version": string }; Returns: {
+              "activated_at": string | null,
+"activated_by": string | null,
+"artifact_path": string,
+"card": NonNullable<Json>,
+"code_sha": string | null,
+"created_at": string,
+"data_hash": string | null,
+"feature_set": string,
+"gates_passed": boolean,
+"id": string,
+"metrics": NonNullable<Json>,
+"status": string,
+"training_dataset_ids": (string)[],
+"version": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "model_versions"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"has_any_role":
+{ Args: { "roles": (Database["public"]['Enums']["app_role"])[] }; Returns: boolean
+                           },
 "has_role":
 { Args: { "dept": string,"roles": (Database["public"]['Enums']["app_role"])[] }; Returns: boolean
                            },
@@ -237,6 +410,32 @@ isOneToOne: false
 "is_platform_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"purge_idempotency_keys":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"rollback_model_version":
+{ Args: { "p_actor": string,"p_feature_set": string }; Returns: {
+              "activated_at": string | null,
+"activated_by": string | null,
+"artifact_path": string,
+"card": NonNullable<Json>,
+"code_sha": string | null,
+"created_at": string,
+"data_hash": string | null,
+"feature_set": string,
+"gates_passed": boolean,
+"id": string,
+"metrics": NonNullable<Json>,
+"status": string,
+"training_dataset_ids": (string)[],
+"version": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "model_versions"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "session_age_seconds":
 { Args: Record<PropertyKey, never>; Returns: number
                            }

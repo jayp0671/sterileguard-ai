@@ -1,0 +1,48 @@
+{
+  "file": "misspelled_headers.csv",
+  "kind": "messy",
+  "options": {},
+  "mapping": {
+    "Date": "date",
+    "Regular patinets": "regular_patients",
+    "Morning staf": "morning_staff_present",
+    "Overtme hours": "ot_labor_hours"
+  },
+  "valid_rows": 6,
+  "rows": [
+    {
+      "date": "2026-10-12",
+      "regular_patients": 332,
+      "ot_labor_hours": 6
+    },
+    {
+      "date": "2026-10-13",
+      "regular_patients": 268,
+      "ot_labor_hours": 4.75
+    },
+    {
+      "date": "2026-10-14",
+      "regular_patients": 379,
+      "ot_labor_hours": 0
+    },
+    {
+      "date": "2026-10-15",
+      "regular_patients": 357,
+      "ot_labor_hours": 2.25
+    },
+    {
+      "date": "2026-10-16",
+      "regular_patients": 358,
+      "ot_labor_hours": 0.5
+    },
+    {
+      "date": "2026-10-19",
+      "regular_patients": 410,
+      "ot_labor_hours": 6
+    }
+  ],
+  "error_rows": [],
+  "dropped_columns": [],
+  "phi_cells": [],
+  "fake_strings": []
+}
