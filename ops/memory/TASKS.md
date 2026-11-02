@@ -29,4 +29,4 @@ Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm vi
 | SG-19 | Staffing scenario engine, API, Scenarios page | Leo, Jay | done; staging migrated (0009); ADR-0008 needs Leo; screenshots need a signed-in supervisor | #21 |
 | SG-20 | Shift actuals: API, Log a shift, history, approvals, backfill | Jay | done; staging migrated (0010); screenshots need a signed-in user | #22 |
 | SG-21 | Import pipeline v1 and PHI guard | Leo | done; staging migrated (0011); ADR-0009 needs Leo | #23 |
-| SG-22 | Tests: messy fixtures, import and PHI tests, contract fuzzing | Carlos | done; contract job nightly | (this PR) |
+| SG-22 | Tests: messy fixtures, import and PHI tests, contract fuzzing | Carlos | done; contract job nightly | #24 |
