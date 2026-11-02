@@ -17,9 +17,9 @@ STUBS: dict[str, tuple[str, str, list[str]]] = {
     ),
     "sim": ("SG-09", "SimPy simulator.", ["run", "calibrate", "scenario-grid", "validate"]),
     "data": (
-        "SG-21",
+        "SG-22",
         "Data import pipeline.",
-        ["import", "profile", "validate", "report", "synth-messy"],
+        ["import", "profile", "report", "synth-messy"],
     ),
     "ml": (
         "SG-13",

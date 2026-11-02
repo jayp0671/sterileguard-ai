@@ -1,50 +1,29 @@
-"""Free-text guard for notes and reasons (SG-20).
+"""Free-text guard for notes and reasons (SG-20, SG-21).
 
-TODO(SG-21): replace with sg_data.phi.guard_text (Presidio plus custom recognizers). Until then
-this rejects the obvious identifier patterns: email addresses, phone numbers, SSN-like numbers
-and long digit runs that look like record or badge IDs. Only entity types are reported: the
-matched text is never echoed, logged or stored.
+Uses sg_data.phi.guard_text: Presidio with spaCy's small English model plus custom recognizers
+for names, emails, phone numbers, SSNs, MRN-like IDs and dates of birth. Only entity types are
+reported: the matched text is never echoed, logged or stored. The analyzer loads once (about
+4 s); the API warms it in the background at startup, and checks run in a worker thread so the
+event loop never waits on spaCy.
 """
 
 from __future__ import annotations
 
-import re
-from dataclasses import dataclass
+import asyncio
 
 from sg_api.core.errors import ApiError
+from sg_data.phi import GuardResult, analyzer, guard_text
 
 PHI_DETECTED = "https://sterileguard.dev/problems/phi-detected"
 
-_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("EMAIL_ADDRESS", re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")),
-    ("US_SSN", re.compile(r"\b\d{3}-\d{2}-\d{4}\b")),
-    (
-        "PHONE_NUMBER",
-        re.compile(r"(?<!\d)(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}(?!\d)"),
-    ),
-    ("ID_NUMBER", re.compile(r"(?<!\d)(?:[A-Za-z]{1,4}[-#:]?\s?)?\d{6,}(?!\d)")),
-)
+__all__ = ["PHI_DETECTED", "GuardResult", "guard_text", "require_clean", "warm"]
 
 
-@dataclass(frozen=True)
-class GuardResult:
-    ok: bool
-    entity_types: list[str]
-
-
-def guard_text(text: str | None) -> GuardResult:
-    if not text:
-        return GuardResult(True, [])
-    found = [name for name, pattern in _PATTERNS if pattern.search(text)]
-    # An SSN or phone number also looks like a long digit run: report the specific type only.
-    if "ID_NUMBER" in found and ({"US_SSN", "PHONE_NUMBER"} & set(found)):
-        found.remove("ID_NUMBER")
-    return GuardResult(not found, found)
-
-
-def require_clean(text: str | None, field: str) -> None:
+async def require_clean(text: str | None, field: str) -> None:
     """422 phi_detected naming the field and entity types, never the text."""
-    result = guard_text(text)
+    if not text or not text.strip():
+        return
+    result = await asyncio.to_thread(guard_text, text)
     if not result.ok:
         raise ApiError(
             422,
@@ -52,3 +31,7 @@ def require_clean(text: str | None, field: str) -> None:
             "Do not enter patient or employee names, contact details or ID numbers.",
             PHI_DETECTED,
         )
+
+
+async def warm() -> None:
+    await asyncio.to_thread(analyzer)

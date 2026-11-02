@@ -37,6 +37,7 @@ class ParseReport:
     delimiter: str | None = None
     sheet: str | None = None
     sheets: list[str] = field(default_factory=list)
+    # Positions after empty rows are dropped.
     header_rows: list[int] = field(default_factory=list)
     rows: int = 0
     columns: int = 0
@@ -144,8 +145,11 @@ def _header_index(rows: list[list[Any]]) -> int:
     """First row where at least half of the non-empty cells are non-numeric strings."""
     for i, r in enumerate(rows):
         present = [v for v in r if v is not None]
-        if len(present) >= 2 and sum(_is_text(v) for v in present) / len(present) >= (
-            HEADER_TEXT_SHARE
+        # A merged title ("Daily log" spread over every column) has one distinct value.
+        distinct = {str(v) for v in present}
+        if (
+            len(distinct) >= 2
+            and sum(_is_text(v) for v in present) / len(present) >= HEADER_TEXT_SHARE
         ):
             return i
     return 0

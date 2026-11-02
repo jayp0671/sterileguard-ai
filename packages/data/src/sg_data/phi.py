@@ -176,7 +176,8 @@ def is_identity_column(header: str, values: pd.Series | None = None) -> bool:
         return True
     present = values.dropna().astype(str).str.strip()
     present = present[present != ""]
-    return bool(len(present)) and bool(pd.to_numeric(present, errors="coerce").isna().any())
+    # Mostly text: a typo in a count column ("three") does not make it an identity column.
+    return bool(len(present)) and bool(pd.to_numeric(present, errors="coerce").isna().mean() > 0.5)
 
 
 def text_columns(df: pd.DataFrame) -> list[str]:
