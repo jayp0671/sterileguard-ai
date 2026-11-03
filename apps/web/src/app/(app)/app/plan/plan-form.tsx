@@ -231,6 +231,9 @@ export function PlanForm({
 
   const finalize = () => {
     if (timer.current) clearTimeout(timer.current);
+    // Finalizing is a new request: reusing the last draft's key with status "final" is a
+    // different body under the same key, which the API refuses (409).
+    keyRef.current = crypto.randomUUID();
     persist("final", values);
   };
 
