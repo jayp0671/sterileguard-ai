@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm video due Nov 8
-- Branch: chore/sprint-4-close
+- Branch: chore/demo-prep-notes
 - Latest migration: 0011_imports.sql
 - Active model: 20261026-0105-de605a9 (full, staging; gates passed; run 20261026-002617-full-s42)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Sprint 5 (Nov 9-15): SG-23 NIM agents, SG-24 imports UI and model performance (needs a steward commit function, ADR-0009), SG-25 admin and Trust Center, SG-26 role journeys. Before Nov 8: Jay runs sg demo seed-demo --env staging, then the agent runs SG-17 E2E, adds E2E_* secrets, takes Scenarios screenshots for the PRs and the deck slide
+- Next up (from handoff): Team records the narrated video (Nov 8). Leo: model barely responds to added staff (ClickUp SG-19 comment). SG-17 E2E stays open: Jay demos with his own login, so no shared test users
 
 ## Tickets
 
@@ -30,14 +30,14 @@
 - SG-16 done; web on Vercel, API on Render (ADR-0007); shared demo users not created: Staging deployment, keep-alive, demo seed
 - SG-17 gates done; E2E specs written, never run (need demo users + E2E_* secrets): ML activation gates and first E2E journeys
 - SG-18 deck updated, live demo works; placeholders, narrated video and Canvas are the team's: Midterm presentation and live demo (moved to Nov 8, video)
-- SG-19 done; staging migrated (0009); ADR-0008 needs Leo; screenshots need a signed-in supervisor: Staffing scenario engine, API, Scenarios page
-- SG-20 done; staging migrated (0010); screenshots need a signed-in user: Shift actuals: API, Log a shift, history, approvals, backfill
+- SG-19 done; staging migrated (0009); ADR-0008 needs Leo; screenshots on the PR; staffing sensitivity finding for Leo: Staffing scenario engine, API, Scenarios page
+- SG-20 done; staging migrated (0010); screenshots on the PR: Shift actuals: API, Log a shift, history, approvals, backfill
 - SG-21 done; staging migrated (0011); ADR-0009 needs Leo: Import pipeline v1 and PHI guard
 - SG-22 done; contract job nightly: Tests: messy fixtures, import and PHI tests, contract fuzzing
 
 ## Tests
 
-- affected-python: 353 passed, 0 failed, 2 skipped (5d299ab)
+- affected-python: 80 passed, 0 failed, 0 skipped (f4d36e0)
 - db-staging: 659 passed, 0 failed, 0 skipped (172bff7)
 
 ## Deployed URLs
@@ -51,13 +51,13 @@
 
 ## Last 10 commits
 
-- e05b931 jayp0671: chore(memory): Sprint 4 close: ADR-0008 and 0009 in the decision log, TASKS PR links
-- 5d299ab jayp0671: test(data): fixtures stable across OSes; Biome skips generated fixtures [SG-22]
-- bc36f1c jayp0671: test(data,api): messy import fixtures, contract fuzzing, DB type drift check [SG-22]
-- d5adc7a jayp0671: wip(data): messy fixture generator, fixture tests, db types drift check [SG-22]
+- 510a20d Jay Patel: docs: Sprint 4 screenshots from staging (#29)
+- eacadc4 Jay Patel: [SG-19] Scenario polish: one-decimal messages, stepper label (#28)
+- 5942855 Jay Patel: [SG-11] Fix: finalizing a plan after an autosave fails with 409 (#27)
+- 666fcce Jay Patel: [SG-04] Fix sign-in landing on /login (404) (#26)
+- 2131660 Jay Patel: chore: close Sprint 4 (memory, decision log, handoff) (#25)
+- 9dd3399 Jay Patel: [SG-22] Tests: messy fixtures, import and PHI tests, contract fuzzing (#24)
 - 6cfff7c Jay Patel: [SG-21] Import pipeline v1 and PHI guard (#23)
 - ca0ba7a Jay Patel: [SG-20] Shift actuals: API, Log a shift, history, approvals, backfill (#22)
 - ca6dcdc Jay Patel: [SG-19] Staffing scenario engine, API and Scenarios page (#21)
 - 134bba8 Jay Patel: chore: close Sprint 3 (memory, ENVIRONMENTS.md, demo polish) (#20)
-- f3727e4 Jay Patel: chore(db): demo department defaults to 2 staff willing to stay [SG-16] (#19)
-- bc4ef12 Jay Patel: fix(api): token verifier cache crashed every authenticated request [SG-04] (#18)
