@@ -72,6 +72,11 @@ describe("safeNext", () => {
     ["https://evil.example", "/app"],
     ["/\\evil", "/app"],
     [null, "/app"],
+    ["/app", "/app"],
+    ["/app/scenarios?d=1", "/app/scenarios?d=1"],
+    ["/login", "/app"],
+    ["/sign-in?next=%2Fapp", "/app"],
+    ["/apple", "/app"],
   ])("safeNext(%s) = %s", (input, expected) => {
     expect(safeNext(input)).toBe(expected);
   });

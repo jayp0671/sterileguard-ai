@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   transpilePackages: ["@sg/contracts"],
+  // People type /login out of habit; the page is /sign-in (the query string is kept).
+  async redirects() {
+    return [
+      { source: "/login", destination: "/sign-in", permanent: false },
+      { source: "/signin", destination: "/sign-in", permanent: false },
+    ];
+  },
 };
 
 export default createNextIntlPlugin("./src/i18n/request.ts")(nextConfig);
