@@ -33,9 +33,14 @@ export function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
-/** Only allow same-site relative `next` targets (no open redirects). */
+/** After sign-in, only go back to a page inside the app (no open redirects, and never to a
+ * public or unknown path such as /login, which would 404 for a signed-in user). */
 export function safeNext(next: string | null | undefined, fallback = "/app"): string {
   if (!next || !next.startsWith("/") || next.startsWith("//") || next.includes("\\")) {
+    return fallback;
+  }
+  const path = next.split(/[?#]/)[0] ?? "";
+  if (path !== "/app" && !path.startsWith("/app/")) {
     return fallback;
   }
   return next;
