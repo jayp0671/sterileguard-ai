@@ -368,11 +368,11 @@ def _message(
         return f"Tomorrow's plan already meets the target ({_target_text(target)})."
     return (
         f"{describe_changes(best.changes)}. Predicted overtime drops from "
-        f"{base.ot_p50:g} to {best.ot_p50:g} hours (most likely)."
+        f"{base.ot_p50:.1f} to {best.ot_p50:.1f} hours (most likely)."
     )
 
 
 def _target_text(target: Target) -> str:
     if target.type == "p50_hours":
-        return f"at most {target.value:g} overtime hours"
+        return f"at most {target.value:.1f} overtime hours"
     return f"high-burden probability at most {target.value:.0%}"

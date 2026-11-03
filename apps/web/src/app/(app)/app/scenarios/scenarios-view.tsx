@@ -376,13 +376,13 @@ function Stepper({
           </Button>
           <output
             aria-live="polite"
-            className="tabular w-16 text-center text-lg font-medium"
+            className="tabular w-24 text-center text-lg font-medium"
             aria-label={`${label}: ${value}`}
           >
             {value}
             <span
               className={cn(
-                "block text-xs font-normal",
+                "block whitespace-nowrap text-xs font-normal",
                 diff === 0 ? "text-muted-foreground" : "text-primary",
               )}
             >
