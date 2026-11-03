@@ -125,6 +125,23 @@ describe("PlanForm", () => {
     expect(puts[0]?.body.status).toBe("final");
   });
 
+  it("finalizes after an autosave with a new Idempotency-Key", async () => {
+    // The API refuses a reused key with a different body (409), so finalizing must not reuse
+    // the draft's key: that blocked every plan finalized after an autosave.
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    renderForm();
+    await screen.findByLabelText("Regular patients");
+    fireEvent.click(screen.getByRole("button", { name: "Increase Regular patients" }));
+    await act(async () => {
+      vi.advanceTimersByTime(AUTOSAVE_MS + 100);
+    });
+    await waitFor(() => expect(puts).toHaveLength(1));
+    fireEvent.click(screen.getByRole("button", { name: "Finalize plan" }));
+    await waitFor(() => expect(puts).toHaveLength(2));
+    expect(puts[1]?.body.status).toBe("final");
+    expect(puts[1]?.key).not.toBe(puts[0]?.key);
+  });
+
   it("shows a conflict message with a reload option on 409", async () => {
     server.use(
       http.put(`${API}/v1/plans/:date`, () =>
