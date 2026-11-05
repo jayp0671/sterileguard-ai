@@ -3,11 +3,11 @@
 # STATE
 
 - Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm video due Nov 8
-- Branch: chore/demo-prep-notes
+- Branch: chore/video-prep
 - Latest migration: 0011_imports.sql
 - Active model: 20261026-0105-de605a9 (full, staging; gates passed; run 20261026-002617-full-s42)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Team records the narrated video (Nov 8). Leo: model barely responds to added staff (ClickUp SG-19 comment). SG-17 E2E stays open: Jay demos with his own login, so no shared test users
+- Next up (from handoff): Team records the narrated video Nov 8. Simulator-vs-real calibration plot dropped from the deck (only 5 real days); the results slide already shows interval coverage
 
 ## Tickets
 
@@ -51,6 +51,7 @@
 
 ## Last 10 commits
 
+- c7086e5 Jay Patel: chore: demo prep notes (handoff, TASKS, AI usage log) (#30)
 - 510a20d Jay Patel: docs: Sprint 4 screenshots from staging (#29)
 - eacadc4 Jay Patel: [SG-19] Scenario polish: one-decimal messages, stepper label (#28)
 - 5942855 Jay Patel: [SG-11] Fix: finalizing a plan after an autosave fails with 409 (#27)
@@ -60,4 +61,3 @@
 - 6cfff7c Jay Patel: [SG-21] Import pipeline v1 and PHI guard (#23)
 - ca0ba7a Jay Patel: [SG-20] Shift actuals: API, Log a shift, history, approvals, backfill (#22)
 - ca6dcdc Jay Patel: [SG-19] Staffing scenario engine, API and Scenarios page (#21)
-- 134bba8 Jay Patel: chore: close Sprint 3 (memory, ENVIRONMENTS.md, demo polish) (#20)
