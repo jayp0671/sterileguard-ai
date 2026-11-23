@@ -4,7 +4,8 @@ import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { chromium } from "@playwright/test";
 
-const [base = "http://localhost:3000", out = "../../docs/screenshots/sprint-5"] = process.argv.slice(2);
+const [base = "http://localhost:3000", out = "../../docs/screenshots/sprint-5"] =
+  process.argv.slice(2);
 const PAGES = [
   ["trust-center", "/trust"],
   ["trust-hipaa-notice", "/trust/hipaa-notice"],
