@@ -12,6 +12,7 @@ dependencies = [
     "pydantic-settings>=2.11",
     "pyjwt[crypto]>=2.10",
     "python-multipart>=0.0.20",
+    "sg-agents",
     "sg-data",
     "sg-ml",
     "structlog>=25.4",
@@ -28,6 +29,7 @@ packages = ["src/sg_api"]
 [tool.uv.sources]
 sg-data = { workspace = true }
 sg-ml = { workspace = true }
+sg-agents = { workspace = true }
 
 [dependency-groups]
 dev = [

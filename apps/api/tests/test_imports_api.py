@@ -342,3 +342,27 @@ def test_fields_endpoint_lists_mappable_fields(api: TestClient) -> None:
     names = {f["name"] for f in res.json()}
     assert {"date", "regular_patients", "ot_labor_hours"} <= names
     assert "department_id" not in names
+
+
+def test_ai_suggestions_are_shown_never_applied(api: TestClient, gw: ImportGateway) -> None:
+    seen: dict[str, Any] = {}
+
+    async def suggester(
+        unmapped: list[str], profile: list[dict[str, Any]], taken: list[str]
+    ) -> Any:
+        seen.update(unmapped=unmapped, profile=profile, taken=taken)
+        return {
+            "Clinic blocks": {"field": "student_clinic_sessions", "confidence": 0.45, "reason": "r"}
+        }
+
+    api.app.state.mapping_suggester = suggester  # type: ignore[attr-defined]
+    job = upload(api).json()
+    col = next(c for c in job["columns"] if c["column"] == "Clinic blocks")
+    assert col["field"] is None and col["suggested_field"] == "student_clinic_sessions"
+    assert col["method"] == "ai" and col["uncertain"]
+    assert "Employee" not in seen["unmapped"] and "Notes" not in seen["unmapped"]
+    # Committing without a person choosing it leaves the column out.
+    api.post(
+        f"/v1/imports/{job['id']}/commit", json={"department_id": DEPT}, headers=auth_h(STEWARD)
+    )
+    assert all(p.get("student_clinic_sessions__missing") in (True, None) for p in gw.committed)

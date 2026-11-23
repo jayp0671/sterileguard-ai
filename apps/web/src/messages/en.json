@@ -161,5 +161,10 @@
       "pos": "Using the department default for academic event is adding about {hours} hours",
       "neg": "Using the department default for academic event is reducing overtime by about {hours} hours"
     }
+  },
+  "briefing": {
+    "template": "Tomorrow's overtime is most likely {p50} hours (range {p10} to {p90}), a {class} burden day. The biggest factors are {driver1} and {driver2}. {minimumChangeSentence} Model estimate.",
+    "aiLabel": "AI-generated summary",
+    "templateLabel": "Summary"
   }
 }

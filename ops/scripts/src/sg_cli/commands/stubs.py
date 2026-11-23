@@ -68,6 +68,7 @@ STUBS: dict[str, tuple[str, str, list[str]]] = {
     ),
     "ops": ("SG-30", "Operations.", ["keepalive", "status", "health", "report"]),
     "demo": ("SG-16", "Demo data.", ["seed-demo", "reset-demo"]),
+    "agents": ("SG-23", "NVIDIA NIM agents.", ["ping", "record"]),
 }
 
 

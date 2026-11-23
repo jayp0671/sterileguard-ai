@@ -1,0 +1,18 @@
+# NVIDIA NIM model IDs per agent (SG-23, plan §13). Hosted API:
+# https://integrate.api.nvidia.com/v1 (OpenAI-compatible, bearer key from build.nvidia.com).
+# IDs checked against docs.api.nvidia.com/nim/reference/llm-apis on 2026-11-23. They are not
+# yet confirmed callable on our free account (no key configured): run
+# `uv run sg agents ping` once NIM_API_KEY is set, and update here if a model is gone.
+# The hosted chat schema has no response_format, so JSON answers are parsed and validated.
+base_url: https://integrate.api.nvidia.com/v1
+models:
+  briefing: meta/llama-3.3-70b-instruct
+  mapping: meta/llama-3.3-70b-instruct
+  translation: meta/llama-3.3-70b-instruct
+  coding: qwen/qwen2.5-coder-32b-instruct
+# Below the roughly 40 requests/minute free limit.
+requests_per_minute: 30
+timeout_s: 20
+max_retries: 3
+breaker_failures: 5
+breaker_open_s: 300

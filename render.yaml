@@ -18,6 +18,7 @@ services:
         - packages/ml/**
         - packages/sim/**
         - packages/agents/**
+        - ops/prompts/**
         - pyproject.toml
         - uv.lock
         - render.yaml
@@ -40,4 +41,8 @@ services:
       - key: SUPABASE_ANON_KEY
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # NVIDIA NIM key for the briefing and mapping agents (SG-23). Optional: without it the API
+      # uses the template briefing and manual mapping. Add it in the Render dashboard.
+      - key: NIM_API_KEY
         sync: false

@@ -4,6 +4,7 @@ import { ApiError } from "@sg/contracts";
 import { CalendarClock, Cpu, FlaskConical, PencilLine, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { BurdenBadge } from "@/components/burden-badge";
+import { BriefingCard } from "@/components/forecast/briefing-card";
 import { ForecastDrivers } from "@/components/forecast/forecast-drivers";
 import { HistoryChart } from "@/components/forecast/history-chart";
 import { MetricCard } from "@/components/metric-card";
@@ -224,6 +225,7 @@ function ForecastBody({
             </div>
           }
         />
+        <BriefingCard departmentId={f.department_id} forecastId={f.id} />
         {plan && !plan.suggested ? (
           <section aria-labelledby="staffing-heading" className="flex flex-col gap-2">
             <h2 id="staffing-heading" className="engraved">

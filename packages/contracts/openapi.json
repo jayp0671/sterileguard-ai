@@ -140,6 +140,83 @@
         "title": "Body_upload_v1_imports_post",
         "type": "object"
       },
+      "BriefingIn": {
+        "properties": {
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "forecast_id": {
+            "format": "uuid",
+            "title": "Forecast Id",
+            "type": "string"
+          },
+          "locale": {
+            "default": "en",
+            "enum": [
+              "en",
+              "es"
+            ],
+            "title": "Locale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "department_id",
+          "forecast_id"
+        ],
+        "title": "BriefingIn",
+        "type": "object"
+      },
+      "BriefingOut": {
+        "properties": {
+          "ai_note": {
+            "default": "An AI model rewrote the forecast numbers above into plain sentences. It does not predict, and its answer is checked so it can only use numbers from the forecast.",
+            "title": "Ai Note",
+            "type": "string"
+          },
+          "disclaimer": {
+            "default": "Model estimate, not a guarantee.",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "llm",
+              "template"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "source",
+          "prompt_version"
+        ],
+        "title": "BriefingOut",
+        "type": "object"
+      },
       "CardSections": {
         "properties": {
           "features": {
@@ -4095,6 +4172,49 @@
         "summary": "Revoke Invite",
         "tags": [
           "admin"
+        ]
+      }
+    },
+    "/v1/agents/briefing": {
+      "post": {
+        "description": "A 3 to 4 sentence summary of a forecast. AI-written when NVIDIA NIM is available and\nthe answer passes the number guardrail; otherwise the fixed template.",
+        "operationId": "create_briefing_v1_agents_briefing_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BriefingIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BriefingOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Create Briefing",
+        "tags": [
+          "agents"
         ]
       }
     },

@@ -9,6 +9,7 @@ import typer
 
 from sg_cli import core
 from sg_cli.commands import (
+    agents,
     bootstrap,
     contracts,
     data,
@@ -66,6 +67,7 @@ app.add_typer(deploy.app, name="deploy", help="Configure and deploy environments
 stubs.register(
     app,
     implemented={
+        "agents": agents.app,
         "contracts": contracts.app,
         "data": data.app,
         "db": db.app,

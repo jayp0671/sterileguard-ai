@@ -72,6 +72,10 @@ values ('40000000-0000-4000-8000-0000000000e5', '40000000-0000-4000-8000-0000000
 insert into public.mapping_templates (id, department_id, column_signature, mapping, created_by)
 values ('40000000-0000-4000-8000-0000000000e6', '40000000-0000-4000-8000-00000000000a', 'sig-1', '{}',
         '40000000-0000-4000-8000-0000000000a4');
+insert into public.agent_calls (agent, model, prompt_version, input_hash, status)
+values ('briefing', 'mx/model', 'v1', repeat('a', 64), 'ok');
+insert into public.agent_cache (key, agent, value)
+values (repeat('b', 64), 'briefing', '{"text": "mx"}');
 
 -- ---------------------------------------------------------------------------
 -- Actors and rules
@@ -248,6 +252,23 @@ insert into rules values
    array['admin_a']),
   -- commit_import (SG-24, ADR-0010): the security definer path for writing imported real rows.
   -- Stewards and dept admins of the job's department commit; only dept admins overwrite.
+  -- agent_calls and agent_cache (SG-23): API service role only; no signed-in user or anon
+  ('agent_calls', 'select', $q$select count(*) from public.agent_calls where model = 'mx/model'$q$,
+   array[]::text[]),
+  ('agent_calls', 'insert', $q$with t as (insert into public.agent_calls (agent, model, prompt_version, input_hash, status) values ('briefing', 'mx/new', 'v1', repeat('c', 64), 'ok') returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('agent_calls', 'update', $q$with t as (update public.agent_calls set status = 'x' where model = 'mx/model' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('agent_calls', 'delete', $q$with t as (delete from public.agent_calls where model = 'mx/model' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('agent_cache', 'select', $q$select count(*) from public.agent_cache where key = repeat('b', 64)$q$,
+   array[]::text[]),
+  ('agent_cache', 'insert', $q$with t as (insert into public.agent_cache (key, agent, value) values (repeat('d', 64), 'briefing', '{}') returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('agent_cache', 'update', $q$with t as (update public.agent_cache set value = '{}' where key = repeat('b', 64) returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('agent_cache', 'delete', $q$with t as (delete from public.agent_cache where key = repeat('b', 64) returning 1) select count(*) from t$q$,
+   array[]::text[]),
   ('fn commit_import', 'execute', $q$select (public.commit_import('40000000-0000-4000-8000-0000000000e5', '[{"plan_date": "2026-11-12", "regular_patients": 300, "morning_staff_present": 3}]', '[]') ->> 'plans')::int$q$,
    array['admin_a','steward_a']),
   ('fn commit_import', 'execute overwrite', $q$select (public.commit_import('40000000-0000-4000-8000-0000000000e5', '[{"plan_date": "2026-11-02", "regular_patients": 310, "morning_staff_present": 3}]', '[]', true) ->> 'plans')::int$q$,

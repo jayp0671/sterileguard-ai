@@ -64,6 +64,23 @@ class ServiceClient:
         rows: list[dict[str, Any]] = resp.json()
         return rows
 
+    async def insert(self, table: str, row: dict[str, Any], upsert_on: str | None = None) -> None:
+        """Service-only tables (agent_calls, agent_cache). Never business data for a user."""
+        headers = {
+            **self._headers(),
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal",
+        }
+        params: dict[str, str] = {}
+        if upsert_on:
+            headers["Prefer"] += ",resolution=merge-duplicates"
+            params["on_conflict"] = upsert_on
+        resp = await self.client.post(
+            f"{self.base}/rest/v1/{table}", params=params, json=row, headers=headers
+        )
+        if resp.status_code >= 400:
+            raise ApiError(502, f"service insert into {table} failed")
+
     async def download(self, bucket: str, path: str) -> bytes:
         """An object from a private Storage bucket."""
         resp = await self.client.get(

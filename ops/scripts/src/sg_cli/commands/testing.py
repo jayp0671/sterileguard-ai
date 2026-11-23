@@ -133,6 +133,25 @@ def unit(
     result.finish()
 
 
+@app.command("agents", help="Agent tests and evals in replay mode (zero live NIM calls).")
+def agents() -> None:
+    import os
+
+    result = core.Result("test", "agents")
+    os.environ["NIM_MODE"] = "replay"
+    ok = pytest_suite(result, "agents", [PY_MEMBERS["packages/agents"]], [])
+    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+    report = report_dir() / f"agents-{stamp}.md"
+    cmd = ["uv", "run", "python", "packages/agents/tests/evals.py", str(report)]
+    if core.OPTIONS.dry_run:
+        core.run(cmd)
+    else:
+        ok &= core.run(cmd, check=False) == 0
+        result.add(f"- eval report: {report.relative_to(core.repo_root())}")
+    result.ok = ok
+    result.finish()
+
+
 @app.command("api", help="API tests (apps/api).")
 def api() -> None:
     result = core.Result("test", "api")
@@ -241,7 +260,6 @@ LATER = {
     "load": ("SG-31", "k6 load tests"),
     "security": ("SG-28", "ZAP, gitleaks, Semgrep and audits"),
     "i18n": ("SG-27", "missing keys and pseudo-locale"),
-    "agents": ("SG-26", "agent evals with recorded NIM responses"),
 }
 
 
