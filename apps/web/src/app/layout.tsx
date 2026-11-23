@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { CookieBanner } from "@/components/compliance/cookie-banner";
+import { SiteFooter } from "@/components/compliance/site-footer";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -49,9 +51,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <NextIntlClientProvider>
           <Providers>
             <div className="flex flex-1 flex-col">{children}</div>
-            <footer className="border-t px-4 py-3 text-center text-xs text-muted-foreground">
-              {t("footer")}
-            </footer>
+            <SiteFooter notice={t("footer")} />
+            <CookieBanner />
             <Toaster />
           </Providers>
         </NextIntlClientProvider>

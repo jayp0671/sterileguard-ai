@@ -81,6 +81,38 @@ class ServiceClient:
         if resp.status_code >= 400:
             raise ApiError(502, f"service insert into {table} failed")
 
+    # Auth admin API (SG-25): member details for the admin console and the factor reset, the
+    # recovery path because Supabase has no recovery codes. Callers check the admin's role first.
+    async def auth_user(self, user_id: str) -> dict[str, Any] | None:
+        resp = await self.client.get(
+            f"{self.base}/auth/v1/admin/users/{user_id}", headers=self._headers()
+        )
+        if resp.status_code == 404:
+            return None
+        if resp.status_code >= 400:
+            raise ApiError(502, "auth admin lookup failed")
+        out: dict[str, Any] = resp.json()
+        return out
+
+    async def auth_factors(self, user_id: str) -> list[dict[str, Any]]:
+        resp = await self.client.get(
+            f"{self.base}/auth/v1/admin/users/{user_id}/factors", headers=self._headers()
+        )
+        if resp.status_code >= 400:
+            raise ApiError(502, "listing factors failed")
+        body = resp.json()
+        rows: list[dict[str, Any]] = body if isinstance(body, list) else body.get("factors", [])
+        return rows
+
+    async def delete_factor(self, user_id: str, factor_id: str) -> None:
+        resp = await self.client.request(
+            "DELETE",
+            f"{self.base}/auth/v1/admin/users/{user_id}/factors/{factor_id}",
+            headers=self._headers(),
+        )
+        if resp.status_code >= 400 and resp.status_code != 404:
+            raise ApiError(502, "deleting a factor failed")
+
     async def download(self, bucket: str, path: str) -> bytes:
         """An object from a private Storage bucket."""
         resp = await self.client.get(

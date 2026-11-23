@@ -1,6 +1,29 @@
 {
   "components": {
     "schemas": {
+      "AcceptIn": {
+        "properties": {
+          "policy": {
+            "enum": [
+              "terms",
+              "privacy"
+            ],
+            "title": "Policy",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy",
+          "version"
+        ],
+        "title": "AcceptIn",
+        "type": "object"
+      },
       "Accepted": {
         "properties": {
           "status": {
@@ -99,6 +122,137 @@
           "changes"
         ],
         "title": "AuditEntry",
+        "type": "object"
+      },
+      "AuditPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditRow"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass as before_id for the next page",
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "AuditPage",
+        "type": "object"
+      },
+      "AuditRow": {
+        "properties": {
+          "action": {
+            "enum": [
+              "insert",
+              "update",
+              "delete"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "actor_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Id"
+          },
+          "actor_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Role"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "entity": {
+            "title": "Entity",
+            "type": "string"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "title": "Occurred At",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "id",
+          "occurred_at",
+          "action",
+          "entity"
+        ],
+        "title": "AuditRow",
         "type": "object"
       },
       "AuthEvent": {
@@ -413,6 +567,62 @@
         "title": "Confusion",
         "type": "object"
       },
+      "ConsentIn": {
+        "properties": {
+          "analytics": {
+            "default": false,
+            "title": "Analytics",
+            "type": "boolean"
+          },
+          "anon_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 8,
+                "pattern": "^[A-Za-z0-9-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anon Id"
+          },
+          "gpc": {
+            "default": false,
+            "title": "Gpc",
+            "type": "boolean"
+          },
+          "version": {
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "title": "ConsentIn",
+        "type": "object"
+      },
+      "ConsentOut": {
+        "properties": {
+          "analytics": {
+            "title": "Analytics",
+            "type": "boolean"
+          },
+          "recorded": {
+            "title": "Recorded",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "recorded",
+          "analytics"
+        ],
+        "title": "ConsentOut",
+        "type": "object"
+      },
       "DailyError": {
         "properties": {
           "actual": {
@@ -483,6 +693,94 @@
         "title": "DepartmentIn",
         "type": "object"
       },
+      "DepartmentSettings": {
+        "additionalProperties": false,
+        "description": "The editable part of departments.settings. Unknown keys already stored (for example\nburden_thresholds from SG-29) are kept as they are.",
+        "properties": {
+          "alert_threshold_hours": {
+            "anyOf": [
+              {
+                "maximum": 60.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Threshold Hours"
+          },
+          "mf_cases_default": {
+            "maximum": 80.0,
+            "minimum": 0.0,
+            "title": "Mf Cases Default",
+            "type": "integer"
+          },
+          "ot_available_default": {
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "title": "Ot Available Default",
+            "type": "integer"
+          },
+          "outside_support_default": {
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "title": "Outside Support Default",
+            "type": "integer"
+          },
+          "outside_support_until": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Outside Support Until",
+            "type": "string"
+          },
+          "retention_days_drafts": {
+            "maximum": 365.0,
+            "minimum": 7.0,
+            "title": "Retention Days Drafts",
+            "type": "integer"
+          },
+          "shift_windows": {
+            "items": {
+              "$ref": "#/components/schemas/ShiftWindow"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Shift Windows",
+            "type": "array"
+          },
+          "sterilizers": {
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Sterilizers",
+            "type": "integer"
+          },
+          "student_clinic_sessions_default": {
+            "maximum": 40.0,
+            "minimum": 0.0,
+            "title": "Student Clinic Sessions Default",
+            "type": "integer"
+          },
+          "washers": {
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Washers",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "shift_windows",
+          "outside_support_default",
+          "outside_support_until",
+          "washers",
+          "sterilizers",
+          "mf_cases_default",
+          "ot_available_default",
+          "student_clinic_sessions_default",
+          "retention_days_drafts"
+        ],
+        "title": "DepartmentSettings",
+        "type": "object"
+      },
       "DeptBody": {
         "properties": {
           "department_id": {
@@ -495,6 +793,20 @@
           "department_id"
         ],
         "title": "DeptBody",
+        "type": "object"
+      },
+      "DeptIn": {
+        "properties": {
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "department_id"
+        ],
+        "title": "DeptIn",
         "type": "object"
       },
       "DriverOut": {
@@ -1385,6 +1697,73 @@
         "title": "InviteCreate",
         "type": "object"
       },
+      "InviteRow": {
+        "properties": {
+          "accepted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accepted At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "role": {
+            "enum": [
+              "technician",
+              "supervisor",
+              "dept_admin",
+              "data_steward",
+              "platform_admin"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "created_at",
+          "expires_at"
+        ],
+        "title": "InviteRow",
+        "type": "object"
+      },
       "LeverBounds": {
         "properties": {
           "max": {
@@ -1584,6 +1963,74 @@
         "title": "Me",
         "type": "object"
       },
+      "Member": {
+        "properties": {
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "last_sign_in_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sign In At"
+          },
+          "mfa_factors": {
+            "default": 0,
+            "title": "Mfa Factors",
+            "type": "integer"
+          },
+          "roles": {
+            "items": {
+              "enum": [
+                "technician",
+                "supervisor",
+                "dept_admin",
+                "data_steward",
+                "platform_admin"
+              ],
+              "type": "string"
+            },
+            "title": "Roles",
+            "type": "array"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "roles"
+        ],
+        "title": "Member",
+        "type": "object"
+      },
       "Membership": {
         "properties": {
           "department_id": {
@@ -1615,6 +2062,30 @@
           "roles"
         ],
         "title": "Membership",
+        "type": "object"
+      },
+      "MfaResetOut": {
+        "properties": {
+          "factors_removed": {
+            "title": "Factors Removed",
+            "type": "integer"
+          },
+          "note": {
+            "default": "The user is signed out everywhere and enrolls a new authenticator at next sign-in.",
+            "title": "Note",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "factors_removed"
+        ],
+        "title": "MfaResetOut",
         "type": "object"
       },
       "ModelCardView": {
@@ -2377,6 +2848,66 @@
         "title": "PlanPut",
         "type": "object"
       },
+      "PoliciesOut": {
+        "properties": {
+          "all_accepted": {
+            "title": "All Accepted",
+            "type": "boolean"
+          },
+          "policies": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyStatus"
+            },
+            "title": "Policies",
+            "type": "array"
+          }
+        },
+        "required": [
+          "policies",
+          "all_accepted"
+        ],
+        "title": "PoliciesOut",
+        "type": "object"
+      },
+      "PolicyStatus": {
+        "properties": {
+          "accepted": {
+            "title": "Accepted",
+            "type": "boolean"
+          },
+          "accepted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accepted At"
+          },
+          "policy": {
+            "enum": [
+              "terms",
+              "privacy"
+            ],
+            "title": "Policy",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy",
+          "version",
+          "accepted"
+        ],
+        "title": "PolicyStatus",
+        "type": "object"
+      },
       "PreviewCell": {
         "properties": {
           "changed": {
@@ -2540,6 +3071,66 @@
           "reason"
         ],
         "title": "ReopenIn",
+        "type": "object"
+      },
+      "RolesIn": {
+        "properties": {
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "enum": [
+                "technician",
+                "supervisor",
+                "dept_admin",
+                "data_steward",
+                "platform_admin"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "department_id",
+          "roles"
+        ],
+        "title": "RolesIn",
+        "type": "object"
+      },
+      "RolesOut": {
+        "properties": {
+          "roles": {
+            "items": {
+              "enum": [
+                "technician",
+                "supervisor",
+                "dept_admin",
+                "data_steward",
+                "platform_admin"
+              ],
+              "type": "string"
+            },
+            "title": "Roles",
+            "type": "array"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "roles"
+        ],
+        "title": "RolesOut",
         "type": "object"
       },
       "RollbackBody": {
@@ -2749,6 +3340,24 @@
           "created_at"
         ],
         "title": "ScenarioOut",
+        "type": "object"
+      },
+      "SettingsIn": {
+        "properties": {
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/DepartmentSettings"
+          }
+        },
+        "required": [
+          "department_id",
+          "settings"
+        ],
+        "title": "SettingsIn",
         "type": "object"
       },
       "ShiftCreate": {
@@ -3839,6 +4448,45 @@
         "title": "ShiftPlanValues",
         "type": "object"
       },
+      "ShiftWindow": {
+        "additionalProperties": false,
+        "properties": {
+          "default_staff": {
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "title": "Default Staff",
+            "type": "integer"
+          },
+          "end": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "End",
+            "type": "string"
+          },
+          "key": {
+            "enum": [
+              "morning",
+              "aft_11",
+              "aft_13",
+              "aft_15"
+            ],
+            "title": "Key",
+            "type": "string"
+          },
+          "start": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "start",
+          "end",
+          "default_staff"
+        ],
+        "title": "ShiftWindow",
+        "type": "object"
+      },
       "TargetIn": {
         "properties": {
           "type": {
@@ -4045,7 +4693,346 @@
         ]
       }
     },
+    "/v1/admin/audit": {
+      "get": {
+        "description": "Newest first, cursor-paginated by id.",
+        "operationId": "audit_v1_admin_audit_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "before_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Actor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "insert",
+                    "update",
+                    "delete"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "in": "query",
+            "name": "entity",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[a-z_]{1,40}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Audit",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/audit/export.csv": {
+      "get": {
+        "description": "Re-auth required; the export itself is recorded in the audit log.",
+        "operationId": "export_audit_v1_admin_audit_export_csv_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Actor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "insert",
+                    "update",
+                    "delete"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "in": "query",
+            "name": "entity",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[a-z_]{1,40}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/csv": {}
+            },
+            "description": "Audit rows as CSV"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Export Audit",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/v1/admin/invites": {
+      "get": {
+        "operationId": "list_invites_v1_admin_invites_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InviteRow"
+                  },
+                  "title": "Response List Invites V1 Admin Invites Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "List Invites",
+        "tags": [
+          "admin"
+        ]
+      },
       "post": {
         "operationId": "create_invite_v1_admin_invites_post",
         "requestBody": {
@@ -4175,6 +5162,296 @@
         ]
       }
     },
+    "/v1/admin/members": {
+      "get": {
+        "operationId": "list_members_v1_admin_members_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Member"
+                  },
+                  "title": "Response List Members V1 Admin Members Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "List Members",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/members/{user_id}": {
+      "delete": {
+        "operationId": "remove_member_v1_admin_members__user_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Remove Member",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/members/{user_id}/mfa-reset": {
+      "post": {
+        "description": "Lost-authenticator recovery: remove the member's two-factor factors (audited).",
+        "operationId": "reset_mfa_v1_admin_members__user_id__mfa_reset_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeptIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MfaResetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Reset Mfa",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/members/{user_id}/roles": {
+      "put": {
+        "description": "Replace a member's roles in the department (re-auth; blocked for the last dept_admin).",
+        "operationId": "set_roles_v1_admin_members__user_id__roles_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolesIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RolesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Set Roles",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/settings": {
+      "get": {
+        "operationId": "get_settings__v1_admin_settings_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentSettings"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Get Settings ",
+        "tags": [
+          "admin"
+        ]
+      },
+      "put": {
+        "description": "Validated by DepartmentSettings; the departments audit trigger records the change.",
+        "operationId": "put_settings_v1_admin_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentSettings"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Put Settings",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/v1/agents/briefing": {
       "post": {
         "description": "A 3 to 4 sentence summary of a forecast. AI-written when NVIDIA NIM is available and\nthe answer passes the number guardrail; otherwise the fixed template.",
@@ -4257,6 +5534,49 @@
         "summary": "Auth Event",
         "tags": [
           "audit"
+        ]
+      }
+    },
+    "/v1/consents": {
+      "post": {
+        "description": "Log a cookie choice against the cookie policy version. Global Privacy Control means no\nanalytics, whatever the body says. Works before sign-in (anonymous id from the browser).",
+        "operationId": "record_consent_v1_consents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Record Consent",
+        "tags": [
+          "compliance"
         ]
       }
     },
@@ -4981,6 +6301,80 @@
         "summary": "Me",
         "tags": [
           "me"
+        ]
+      }
+    },
+    "/v1/me/policies": {
+      "get": {
+        "description": "Which current policy versions the caller has accepted.",
+        "operationId": "my_policies_v1_me_policies_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoliciesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "My Policies",
+        "tags": [
+          "compliance"
+        ]
+      },
+      "post": {
+        "description": "Record acceptance of the current version (audited by the table trigger).",
+        "operationId": "accept_policy_v1_me_policies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoliciesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Accept Policy",
+        "tags": [
+          "compliance"
         ]
       }
     },

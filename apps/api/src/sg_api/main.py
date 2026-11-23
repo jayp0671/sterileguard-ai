@@ -21,8 +21,10 @@ from sg_api.core.ratelimit import RateLimitMiddleware
 from sg_api.db.service_client import ServiceClient
 from sg_api.routers import (
     admin,
+    admin_console,
     agents,
     audit,
+    compliance,
     forecasts,
     health,
     imports,
@@ -38,6 +40,8 @@ from sg_api.services.models import ModelService, SupabaseModelSource
 v1 = APIRouter(prefix="/v1")
 v1.include_router(admin.router)
 v1.include_router(agents.router)
+v1.include_router(admin_console.router)
+v1.include_router(compliance.router)
 v1.include_router(audit.router)
 v1.include_router(forecasts.router)
 v1.include_router(imports.router)

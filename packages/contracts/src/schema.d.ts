@@ -38,6 +38,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Audit
+         * @description Newest first, cursor-paginated by id.
+         */
+        get: operations["audit_v1_admin_audit_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/audit/export.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Audit
+         * @description Re-auth required; the export itself is recorded in the audit log.
+         */
+        get: operations["export_audit_v1_admin_audit_export_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/invites": {
         parameters: {
             query?: never;
@@ -45,7 +85,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List Invites */
+        get: operations["list_invites_v1_admin_invites_get"];
         put?: never;
         /** Create Invite */
         post: operations["create_invite_v1_admin_invites_post"];
@@ -89,6 +130,101 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Members */
+        get: operations["list_members_v1_admin_members_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/members/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Member */
+        delete: operations["remove_member_v1_admin_members__user_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/members/{user_id}/mfa-reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Mfa
+         * @description Lost-authenticator recovery: remove the member's two-factor factors (audited).
+         */
+        post: operations["reset_mfa_v1_admin_members__user_id__mfa_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/members/{user_id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Roles
+         * @description Replace a member's roles in the department (re-auth; blocked for the last dept_admin).
+         */
+        put: operations["set_roles_v1_admin_members__user_id__roles_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Settings */
+        get: operations["get_settings__v1_admin_settings_get"];
+        /**
+         * Put Settings
+         * @description Validated by DepartmentSettings; the departments audit trigger records the change.
+         */
+        put: operations["put_settings_v1_admin_settings_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/agents/briefing": {
         parameters: {
             query?: never;
@@ -121,6 +257,27 @@ export interface paths {
         put?: never;
         /** Auth Event */
         post: operations["auth_event_v1_audit_auth_event_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Consent
+         * @description Log a cookie choice against the cookie policy version. Global Privacy Control means no
+         *     analytics, whatever the body says. Works before sign-in (anonymous id from the browser).
+         */
+        post: operations["record_consent_v1_consents_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -371,6 +528,30 @@ export interface paths {
         get: operations["me_v1_me_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Policies
+         * @description Which current policy versions the caller has accepted.
+         */
+        get: operations["my_policies_v1_me_policies_get"];
+        put?: never;
+        /**
+         * Accept Policy
+         * @description Record acceptance of the current version (audited by the table trigger).
+         */
+        post: operations["accept_policy_v1_me_policies_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -670,6 +851,16 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AcceptIn */
+        AcceptIn: {
+            /**
+             * Policy
+             * @enum {string}
+             */
+            policy: "terms" | "privacy";
+            /** Version */
+            version: string;
+        };
         /** Accepted */
         Accepted: {
             /**
@@ -714,6 +905,49 @@ export interface components {
              * Format: date-time
              */
             occurred_at: string;
+        };
+        /** AuditPage */
+        AuditPage: {
+            /** Items */
+            items: components["schemas"]["AuditRow"][];
+            /**
+             * Next Cursor
+             * @description Pass as before_id for the next page
+             */
+            next_cursor?: number | null;
+        };
+        /** AuditRow */
+        AuditRow: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "insert" | "update" | "delete";
+            /** Actor Id */
+            actor_id?: string | null;
+            /** Actor Role */
+            actor_role?: string | null;
+            /** After */
+            after?: {
+                [key: string]: unknown;
+            } | null;
+            /** Before */
+            before?: {
+                [key: string]: unknown;
+            } | null;
+            /** Entity */
+            entity: string;
+            /** Entity Id */
+            entity_id?: string | null;
+            /** Id */
+            id: number;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /** Request Id */
+            request_id?: string | null;
         };
         /** AuthEvent */
         AuthEvent: {
@@ -857,6 +1091,30 @@ export interface components {
              */
             matrix: number[][];
         };
+        /** ConsentIn */
+        ConsentIn: {
+            /**
+             * Analytics
+             * @default false
+             */
+            analytics: boolean;
+            /** Anon Id */
+            anon_id?: string | null;
+            /**
+             * Gpc
+             * @default false
+             */
+            gpc: boolean;
+            /** Version */
+            version: string;
+        };
+        /** ConsentOut */
+        ConsentOut: {
+            /** Analytics */
+            analytics: boolean;
+            /** Recorded */
+            recorded: boolean;
+        };
         /** DailyError */
         DailyError: {
             /** Actual */
@@ -887,8 +1145,43 @@ export interface components {
             /** Department Id */
             department_id: string;
         };
+        /**
+         * DepartmentSettings
+         * @description The editable part of departments.settings. Unknown keys already stored (for example
+         *     burden_thresholds from SG-29) are kept as they are.
+         */
+        DepartmentSettings: {
+            /** Alert Threshold Hours */
+            alert_threshold_hours?: number | null;
+            /** Mf Cases Default */
+            mf_cases_default: number;
+            /** Ot Available Default */
+            ot_available_default: number;
+            /** Outside Support Default */
+            outside_support_default: number;
+            /** Outside Support Until */
+            outside_support_until: string;
+            /** Retention Days Drafts */
+            retention_days_drafts: number;
+            /** Shift Windows */
+            shift_windows: components["schemas"]["ShiftWindow"][];
+            /** Sterilizers */
+            sterilizers: number;
+            /** Student Clinic Sessions Default */
+            student_clinic_sessions_default: number;
+            /** Washers */
+            washers: number;
+        };
         /** DeptBody */
         DeptBody: {
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+        };
+        /** DeptIn */
+        DeptIn: {
             /**
              * Department Id
              * Format: uuid
@@ -1278,6 +1571,35 @@ export interface components {
             email: string;
             role: components["schemas"]["AppRole"];
         };
+        /** InviteRow */
+        InviteRow: {
+            /** Accepted At */
+            accepted_at?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Email */
+            email: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Revoked At */
+            revoked_at?: string | null;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin";
+        };
         /** LeverBounds */
         LeverBounds: {
             /** Max */
@@ -1352,6 +1674,27 @@ export interface components {
              */
             theme: "system" | "light" | "dark";
         };
+        /** Member */
+        Member: {
+            /** Display Name */
+            display_name?: string | null;
+            /** Email */
+            email?: string | null;
+            /** Last Sign In At */
+            last_sign_in_at?: string | null;
+            /**
+             * Mfa Factors
+             * @default 0
+             */
+            mfa_factors: number;
+            /** Roles */
+            roles: ("technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin")[];
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+        };
         /** Membership */
         Membership: {
             /** Department Id */
@@ -1360,6 +1703,21 @@ export interface components {
             department_name: string;
             /** Roles */
             roles: ("technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin")[];
+        };
+        /** MfaResetOut */
+        MfaResetOut: {
+            /** Factors Removed */
+            factors_removed: number;
+            /**
+             * Note
+             * @default The user is signed out everywhere and enrolls a new authenticator at next sign-in.
+             */
+            note: string;
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
         };
         /** ModelCardView */
         ModelCardView: {
@@ -1672,6 +2030,27 @@ export interface components {
              */
             washers_up?: number | null;
         };
+        /** PoliciesOut */
+        PoliciesOut: {
+            /** All Accepted */
+            all_accepted: boolean;
+            /** Policies */
+            policies: components["schemas"]["PolicyStatus"][];
+        };
+        /** PolicyStatus */
+        PolicyStatus: {
+            /** Accepted */
+            accepted: boolean;
+            /** Accepted At */
+            accepted_at?: string | null;
+            /**
+             * Policy
+             * @enum {string}
+             */
+            policy: "terms" | "privacy";
+            /** Version */
+            version: string;
+        };
         /** PreviewCell */
         PreviewCell: {
             /**
@@ -1744,6 +2123,26 @@ export interface components {
             department_id: string;
             /** Reason */
             reason: string;
+        };
+        /** RolesIn */
+        RolesIn: {
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            /** Roles */
+            roles: ("technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin")[];
+        };
+        /** RolesOut */
+        RolesOut: {
+            /** Roles */
+            roles: ("technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin")[];
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
         };
         /** RollbackBody */
         RollbackBody: {
@@ -1825,6 +2224,15 @@ export interface components {
             window_hours: {
                 [key: string]: number;
             };
+        };
+        /** SettingsIn */
+        SettingsIn: {
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            settings: components["schemas"]["DepartmentSettings"];
         };
         /** ShiftCreate */
         ShiftCreate: {
@@ -2187,6 +2595,20 @@ export interface components {
              */
             washers_up?: number | null;
         };
+        /** ShiftWindow */
+        ShiftWindow: {
+            /** Default Staff */
+            default_staff: number;
+            /** End */
+            end: string;
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "morning" | "aft_11" | "aft_13" | "aft_15";
+            /** Start */
+            start: string;
+        };
         /** TargetIn */
         TargetIn: {
             /**
@@ -2336,6 +2758,114 @@ export interface operations {
             };
         };
     };
+    audit_v1_admin_audit_get: {
+        parameters: {
+            query: {
+                department_id: string;
+                before_id?: number | null;
+                from?: string | null;
+                to?: string | null;
+                actor?: string | null;
+                action?: ("insert" | "update" | "delete") | null;
+                entity?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditPage"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    export_audit_v1_admin_audit_export_csv_get: {
+        parameters: {
+            query: {
+                department_id: string;
+                from?: string | null;
+                to?: string | null;
+                actor?: string | null;
+                action?: ("insert" | "update" | "delete") | null;
+                entity?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Audit rows as CSV */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": unknown;
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    list_invites_v1_admin_invites_get: {
+        parameters: {
+            query: {
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteRow"][];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
     create_invite_v1_admin_invites_post: {
         parameters: {
             query?: never;
@@ -2434,6 +2964,208 @@ export interface operations {
             };
         };
     };
+    list_members_v1_admin_members_get: {
+        parameters: {
+            query: {
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Member"][];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    remove_member_v1_admin_members__user_id__delete: {
+        parameters: {
+            query: {
+                department_id: string;
+            };
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    reset_mfa_v1_admin_members__user_id__mfa_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeptIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MfaResetOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    set_roles_v1_admin_members__user_id__roles_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RolesIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RolesOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    get_settings__v1_admin_settings_get: {
+        parameters: {
+            query: {
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentSettings"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    put_settings_v1_admin_settings_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettingsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentSettings"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
     create_briefing_v1_agents_briefing_post: {
         parameters: {
             query?: never;
@@ -2488,6 +3220,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    record_consent_v1_consents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentOut"];
                 };
             };
             /** @description Problem */
@@ -2971,6 +3737,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    my_policies_v1_me_policies_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PoliciesOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    accept_policy_v1_me_policies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcceptIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PoliciesOut"];
                 };
             };
             /** @description Problem */

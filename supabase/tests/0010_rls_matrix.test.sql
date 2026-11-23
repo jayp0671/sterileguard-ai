@@ -72,6 +72,13 @@ values ('40000000-0000-4000-8000-0000000000e5', '40000000-0000-4000-8000-0000000
 insert into public.mapping_templates (id, department_id, column_signature, mapping, created_by)
 values ('40000000-0000-4000-8000-0000000000e6', '40000000-0000-4000-8000-00000000000a', 'sig-1', '{}',
         '40000000-0000-4000-8000-0000000000a4');
+insert into public.policy_acceptances (user_id, policy, version)
+values ('40000000-0000-4000-8000-0000000000a1', 'terms', '1.0.0');
+insert into public.consents (user_id, version, analytics)
+values ('40000000-0000-4000-8000-0000000000a1', '1.0.0', false);
+insert into public.admin_actions (id, department_id, actor_id, action, target_user_id)
+values ('40000000-0000-4000-8000-0000000000e9', '40000000-0000-4000-8000-00000000000a',
+        '40000000-0000-4000-8000-0000000000a3', 'mfa_reset', '40000000-0000-4000-8000-0000000000a1');
 insert into public.agent_calls (agent, model, prompt_version, input_hash, status)
 values ('briefing', 'mx/model', 'v1', repeat('a', 64), 'ok');
 insert into public.agent_cache (key, agent, value)
@@ -268,6 +275,33 @@ insert into rules values
   ('agent_cache', 'update', $q$with t as (update public.agent_cache set value = '{}' where key = repeat('b', 64) returning 1) select count(*) from t$q$,
    array[]::text[]),
   ('agent_cache', 'delete', $q$with t as (delete from public.agent_cache where key = repeat('b', 64) returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  -- policy_acceptances (SG-25): own rows only; never edited or removed
+  ('policy_acceptances', 'select', $q$select count(*) from public.policy_acceptances where user_id = '40000000-0000-4000-8000-0000000000a1'$q$,
+   array['tech_a']),
+  ('policy_acceptances', 'insert', $q$with t as (insert into public.policy_acceptances (user_id, policy, version) values ((select auth.uid()), 'privacy', '1.0.0') returning 1) select count(*) from t$q$,
+   array['tech_a','sup_a','admin_a','steward_a','platform','tech_b']),
+  ('policy_acceptances', 'update', $q$with t as (update public.policy_acceptances set version = '1.0.1' where user_id = '40000000-0000-4000-8000-0000000000a1' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('policy_acceptances', 'delete', $q$with t as (delete from public.policy_acceptances where user_id = '40000000-0000-4000-8000-0000000000a1' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  -- consents (SG-25): API service role only
+  ('consents', 'select', $q$select count(*) from public.consents where user_id = '40000000-0000-4000-8000-0000000000a1'$q$,
+   array[]::text[]),
+  ('consents', 'insert', $q$with t as (insert into public.consents (anon_id, version) values ('mx-anon-123', '1.0.0') returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('consents', 'update', $q$with t as (update public.consents set analytics = true where user_id = '40000000-0000-4000-8000-0000000000a1' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('consents', 'delete', $q$with t as (delete from public.consents where user_id = '40000000-0000-4000-8000-0000000000a1' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  -- admin_actions (SG-25): dept admins and platform admins; the actor is the caller; append-only
+  ('admin_actions', 'select', $q$select count(*) from public.admin_actions where id = '40000000-0000-4000-8000-0000000000e9'$q$,
+   array['admin_a','platform']),
+  ('admin_actions', 'insert', $q$with t as (insert into public.admin_actions (department_id, actor_id, action) values ('40000000-0000-4000-8000-00000000000a', (select auth.uid()), 'audit_export') returning 1) select count(*) from t$q$,
+   array['admin_a','platform']),
+  ('admin_actions', 'update', $q$with t as (update public.admin_actions set detail = '{"x": 1}' where id = '40000000-0000-4000-8000-0000000000e9' returning 1) select count(*) from t$q$,
+   array[]::text[]),
+  ('admin_actions', 'delete', $q$with t as (delete from public.admin_actions where id = '40000000-0000-4000-8000-0000000000e9' returning 1) select count(*) from t$q$,
    array[]::text[]),
   ('fn commit_import', 'execute', $q$select (public.commit_import('40000000-0000-4000-8000-0000000000e5', '[{"plan_date": "2026-11-12", "regular_patients": 300, "morning_staff_present": 3}]', '[]') ->> 'plans')::int$q$,
    array['admin_a','steward_a']),
