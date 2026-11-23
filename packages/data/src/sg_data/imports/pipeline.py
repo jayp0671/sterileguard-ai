@@ -115,4 +115,7 @@ def run(
         errors=errors,
         valid=checked.valid,
         wide=wide,
+        # In-memory only (never in report()): the PHI-scanned source frame and the canonical
+        # frame, for the review preview and the rejected-rows download (SG-24).
+        extra={"frame": frame, "transformed": transformed.frame},
     )

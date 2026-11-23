@@ -245,6 +245,12 @@ insert into rules values
   ('mapping_templates', 'update', $q$with t as (update public.mapping_templates set mapping = '{"a": null}' where id = '40000000-0000-4000-8000-0000000000e6' returning 1) select count(*) from t$q$,
    array['admin_a','steward_a']),
   ('mapping_templates', 'delete', $q$with t as (delete from public.mapping_templates where id = '40000000-0000-4000-8000-0000000000e6' returning 1) select count(*) from t$q$,
+   array['admin_a']),
+  -- commit_import (SG-24, ADR-0010): the security definer path for writing imported real rows.
+  -- Stewards and dept admins of the job's department commit; only dept admins overwrite.
+  ('fn commit_import', 'execute', $q$select (public.commit_import('40000000-0000-4000-8000-0000000000e5', '[{"plan_date": "2026-11-12", "regular_patients": 300, "morning_staff_present": 3}]', '[]') ->> 'plans')::int$q$,
+   array['admin_a','steward_a']),
+  ('fn commit_import', 'execute overwrite', $q$select (public.commit_import('40000000-0000-4000-8000-0000000000e5', '[{"plan_date": "2026-11-02", "regular_patients": 310, "morning_staff_present": 3}]', '[]', true) ->> 'plans')::int$q$,
    array['admin_a']);
 
 create temp table matrix as

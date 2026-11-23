@@ -60,7 +60,10 @@ async def _department_id(request: Request) -> str | None:
         return str(dept)
     if dept := request.query_params.get("department_id"):
         return dept
-    if request.method in ("POST", "PUT", "PATCH"):
+    # Only JSON bodies carry department_id; a multipart upload names it in the query string,
+    # and reading its stream here would break form parsing.
+    is_json = request.headers.get("content-type", "").startswith("application/json")
+    if request.method in ("POST", "PUT", "PATCH") and is_json:
         try:
             body = json.loads(await request.body() or b"{}")
         except ValueError:
