@@ -1,8 +1,11 @@
 name: e2e
 
-# SG-17: the first end-to-end journeys against each Vercel preview deployment. Vercel reports
-# deployments to GitHub, so this runs on the deployment_status event once a preview succeeds.
-# It needs the demo users from SG-16 (E2E_* secrets); until they exist it reports and skips.
+# SG-17 / SG-26: role journeys against each Vercel preview deployment, on four browser
+# projects. Vercel reports deployments to GitHub, so this runs on the deployment_status event
+# once a preview succeeds. Journeys that need a signed-in role skip themselves until the demo
+# users exist (sg demo seed-demo, then sg demo e2e-secrets --apply); the public privacy checks
+# of journey 7 always run. Journey 1 (onboarding) needs the local Supabase stack: see the
+# onboarding-local job.
 
 on:
   deployment_status:
@@ -22,37 +25,70 @@ jobs:
       (github.event.deployment_status.state == 'success' &&
        github.event.deployment_status.environment != 'Production')
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox, webkit, tablet]
     env:
       E2E_BASE_URL: ${{ inputs.base_url || github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
       VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-      E2E_SUPERVISOR_EMAIL: ${{ secrets.E2E_SUPERVISOR_EMAIL }}
-      E2E_SUPERVISOR_PASSWORD: ${{ secrets.E2E_SUPERVISOR_PASSWORD }}
-      E2E_SUPERVISOR_TOTP_SECRET: ${{ secrets.E2E_SUPERVISOR_TOTP_SECRET }}
       E2E_TECHNICIAN_EMAIL: ${{ secrets.E2E_TECHNICIAN_EMAIL }}
       E2E_TECHNICIAN_PASSWORD: ${{ secrets.E2E_TECHNICIAN_PASSWORD }}
       E2E_TECHNICIAN_TOTP_SECRET: ${{ secrets.E2E_TECHNICIAN_TOTP_SECRET }}
+      E2E_SUPERVISOR_EMAIL: ${{ secrets.E2E_SUPERVISOR_EMAIL }}
+      E2E_SUPERVISOR_PASSWORD: ${{ secrets.E2E_SUPERVISOR_PASSWORD }}
+      E2E_SUPERVISOR_TOTP_SECRET: ${{ secrets.E2E_SUPERVISOR_TOTP_SECRET }}
+      E2E_DEPT_ADMIN_EMAIL: ${{ secrets.E2E_DEPT_ADMIN_EMAIL }}
+      E2E_DEPT_ADMIN_PASSWORD: ${{ secrets.E2E_DEPT_ADMIN_PASSWORD }}
+      E2E_DEPT_ADMIN_TOTP_SECRET: ${{ secrets.E2E_DEPT_ADMIN_TOTP_SECRET }}
+      E2E_DATA_STEWARD_EMAIL: ${{ secrets.E2E_DATA_STEWARD_EMAIL }}
+      E2E_DATA_STEWARD_PASSWORD: ${{ secrets.E2E_DATA_STEWARD_PASSWORD }}
+      E2E_DATA_STEWARD_TOTP_SECRET: ${{ secrets.E2E_DATA_STEWARD_TOTP_SECRET }}
+      E2E_PLATFORM_ADMIN_EMAIL: ${{ secrets.E2E_PLATFORM_ADMIN_EMAIL }}
+      E2E_PLATFORM_ADMIN_PASSWORD: ${{ secrets.E2E_PLATFORM_ADMIN_PASSWORD }}
+      E2E_PLATFORM_ADMIN_TOTP_SECRET: ${{ secrets.E2E_PLATFORM_ADMIN_TOTP_SECRET }}
+      E2E_OUTSIDER_EMAIL: ${{ secrets.E2E_OUTSIDER_EMAIL }}
+      E2E_OUTSIDER_PASSWORD: ${{ secrets.E2E_OUTSIDER_PASSWORD }}
+      E2E_OUTSIDER_TOTP_SECRET: ${{ secrets.E2E_OUTSIDER_TOTP_SECRET }}
     steps:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.deployment.sha || github.sha }}
-      - id: ready
+      - name: Report missing demo users
         run: |
-          if [ -z "$E2E_SUPERVISOR_EMAIL" ] || [ -z "$E2E_TECHNICIAN_EMAIL" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "E2E secrets are not set yet (demo users come from SG-16): skipped." >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "run=true" >> "$GITHUB_OUTPUT"
+          if [ -z "$E2E_SUPERVISOR_EMAIL" ]; then
+            echo "E2E_* secrets are not set: role journeys skip, public checks still run." >> "$GITHUB_STEP_SUMMARY"
           fi
-      - if: steps.ready.outputs.run == 'true'
-        uses: ./.github/actions/setup
-      - if: steps.ready.outputs.run == 'true'
-        run: pnpm --filter @sg/web exec playwright install --with-deps chromium
-      - if: steps.ready.outputs.run == 'true'
-        run: pnpm --filter @sg/web exec playwright test --project=chromium e2e/forecast.supervisor.spec.ts e2e/forecast.technician.spec.ts
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter @sg/web exec playwright install --with-deps ${{ matrix.project == 'tablet' && 'webkit' || matrix.project }}
+      - run: pnpm --filter @sg/web exec playwright test --project=${{ matrix.project }} e2e/journeys e2e/forecast.supervisor.spec.ts e2e/forecast.technician.spec.ts
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-traces
+          name: e2e-traces-${{ matrix.project }}
           path: |
             apps/web/test-results/
             apps/web/playwright-report/
+
+  # Journey 1 reads the invite email from the local stack's mail catcher, so it never runs
+  # against staging. Manual for now; it has not been run in CI yet.
+  onboarding-local:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      E2E_LOCAL_STACK: "1"
+      E2E_BASE_URL: http://localhost:3000
+      DEMO_EMAIL_BASE: e2e@example.test
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: pnpm exec supabase start
+      - run: uv run sg db reset && uv run sg demo seed-demo --env local --days 14
+      - run: uv run sg demo e2e-env >> "$GITHUB_ENV"
+      - run: pnpm --filter @sg/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @sg/web exec playwright test --project=chromium e2e/journeys/01-onboarding.spec.ts
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-traces-onboarding
+          path: apps/web/test-results/

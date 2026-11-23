@@ -6,6 +6,8 @@ export const ROLES = [
   "dept_admin",
   "data_steward",
   "platform_admin",
+  // SG-26: technician of a second demo department (tenant isolation journey)
+  "outsider",
 ] as const;
 export type Role = (typeof ROLES)[number];
 

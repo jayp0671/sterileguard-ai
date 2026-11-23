@@ -42,3 +42,31 @@ If anything fails: switch to the backup recording, and say so.
 ## After
 
 `uv run sg demo reset-demo --env staging` so the next session starts clean.
+
+## Shared demo users and E2E secrets (SG-26, Jay)
+
+The agent never creates hosted accounts or enters secrets, so these steps are Jay's. Run them
+in the main checkout (`C:\Users\JayVe\OneDrive - stevens.edu\sterileguard-ai`), which has `.env`.
+
+1. Add one line to `.env`: an inbox you control that supports plus addressing (Gmail does).
+   Each demo user becomes `you+sg-<role>@...`, so the invite and reset emails come to you.
+   `DEMO_EMAIL_BASE=your.name@gmail.com`
+2. Create the users (one per role, plus an `outsider` technician in a second department for
+   the tenant isolation journey) with TOTP enrolled, and reseed the demo history:
+   `uv run sg demo seed-demo --env staging`
+   Passwords and TOTP secrets go to `ops/secrets/demo-totp.json` (gitignored). The run is
+   idempotent: it reuses existing users.
+3. Copy them into GitHub Actions secrets (needs `gh auth login`; values are never printed):
+   `uv run sg demo e2e-secrets` (lists the 18 names), then
+   `uv run sg demo e2e-secrets --apply`
+4. If Vercel previews are protected: Vercel dashboard > sterileguard-ai > Settings >
+   Deployment Protection > Protection Bypass for Automation > Create, then
+   `gh secret set VERCEL_AUTOMATION_BYPASS_SECRET` and paste it.
+5. Run the journeys once against staging and read the summary:
+   `gh workflow run e2e.yml -f base_url=https://sterileguard-ai.vercel.app`
+   then the flake check (10 runs per project):
+   `gh workflow run e2e-flake.yml -f base_url=https://sterileguard-ai.vercel.app`
+
+Journeys 2 to 6 write data (a finalized plan, an applied scenario, a logged and approved
+shift, an import, a role change that is changed back). Run `uv run sg demo reset-demo --env
+staging` before a live demo.
