@@ -2,12 +2,12 @@
 
 # STATE
 
-- Current sprint: Sprint 4 (Nov 2-8) Scenarios, shift logging, imports; midterm video due Nov 8
-- Branch: chore/video-prep
-- Latest migration: 0011_imports.sql
+- Current sprint: Sprint 5 (Nov 9-15, done Nov 23) Agents, Admin, Trust Center; Sprint 6 next (Nov 24)
+- Branch: chore/sprint-5-close
+- Latest migration: 0014_compliance.sql
 - Active model: 20261026-0105-de605a9 (full, staging; gates passed; run 20261026-002617-full-s42)
 - Last autofix: none yet (SG-30)
-- Next up (from handoff): Team records the narrated video Nov 8. Simulator-vs-real calibration plot dropped from the deck (only 5 real days); the results slide already shows interval coverage
+- Next up (from handoff): Jay: DEMO_EMAIL_BASE + sg demo seed-demo --env staging + sg demo e2e-secrets --apply, then the e2e and e2e-flake workflows (ops/runbooks/demo.md); NIM_API_KEY in .env and Render, sg agents ping and record (ops/runbooks/nim.md); a person reviews the 11 legal drafts. Sprint 6 (Nov 24): SG-27 i18n EN/ES, SG-28 security and accessibility (include the Next.js 16.4.2 security advisory), SG-29 real data and thresholds (conflict: the team set aside Leo's unlabeled counts and stays on mock data), SG-30 automation
 
 ## Tickets
 
@@ -28,36 +28,43 @@
 - SG-14 done; staging migrated (0007); ADR-0006 needs Leo: SHAP drivers and model registry with hot swap
 - SG-15 done; staging migrated (0008): Forecast API and Forecast home page
 - SG-16 done; web on Vercel, API on Render (ADR-0007); shared demo users not created: Staging deployment, keep-alive, demo seed
-- SG-17 gates done; E2E specs written, never run (need demo users + E2E_* secrets): ML activation gates and first E2E journeys
+- SG-17 gates done; E2E folded into SG-26 journeys, waits on demo users + E2E_* secrets: ML activation gates and first E2E journeys
 - SG-18 deck updated, live demo works; placeholders, narrated video and Canvas are the team's: Midterm presentation and live demo (moved to Nov 8, video)
 - SG-19 done; staging migrated (0009); ADR-0008 needs Leo; screenshots on the PR; staffing sensitivity finding for Leo: Staffing scenario engine, API, Scenarios page
 - SG-20 done; staging migrated (0010); screenshots on the PR: Shift actuals: API, Log a shift, history, approvals, backfill
 - SG-21 done; staging migrated (0011); ADR-0009 needs Leo: Import pipeline v1 and PHI guard
 - SG-22 done; contract job nightly: Tests: messy fixtures, import and PHI tests, contract fuzzing
+- SG-23 in progress: merged; NIM_API_KEY not set (models unconfirmed, cassettes are stand-ins); ADR-0011 needs review: NVIDIA NIM client, briefing agent with number guardrail, import mapping agent
+- SG-24 in progress: merged; staging migrated (0012); staging import run needs a steward login; ADR-0010 needs review: Imports review UI and Model Performance page
+- SG-25 in progress: merged; staging migrated (0014); legal text needs human review; ADR-0012 needs review: Admin console, audit log viewer, Trust Center, policy acceptance, cookie consent
+- SG-26 in progress: journeys written, public checks pass; role journeys and flake run wait on demo users: Role end-to-end journeys across browsers, AI agent evals
 
 ## Tests
 
-- affected-python: 80 passed, 0 failed, 0 skipped (f4d36e0)
-- db-staging: 659 passed, 0 failed, 0 skipped (172bff7)
+- affected-python: 44 passed, 0 failed, 0 skipped (ec6fe7b)
+- agents: 76 passed, 0 failed, 0 skipped (cde3a38)
+- db-staging: 856 passed, 0 failed, 0 skipped (f16142d)
 
 ## Deployed URLs
 
 - Staging web: https://sterileguard-ai.vercel.app (Vercel Hobby, Root Directory apps/web; every push to main deploys; PRs get previews)
 - Staging API: https://sterileguard-api.onrender.com (Render free web service from render.yaml, deploys from main after CI passes; sleeps after 15 idle minutes, about 1 minute to wake)
-- Staging database: Supabase project sterileguard-ai (ref hhmrrvgvrjyrwvrrolzv), migrations through 0011 (0009 scenarios, 0010 shift reopen, 0011 imports)
+- Staging database: Supabase project sterileguard-ai (ref hhmrrvgvrjyrwvrrolzv), migrations through 0014 (0012 import commit, 0013 agents, 0014 compliance); pgTAP 851/851
 - Keep-alive: .github/workflows/keepalive.yml every 6 hours (API /health and one Supabase query)
-- Demo login: Jay's own account is supervisor of Dental Central Sterile (dental-cs); no shared demo users or E2E_* secrets yet
+- Demo login: Jay's own account is supervisor of Dental Central Sterile (dental-cs); no shared demo users or E2E_* secrets yet (steps: ops/runbooks/demo.md)
+- NVIDIA NIM: not configured (NIM_API_KEY empty in .env and Render), so briefings use the template; steps: ops/runbooks/nim.md
+- Trust Center: https://sterileguard-ai.vercel.app/trust (11 draft pages) and /.well-known/security.txt (Expires 2027-06-30)
 - Production: not created (SG-34)
 
 ## Last 10 commits
 
+- 817e91a Jay Patel: [SG-26] Tests: every role's end-to-end journey across browsers, and AI agent evals (#35)
+- eb85b62 Jay Patel: feat: admin console, audit log viewer, Trust Center, policy acceptance, cookie consent [SG-25] (#34)
+- d8d7d76 Jay Patel: feat: NIM client, briefing agent with number guardrail, mapping agent [SG-23] (#33)
+- ddab341 Jay Patel: feat: imports review UI, steward commit function and model performance [SG-24] (#32)
+- b44c486 Jay Patel: chore(memory): video prep, demo day Nov 9 [SG-18] (#31)
 - c7086e5 Jay Patel: chore: demo prep notes (handoff, TASKS, AI usage log) (#30)
 - 510a20d Jay Patel: docs: Sprint 4 screenshots from staging (#29)
 - eacadc4 Jay Patel: [SG-19] Scenario polish: one-decimal messages, stepper label (#28)
 - 5942855 Jay Patel: [SG-11] Fix: finalizing a plan after an autosave fails with 409 (#27)
 - 666fcce Jay Patel: [SG-04] Fix sign-in landing on /login (404) (#26)
-- 2131660 Jay Patel: chore: close Sprint 4 (memory, decision log, handoff) (#25)
-- 9dd3399 Jay Patel: [SG-22] Tests: messy fixtures, import and PHI tests, contract fuzzing (#24)
-- 6cfff7c Jay Patel: [SG-21] Import pipeline v1 and PHI guard (#23)
-- ca0ba7a Jay Patel: [SG-20] Shift actuals: API, Log a shift, history, approvals, backfill (#22)
-- ca6dcdc Jay Patel: [SG-19] Staffing scenario engine, API and Scenarios page (#21)
