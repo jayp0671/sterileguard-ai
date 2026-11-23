@@ -1,0 +1,5 @@
+Contact: https://github.com/jayp0671/sterileguard-ai/security/advisories/new
+Expires: 2027-06-30T23:59:59Z
+Policy: https://sterileguard-ai.vercel.app/trust/security
+Preferred-Languages: en
+Canonical: https://sterileguard-ai.vercel.app/.well-known/security.txt

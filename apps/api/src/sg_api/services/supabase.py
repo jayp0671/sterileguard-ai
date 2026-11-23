@@ -155,6 +155,15 @@ class SupabaseGateway:
             raise ApiError(410, "the uploaded file is no longer available; upload it again")
         return resp.content
 
+    async def delete(self, token: str, table: str, params: dict[str, str]) -> list[Row]:
+        headers = {**self._headers(token), "Prefer": "return=representation"}
+        resp = await self.client.request(
+            "DELETE", f"{self.base}/rest/v1/{table}", params=params, headers=headers
+        )
+        self._raise(resp)
+        rows: list[Row] = resp.json()
+        return rows
+
     async def storage_delete(self, token: str, bucket: str, path: str) -> None:
         resp = await self.client.request(
             "DELETE",

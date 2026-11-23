@@ -23,7 +23,27 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "agent_cache": {
+            "admin_actions": {
+                  Row: {
+                    "action": string,"actor_id": string,"created_at": string,"department_id": string,"detail": NonNullable<Json>,"id": string,"target_user_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "action": string,"actor_id": string,"created_at"?: string,"department_id": string,"detail"?: NonNullable<Json>,"id"?: string,"target_user_id"?: string | null
+                  }
+                  Update: {
+                    "action"?: string,"actor_id"?: string,"created_at"?: string,"department_id"?: string,"detail"?: NonNullable<Json>,"id"?: string,"target_user_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "admin_actions_department_id_fkey"
+      columns: ["department_id"]
+isOneToOne: false
+      referencedRelation: "departments"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"agent_cache": {
                   Row: {
                     "agent": string,"created_at": string,"expires_at": string,"key": string,"value": NonNullable<Json>
                   }
@@ -61,6 +81,20 @@ export type Database = {
                   }
                   Update: {
                     "action"?: string,"actor_id"?: string | null,"actor_role"?: string | null,"after"?: Json | null,"before"?: Json | null,"department_id"?: string | null,"entity"?: string,"entity_id"?: string | null,"id"?: never,"ip_hash"?: string | null,"occurred_at"?: string,"request_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"consents": {
+                  Row: {
+                    "analytics": boolean,"anon_id": string | null,"created_at": string,"gpc": boolean,"id": number,"user_id": string | null,"version": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "analytics"?: boolean,"anon_id"?: string | null,"created_at"?: string,"gpc"?: boolean,"id"?: never,"user_id"?: string | null,"version": string
+                  }
+                  Update: {
+                    "analytics"?: boolean,"anon_id"?: string | null,"created_at"?: string,"gpc"?: boolean,"id"?: never,"user_id"?: string | null,"version"?: string
                   }
                   Relationships: [
                     
@@ -295,6 +329,20 @@ isOneToOne: false
                   }
                   Update: {
                     "allowed_email_domains"?: (string)[],"created_at"?: string,"id"?: string,"name"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"policy_acceptances": {
+                  Row: {
+                    "accepted_at": string,"policy": string,"user_id": string,"version": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "accepted_at"?: string,"policy": string,"user_id": string,"version": string
+                  }
+                  Update: {
+                    "accepted_at"?: string,"policy"?: string,"user_id"?: string,"version"?: string
                   }
                   Relationships: [
                     

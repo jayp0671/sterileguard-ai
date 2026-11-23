@@ -65,9 +65,13 @@ Example invite body:
 
 ## Lost authenticator
 
-Supabase has no recovery codes. A dept_admin resets the user's factors (admin UI in SG-25; until
-then, a platform admin deletes the factor in the dashboard under Authentication > Users). Every
-reset is audited.
+Supabase has no recovery codes. A dept_admin resets the user's factors in the app: Admin > Users
+and invites > Reset 2FA on the member's row, then a fresh two-factor code from the admin
+(POST /v1/admin/members/{user_id}/mfa-reset, service role, SG-25). The user is signed out
+everywhere and enrolls a new authenticator at next sign-in. Each reset writes an admin_actions
+row, which the audit trigger records (Admin > Audit log, entity "admin actions"). If the only
+dept_admin is locked out, a platform admin does the same from the app, or deletes the factor in
+the Supabase dashboard under Authentication > Users (not audited in the app).
 
 ## Logs
 
