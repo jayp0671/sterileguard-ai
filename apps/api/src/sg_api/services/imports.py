@@ -205,7 +205,7 @@ def reports(result: ImportResult, suggestions: Mapping[str, Any] | None = None) 
 class ImportService:
     def __init__(self, gw: ImportGateway, suggester: Any = None) -> None:
         self.gw = gw
-        # SG-23 mapping agent: async (headers, profile) -> {column: {field, confidence, reason}}
+        # SG-23 mapping agent: async (unmapped, profile, taken) -> {column: suggestion}
         self.suggester = suggester
 
     # -- helpers ---------------------------------------------------------------------------
@@ -260,7 +260,8 @@ class ImportService:
         if not unmapped:
             return {}
         try:
-            out: dict[str, Any] = await self.suggester(unmapped, result.profile)
+            taken = [m.field for m in result.mapping if m.field]
+            out: dict[str, Any] = await self.suggester(unmapped, result.profile, taken)
         except Exception:  # the agent is optional: any failure means manual mapping
             log.warning("mapping_agent_unavailable")
             return {}

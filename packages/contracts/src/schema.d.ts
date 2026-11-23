@@ -89,6 +89,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/agents/briefing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Briefing
+         * @description A 3 to 4 sentence summary of a forecast. AI-written when NVIDIA NIM is available and
+         *     the answer passes the number guardrail; otherwise the fixed template.
+         */
+        post: operations["create_briefing_v1_agents_briefing_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/audit/auth-event": {
         parameters: {
             query?: never;
@@ -709,6 +730,49 @@ export interface components {
              * @description CSV or Excel, at most 10 MB
              */
             file: string;
+        };
+        /** BriefingIn */
+        BriefingIn: {
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            /**
+             * Forecast Id
+             * Format: uuid
+             */
+            forecast_id: string;
+            /**
+             * Locale
+             * @default en
+             * @enum {string}
+             */
+            locale: "en" | "es";
+        };
+        /** BriefingOut */
+        BriefingOut: {
+            /**
+             * Ai Note
+             * @default An AI model rewrote the forecast numbers above into plain sentences. It does not predict, and its answer is checked so it can only use numbers from the forecast.
+             */
+            ai_note: string;
+            /**
+             * Disclaimer
+             * @default Model estimate, not a guarantee.
+             */
+            disclaimer: string;
+            /** Model */
+            model?: string | null;
+            /** Prompt Version */
+            prompt_version: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "llm" | "template";
+            /** Text */
+            text: string;
         };
         /** CardSections */
         CardSections: {
@@ -2356,6 +2420,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Invite"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    create_briefing_v1_agents_briefing_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BriefingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BriefingOut"];
                 };
             };
             /** @description Problem */

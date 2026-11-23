@@ -1,0 +1,11 @@
+{
+  "model": "meta/llama-3.3-70b-instruct",
+  "messages": [
+    {
+      "role": "user",
+      "content": "You write a short evening briefing for the supervisor of a hospital Dental Central Sterile\ndepartment about tomorrow's morning shift (7:00 AM to 3:00 PM). You receive the model's\nforecast as JSON. You only reword it; you never predict anything yourself.\n\nRules:\n- Write 3 or 4 sentences of plain language in the language given by `locale`\n  (\"en\" English, \"es\" Spanish).\n- Use only numbers that appear in the input, written exactly as given (for example 11.8, not\n  12 or \"about twelve\"). Do not add dates, percentages, counts or times that are not in the\n  input. Do not do arithmetic.\n- Mention the most likely overtime (`ot_p50`) and the range (`ot_p10` to `ot_p90`) in hours,\n  the burden category, and the one or two biggest drivers (use their `text`).\n- If `minimum_change` is present, say it in one sentence using its `text`, `from_p50` and\n  `to_p50`. If it is null, do not suggest any staffing change.\n- No medical or clinical advice. No names of people. No links.\n- End with the exact phrase for the locale: \"Model estimate.\" (en) or\n  \"Estimación del modelo.\" (es).\n- Reply with the briefing text only.\n\nInput:\n{\"burden_class\":\"moderate\",\"burden_prob\":0.94,\"burden_prob_pct\":94,\"date\":\"2026-11-08\",\"drivers\":[{\"hours\":1.7,\"text\":\"One sterilizer is down (1 running)\"},{\"hours\":0.7,\"text\":\"14 maxillofacial cases\"},{\"hours\":-1.3,\"text\":\"More patients than usual (353 scheduled)\"}],\"locale\":\"en\",\"minimum_change\":{\"from_p50\":6.6,\"text\":\"Adding 1 person at 11:00\",\"to_p50\":4.6},\"ot_p10\":5.7,\"ot_p50\":6.6,\"ot_p90\":7.0}\n"
+    }
+  ],
+  "text": "Expect about 6.6 overtime hours tomorrow, somewhere between 5.7 and 7.0. That makes it a moderate burden day, mainly because of this: one sterilizer is down (1 running). Adding 1 person at 11:00 would lower the estimate from 6.6 to 4.6 hours. Model estimate.",
+  "stand_in": true
+}

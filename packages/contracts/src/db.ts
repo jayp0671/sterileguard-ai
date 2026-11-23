@@ -23,7 +23,35 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "audit_log": {
+            "agent_cache": {
+                  Row: {
+                    "agent": string,"created_at": string,"expires_at": string,"key": string,"value": NonNullable<Json>
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "agent": string,"created_at"?: string,"expires_at"?: string,"key": string,"value": NonNullable<Json>
+                  }
+                  Update: {
+                    "agent"?: string,"created_at"?: string,"expires_at"?: string,"key"?: string,"value"?: NonNullable<Json>
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"agent_calls": {
+                  Row: {
+                    "agent": string,"created_at": string,"id": number,"input_hash": string,"latency_ms": number | null,"model": string,"output_hash": string | null,"prompt_version": string,"status": string,"tokens_in": number | null,"tokens_out": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "agent": string,"created_at"?: string,"id"?: never,"input_hash": string,"latency_ms"?: number | null,"model": string,"output_hash"?: string | null,"prompt_version": string,"status": string,"tokens_in"?: number | null,"tokens_out"?: number | null
+                  }
+                  Update: {
+                    "agent"?: string,"created_at"?: string,"id"?: never,"input_hash"?: string,"latency_ms"?: number | null,"model"?: string,"output_hash"?: string | null,"prompt_version"?: string,"status"?: string,"tokens_in"?: number | null,"tokens_out"?: number | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"audit_log": {
                   Row: {
                     "action": string,"actor_id": string | null,"actor_role": string | null,"after": Json | null,"before": Json | null,"department_id": string | null,"entity": string,"entity_id": string | null,"id": number,"ip_hash": string | null,"occurred_at": string,"request_id": string | null
                   }

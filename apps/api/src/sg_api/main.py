@@ -21,6 +21,7 @@ from sg_api.core.ratelimit import RateLimitMiddleware
 from sg_api.db.service_client import ServiceClient
 from sg_api.routers import (
     admin,
+    agents,
     audit,
     forecasts,
     health,
@@ -31,10 +32,12 @@ from sg_api.routers import (
     scenarios,
     shifts,
 )
+from sg_api.services.agents import AgentService
 from sg_api.services.models import ModelService, SupabaseModelSource
 
 v1 = APIRouter(prefix="/v1")
 v1.include_router(admin.router)
+v1.include_router(agents.router)
 v1.include_router(audit.router)
 v1.include_router(forecasts.router)
 v1.include_router(imports.router)
@@ -82,6 +85,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     app.state.model_service = model_service_for(settings)
+    # One NIM client per process: limiter and breaker are per process (SG-23).
+    app.state.agent_service = AgentService(settings)
+    app.state.mapping_suggester = app.state.agent_service.suggest_mapping
     # add_middleware wraps: the last one added runs first. Idempotency sits inside GZip so it
     # stores plain JSON; rate limiting runs after request ids are bound.
     app.add_middleware(IdempotencyMiddleware)

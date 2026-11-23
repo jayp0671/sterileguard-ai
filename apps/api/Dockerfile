@@ -23,10 +23,12 @@ COPY packages/data packages/data
 COPY packages/sim packages/sim
 COPY packages/ml packages/ml
 COPY packages/agents packages/agents
+# Agent prompts and model IDs (SG-23); sg_agents finds ops/prompts from its own location.
+COPY ops/prompts ops/prompts
 RUN uv sync --frozen --no-dev --package sg-api --no-editable && chown -R app /app
 
 ARG GIT_SHA=""
-ENV GIT_SHA=${GIT_SHA} PATH="/app/.venv/bin:$PATH" PORT=7860
+ENV GIT_SHA=${GIT_SHA} PATH="/app/.venv/bin:$PATH" PORT=7860 SG_PROMPTS_DIR=/app/ops/prompts
 USER app
 EXPOSE 7860
 CMD ["sh", "-c", "uvicorn sg_api.main:create_app --factory --host 0.0.0.0 --port ${PORT:-7860}"]
