@@ -186,6 +186,159 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_v1_imports_get"];
+        put?: never;
+        /**
+         * Upload
+         * @description Upload a file, then parse, PHI-guard, map and validate it. Nothing is committed.
+         */
+        post: operations["upload_v1_imports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/fields": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Fields
+         * @description Schema fields an import column can map to (for the mapping select).
+         */
+        get: operations["list_fields_v1_imports_fields_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Job */
+        get: operations["get_job_v1_imports__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/{job_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_v1_imports__job_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/{job_id}/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Commit
+         * @description Write the valid rows as real data (audited). Existing real days are skipped unless a
+         *     department admin sets overwrite.
+         */
+        post: operations["commit_v1_imports__job_id__commit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/{job_id}/mapping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Remap
+         * @description Change column mappings and validate again.
+         */
+        patch: operations["remap_v1_imports__job_id__mapping_patch"];
+        trace?: never;
+    };
+    "/v1/imports/{job_id}/rejected.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Rejected */
+        get: operations["rejected_v1_imports__job_id__rejected_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/imports/{job_id}/template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Save Template
+         * @description Save this file's mapping so the next file with the same columns maps itself.
+         */
+        post: operations["save_template_v1_imports__job_id__template_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me": {
         parameters: {
             query?: never;
@@ -217,6 +370,47 @@ export interface paths {
         get: operations["list_models_v1_models_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/models/performance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Performance
+         * @description Holdout metrics of the active models and live accuracy on approved real shift logs.
+         */
+        get: operations["performance_v1_models_performance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/models/rollback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rollback Model
+         * @description Platform admin with a fresh two-factor proof: re-activate the most recently retired
+         *     version of the feature set. Audited by the model_versions trigger.
+         */
+        post: operations["rollback_model_v1_models_rollback_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -508,6 +702,38 @@ export interface components {
              */
             event: "sign_in_success" | "sign_in_failure" | "mfa_enroll" | "mfa_unenroll" | "mfa_challenge_failure" | "sign_out" | "sign_out_global" | "idle_timeout" | "session_expired";
         };
+        /** Body_upload_v1_imports_post */
+        Body_upload_v1_imports_post: {
+            /**
+             * File
+             * @description CSV or Excel, at most 10 MB
+             */
+            file: string;
+        };
+        /** CardSections */
+        CardSections: {
+            /**
+             * Features
+             * @default []
+             */
+            features: string[];
+            /**
+             * Gates
+             * @default []
+             */
+            gates: components["schemas"]["GateSummary"][];
+            /** Intended Use */
+            intended_use?: string | null;
+            /**
+             * Limitations
+             * @default []
+             */
+            limitations: string[];
+            /** Run Id */
+            run_id?: string | null;
+            /** Trained At */
+            trained_at?: string | null;
+        };
         /** Check */
         Check: {
             /** Ok */
@@ -515,9 +741,94 @@ export interface components {
             /** Reason */
             reason?: string | null;
         };
+        /** CommitBody */
+        CommitBody: {
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            /**
+             * Overwrite
+             * @description Replace existing real days (dept_admin only; audited)
+             * @default false
+             */
+            overwrite: boolean;
+        };
+        /** CommitOut */
+        CommitOut: {
+            /** Actuals */
+            actuals: number;
+            /**
+             * Already Committed
+             * @default false
+             */
+            already_committed: boolean;
+            /** Dataset Id */
+            dataset_id: string | null;
+            /**
+             * Import Job Id
+             * Format: uuid
+             */
+            import_job_id: string;
+            /** Plans */
+            plans: number;
+            /** Rows Committed */
+            rows_committed: number;
+            /**
+             * Skipped Dates
+             * @default []
+             */
+            skipped_dates: string[];
+        };
+        /** Confusion */
+        Confusion: {
+            /** Days */
+            days: number;
+            /** Labels */
+            labels: string[];
+            /**
+             * Matrix
+             * @description rows: actual class, columns: predicted class
+             */
+            matrix: number[][];
+        };
+        /** DailyError */
+        DailyError: {
+            /** Actual */
+            actual: number;
+            /** Covered */
+            covered: boolean;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /**
+             * Error
+             * @description actual minus p50, hours
+             */
+            error: number;
+            /** P10 */
+            p10: number;
+            /** P50 */
+            p50: number;
+            /** P90 */
+            p90: number;
+            /** Predicted Class */
+            predicted_class?: string | null;
+        };
         /** DepartmentIn */
         DepartmentIn: {
             /** Department Id */
+            department_id: string;
+        };
+        /** DeptBody */
+        DeptBody: {
+            /**
+             * Department Id
+             * Format: uuid
+             */
             department_id: string;
         };
         /** DriverOut */
@@ -550,6 +861,21 @@ export interface components {
             msg: string;
             /** Type */
             type: string;
+        };
+        /** FieldOption */
+        FieldOption: {
+            /** Description */
+            description: string;
+            /** Label */
+            label: string;
+            /** Name */
+            name: string;
+            /** Required */
+            required: boolean;
+            /** Tier */
+            tier: number;
+            /** Unit */
+            unit: string;
         };
         /** ForecastIn */
         ForecastIn: {
@@ -629,6 +955,17 @@ export interface components {
             /** Ot P90 */
             ot_p90: number;
         };
+        /** GateSummary */
+        GateSummary: {
+            /** Message */
+            message?: string | null;
+            /** Name */
+            name: string;
+            /** Passed */
+            passed: boolean;
+            /** Required */
+            required: boolean;
+        };
         /** Health */
         Health: {
             /**
@@ -638,6 +975,15 @@ export interface components {
             status: "ok";
             /** Version */
             version: string;
+        };
+        /** HistBin */
+        HistBin: {
+            /** Count */
+            count: number;
+            /** End */
+            end: number;
+            /** Start */
+            start: number;
         };
         /** HistoryPoint */
         HistoryPoint: {
@@ -659,6 +1005,170 @@ export interface components {
             ot_p50: number;
             /** Ot P90 */
             ot_p90: number;
+        };
+        /** Holdout */
+        Holdout: {
+            /** Coverage 80 */
+            coverage_80?: number | null;
+            /** Mae */
+            mae?: number | null;
+            /** Mean Width 80 */
+            mean_width_80?: number | null;
+            /** Rmse */
+            rmse?: number | null;
+        };
+        /** ImportColumn */
+        ImportColumn: {
+            /** Column */
+            column: string;
+            /** Confidence */
+            confidence: number;
+            /** Dtype */
+            dtype: string;
+            /** Field */
+            field: string | null;
+            /** Method */
+            method?: ("exact" | "synonym" | "fuzzy" | "template" | "ai" | "manual") | null;
+            /**
+             * Phi Flagged
+             * @default false
+             */
+            phi_flagged: boolean;
+            /** Samples */
+            samples?: string[];
+            /** Suggested Field */
+            suggested_field?: string | null;
+            /**
+             * Uncertain
+             * @default false
+             */
+            uncertain: boolean;
+        };
+        /** ImportError_ */
+        ImportError_: {
+            /** Column */
+            column: string | null;
+            /**
+             * Kind
+             * @default invalid
+             * @enum {string}
+             */
+            kind: "invalid" | "blocked";
+            /** Message */
+            message: string;
+            /** Row */
+            row: number | null;
+            /** Value */
+            value: string | null;
+        };
+        /** ImportJob */
+        ImportJob: {
+            /**
+             * Columns
+             * @default []
+             */
+            columns: components["schemas"]["ImportColumn"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Created By Me
+             * @default false
+             */
+            created_by_me: boolean;
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            /**
+             * File Available
+             * @default false
+             */
+            file_available: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Original Filename */
+            original_filename: string;
+            parse?: components["schemas"]["ParseSummary"] | null;
+            /**
+             * @default {
+             *       "cells_blocked": 0,
+             *       "columns_removed": 0,
+             *       "rows_flagged": 0
+             *     }
+             */
+            phi: components["schemas"]["PhiSummary"];
+            /** Rows Committed */
+            rows_committed?: number | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "uploaded" | "parsed" | "mapped" | "validated" | "committed" | "failed" | "cancelled";
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * @default {
+             *       "errors": [],
+             *       "invalid_rows": 0,
+             *       "preview": [],
+             *       "valid_rows": 0
+             *     }
+             */
+            validation: components["schemas"]["Validation"];
+        };
+        /** ImportSummary */
+        ImportSummary: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Created By Me
+             * @default false
+             */
+            created_by_me: boolean;
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Original Filename */
+            original_filename: string;
+            /** Rows Committed */
+            rows_committed?: number | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "uploaded" | "parsed" | "mapped" | "validated" | "committed" | "failed" | "cancelled";
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** Importance */
+        Importance: {
+            /** Feature */
+            feature: string;
+            /** Mean Abs Shap */
+            mean_abs_shap: number | null;
         };
         /** Invite */
         Invite: {
@@ -711,6 +1221,55 @@ export interface components {
             /** Min */
             min: number;
         };
+        /** LiveMetrics */
+        LiveMetrics: {
+            /**
+             * Bias
+             * @description mean of actual minus p50, hours
+             */
+            bias?: number | null;
+            confusion?: components["schemas"]["Confusion"] | null;
+            /** Coverage 80 */
+            coverage_80?: number | null;
+            /**
+             * Coverage Target
+             * @default 0.8
+             */
+            coverage_target: number;
+            /**
+             * Daily
+             * @default []
+             */
+            daily: components["schemas"]["DailyError"][];
+            /** Days */
+            days: number;
+            /** Mae */
+            mae?: number | null;
+            /**
+             * Residual Histogram
+             * @default []
+             */
+            residual_histogram: components["schemas"]["HistBin"][];
+            /** Rmse */
+            rmse?: number | null;
+            /** Window Days */
+            window_days: number;
+        };
+        /** MappingPatch */
+        MappingPatch: {
+            /**
+             * Department Id
+             * Format: uuid
+             */
+            department_id: string;
+            /**
+             * Mapping
+             * @description Source column to schema field (null to leave the column out)
+             */
+            mapping: {
+                [key: string]: string | null;
+            };
+        };
         /** Me */
         Me: {
             /** Aal */
@@ -737,6 +1296,59 @@ export interface components {
             department_name: string;
             /** Roles */
             roles: ("technician" | "supervisor" | "dept_admin" | "data_steward" | "platform_admin")[];
+        };
+        /** ModelCardView */
+        ModelCardView: {
+            /** Activated At */
+            activated_at?: string | null;
+            /** Activated By Role */
+            activated_by_role?: ("platform_admin" | "cli") | null;
+            /**
+             * Baselines
+             * @default {}
+             */
+            baselines: {
+                [key: string]: number | null;
+            };
+            card: components["schemas"]["CardSections"];
+            /** Created At */
+            created_at?: string | null;
+            /**
+             * Datasets
+             * @default []
+             */
+            datasets: string[];
+            /**
+             * Feature Set
+             * @enum {string}
+             */
+            feature_set: "full" | "core";
+            /**
+             * Feature Sets
+             * @default {}
+             */
+            feature_sets: {
+                [key: string]: components["schemas"]["Holdout"];
+            };
+            /** Gates Passed */
+            gates_passed: boolean;
+            holdout: components["schemas"]["Holdout"];
+            /**
+             * Shap Global
+             * @default []
+             */
+            shap_global: components["schemas"]["Importance"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "candidate" | "active" | "retired" | "rejected";
+            /** Thresholds */
+            thresholds?: number[] | null;
+            /** Thresholds Source */
+            thresholds_source: string;
+            /** Version */
+            version: string;
         };
         /** ModelVersionOut */
         ModelVersionOut: {
@@ -807,6 +1419,76 @@ export interface components {
              * @description Changes staff willing to stay; never recommended
              */
             what_if: boolean;
+        };
+        /** ParseSummary */
+        ParseSummary: {
+            /**
+             * Columns
+             * @default 0
+             */
+            columns: number;
+            /** Error */
+            error?: string | null;
+            /** File Type */
+            file_type?: string | null;
+            /**
+             * Header Rows
+             * @default []
+             */
+            header_rows: number[];
+            /**
+             * Rows
+             * @default 0
+             */
+            rows: number;
+            /** Sheet */
+            sheet?: string | null;
+            /**
+             * Sheets
+             * @default []
+             */
+            sheets: string[];
+            /**
+             * Transform Notes
+             * @default []
+             */
+            transform_notes: string[];
+            /**
+             * Wide
+             * @default false
+             */
+            wide: boolean;
+        };
+        /** Performance */
+        Performance: {
+            /** Active */
+            active: components["schemas"]["ModelCardView"][];
+            /** Department Id */
+            department_id: string;
+            live: components["schemas"]["LiveMetrics"];
+            /**
+             * Registry
+             * @description Every version, for platform admins only
+             */
+            registry?: components["schemas"]["ModelCardView"][] | null;
+        };
+        /** PhiSummary */
+        PhiSummary: {
+            /**
+             * Cells Blocked
+             * @default 0
+             */
+            cells_blocked: number;
+            /**
+             * Columns Removed
+             * @default 0
+             */
+            columns_removed: number;
+            /**
+             * Rows Flagged
+             * @default 0
+             */
+            rows_flagged: number;
         };
         /** PlanOut */
         PlanOut: {
@@ -926,6 +1608,32 @@ export interface components {
              */
             washers_up?: number | null;
         };
+        /** PreviewCell */
+        PreviewCell: {
+            /**
+             * Changed
+             * @default false
+             */
+            changed: boolean;
+            /**
+             * Hidden
+             * @default false
+             */
+            hidden: boolean;
+            /** Original */
+            original?: string | null;
+            /** Value */
+            value?: unknown;
+        };
+        /** PreviewRow */
+        PreviewRow: {
+            /** Cells */
+            cells: {
+                [key: string]: components["schemas"]["PreviewCell"];
+            };
+            /** Row */
+            row: number;
+        };
         /**
          * Problem
          * @description Problem Details (RFC 9457).
@@ -972,6 +1680,15 @@ export interface components {
             department_id: string;
             /** Reason */
             reason: string;
+        };
+        /** RollbackBody */
+        RollbackBody: {
+            /**
+             * Feature Set
+             * @default full
+             * @enum {string}
+             */
+            feature_set: "full" | "core";
         };
         /** ScenarioIn */
         ScenarioIn: {
@@ -1426,6 +2143,16 @@ export interface components {
             /** Value */
             value: number;
         };
+        /** TemplateOut */
+        TemplateOut: {
+            /** Column Signature */
+            column_signature: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
         /** Thresholds */
         Thresholds: {
             /**
@@ -1443,6 +2170,29 @@ export interface components {
              * @description simulated_provisional until real-data thresholds exist
              */
             source: string;
+        };
+        /** Validation */
+        Validation: {
+            /**
+             * Errors
+             * @default []
+             */
+            errors: components["schemas"]["ImportError_"][];
+            /**
+             * Invalid Rows
+             * @default 0
+             */
+            invalid_rows: number;
+            /**
+             * Preview
+             * @default []
+             */
+            preview: components["schemas"]["PreviewRow"][];
+            /**
+             * Valid Rows
+             * @default 0
+             */
+            valid_rows: number;
         };
     };
     responses: never;
@@ -1790,6 +2540,323 @@ export interface operations {
             };
         };
     };
+    history_v1_imports_get: {
+        parameters: {
+            query: {
+                /** @description Department the import belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportSummary"][];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    upload_v1_imports_post: {
+        parameters: {
+            query: {
+                /** @description Department the import belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_v1_imports_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportJob"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    list_fields_v1_imports_fields_get: {
+        parameters: {
+            query: {
+                /** @description Department the import belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FieldOption"][];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    get_job_v1_imports__job_id__get: {
+        parameters: {
+            query: {
+                /** @description Department the import belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportJob"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    cancel_v1_imports__job_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeptBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportSummary"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    commit_v1_imports__job_id__commit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    remap_v1_imports__job_id__mapping_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MappingPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportJob"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    rejected_v1_imports__job_id__rejected_csv_get: {
+        parameters: {
+            query: {
+                /** @description Department the import belongs to */
+                department_id: string;
+            };
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Rejected rows */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": unknown;
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    save_template_v1_imports__job_id__template_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeptBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateOut"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
     me_v1_me_get: {
         parameters: {
             query?: never;
@@ -1836,6 +2903,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModelVersionOut"][];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    performance_v1_models_performance_get: {
+        parameters: {
+            query: {
+                department_id: string;
+                /** @description Days of real data to score */
+                window?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Performance"];
+                };
+            };
+            /** @description Problem */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                    "application/problem+json": unknown;
+                };
+            };
+        };
+    };
+    rollback_model_v1_models_rollback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RollbackBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelVersionOut"];
                 };
             };
             /** @description Problem */

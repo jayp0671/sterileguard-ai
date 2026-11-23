@@ -395,6 +395,9 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"commit_import":
+{ Args: { "p_actuals": Json,"p_job_id": string,"p_overwrite"?: boolean,"p_plans": Json }; Returns: Json
+                           },
 "has_any_role":
 { Args: { "roles": (Database["public"]['Enums']["app_role"])[] }; Returns: boolean
                            },

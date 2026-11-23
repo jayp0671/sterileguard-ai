@@ -30,6 +30,17 @@ class Gateway(Protocol):
     async def admin_invite(self, email: str, redirect_to: str) -> None: ...
 
 
+class StorageGateway(Protocol):
+    """Private Storage with the caller's token, so the bucket's folder policies apply (SG-24)."""
+
+    async def rpc_result(self, token: str, fn: str, args: Row | None = None) -> tuple[int, Any]: ...
+    async def storage_upload(
+        self, token: str, bucket: str, path: str, data: bytes, content_type: str
+    ) -> None: ...
+    async def storage_download(self, token: str, bucket: str, path: str) -> bytes: ...
+    async def storage_delete(self, token: str, bucket: str, path: str) -> None: ...
+
+
 class SupabaseGateway:
     def __init__(self, settings: Settings, client: httpx.AsyncClient | None = None) -> None:
         self.settings = settings
@@ -114,6 +125,45 @@ class SupabaseGateway:
         )
         self._raise(resp)
         return resp.json()
+
+    async def rpc_result(self, token: str, fn: str, args: Row | None = None) -> tuple[int, Any]:
+        """Status and JSON body, for callers that map database error codes themselves."""
+        resp = await self.client.post(
+            f"{self.base}/rest/v1/rpc/{fn}", json=args or {}, headers=self._headers(token)
+        )
+        if resp.status_code >= 500:
+            raise ApiError(502, "database error")
+        return resp.status_code, (resp.json() if resp.content else None)
+
+    async def storage_upload(
+        self, token: str, bucket: str, path: str, data: bytes, content_type: str
+    ) -> None:
+        headers = {**self._headers(token), "Content-Type": content_type, "x-upsert": "false"}
+        resp = await self.client.post(
+            f"{self.base}/storage/v1/object/{bucket}/{path}", content=data, headers=headers
+        )
+        if resp.status_code >= 400:
+            raise ApiError(502 if resp.status_code >= 500 else 403, "file upload failed")
+
+    async def storage_download(self, token: str, bucket: str, path: str) -> bytes:
+        resp = await self.client.get(
+            f"{self.base}/storage/v1/object/authenticated/{bucket}/{path}",
+            headers=self._headers(token),
+            timeout=60.0,
+        )
+        if resp.status_code >= 400:
+            raise ApiError(410, "the uploaded file is no longer available; upload it again")
+        return resp.content
+
+    async def storage_delete(self, token: str, bucket: str, path: str) -> None:
+        resp = await self.client.request(
+            "DELETE",
+            f"{self.base}/storage/v1/object/{bucket}",
+            json={"prefixes": [path]},
+            headers=self._headers(token),
+        )
+        if resp.status_code >= 500:
+            raise ApiError(502, "file delete failed")
 
     async def admin_invite(self, email: str, redirect_to: str) -> None:
         # Invite emails need the Auth admin API, which only the service role can call.

@@ -125,6 +125,84 @@
         "title": "AuthEvent",
         "type": "object"
       },
+      "Body_upload_v1_imports_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "description": "CSV or Excel, at most 10 MB",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_v1_imports_post",
+        "type": "object"
+      },
+      "CardSections": {
+        "properties": {
+          "features": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Features",
+            "type": "array"
+          },
+          "gates": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/GateSummary"
+            },
+            "title": "Gates",
+            "type": "array"
+          },
+          "intended_use": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intended Use"
+          },
+          "limitations": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "trained_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trained At"
+          }
+        },
+        "title": "CardSections",
+        "type": "object"
+      },
       "Check": {
         "properties": {
           "ok": {
@@ -149,6 +227,171 @@
         "title": "Check",
         "type": "object"
       },
+      "CommitBody": {
+        "properties": {
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "overwrite": {
+            "default": false,
+            "description": "Replace existing real days (dept_admin only; audited)",
+            "title": "Overwrite",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "department_id"
+        ],
+        "title": "CommitBody",
+        "type": "object"
+      },
+      "CommitOut": {
+        "properties": {
+          "actuals": {
+            "title": "Actuals",
+            "type": "integer"
+          },
+          "already_committed": {
+            "default": false,
+            "title": "Already Committed",
+            "type": "boolean"
+          },
+          "dataset_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset Id"
+          },
+          "import_job_id": {
+            "format": "uuid",
+            "title": "Import Job Id",
+            "type": "string"
+          },
+          "plans": {
+            "title": "Plans",
+            "type": "integer"
+          },
+          "rows_committed": {
+            "title": "Rows Committed",
+            "type": "integer"
+          },
+          "skipped_dates": {
+            "default": [],
+            "items": {
+              "format": "date",
+              "type": "string"
+            },
+            "title": "Skipped Dates",
+            "type": "array"
+          }
+        },
+        "required": [
+          "import_job_id",
+          "dataset_id",
+          "rows_committed",
+          "plans",
+          "actuals"
+        ],
+        "title": "CommitOut",
+        "type": "object"
+      },
+      "Confusion": {
+        "properties": {
+          "days": {
+            "title": "Days",
+            "type": "integer"
+          },
+          "labels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Labels",
+            "type": "array"
+          },
+          "matrix": {
+            "description": "rows: actual class, columns: predicted class",
+            "items": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "title": "Matrix",
+            "type": "array"
+          }
+        },
+        "required": [
+          "labels",
+          "matrix",
+          "days"
+        ],
+        "title": "Confusion",
+        "type": "object"
+      },
+      "DailyError": {
+        "properties": {
+          "actual": {
+            "title": "Actual",
+            "type": "number"
+          },
+          "covered": {
+            "title": "Covered",
+            "type": "boolean"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "error": {
+            "description": "actual minus p50, hours",
+            "title": "Error",
+            "type": "number"
+          },
+          "p10": {
+            "title": "P10",
+            "type": "number"
+          },
+          "p50": {
+            "title": "P50",
+            "type": "number"
+          },
+          "p90": {
+            "title": "P90",
+            "type": "number"
+          },
+          "predicted_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Predicted Class"
+          }
+        },
+        "required": [
+          "date",
+          "p10",
+          "p50",
+          "p90",
+          "actual",
+          "error",
+          "covered"
+        ],
+        "title": "DailyError",
+        "type": "object"
+      },
       "DepartmentIn": {
         "properties": {
           "department_id": {
@@ -161,6 +404,20 @@
           "department_id"
         ],
         "title": "DepartmentIn",
+        "type": "object"
+      },
+      "DeptBody": {
+        "properties": {
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "department_id"
+        ],
+        "title": "DeptBody",
         "type": "object"
       },
       "DriverOut": {
@@ -245,6 +502,44 @@
           "type"
         ],
         "title": "FieldError",
+        "type": "object"
+      },
+      "FieldOption": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          },
+          "tier": {
+            "title": "Tier",
+            "type": "integer"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "label",
+          "description",
+          "unit",
+          "tier",
+          "required"
+        ],
+        "title": "FieldOption",
         "type": "object"
       },
       "ForecastIn": {
@@ -410,6 +705,40 @@
         "title": "ForecastRef",
         "type": "object"
       },
+      "GateSummary": {
+        "properties": {
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "boolean"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "passed",
+          "required"
+        ],
+        "title": "GateSummary",
+        "type": "object"
+      },
       "Health": {
         "properties": {
           "status": {
@@ -427,6 +756,29 @@
           "version"
         ],
         "title": "Health",
+        "type": "object"
+      },
+      "HistBin": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "end": {
+            "title": "End",
+            "type": "number"
+          },
+          "start": {
+            "title": "Start",
+            "type": "number"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "count"
+        ],
+        "title": "HistBin",
         "type": "object"
       },
       "HistoryPoint": {
@@ -473,6 +825,398 @@
           "model_version"
         ],
         "title": "HistoryPoint",
+        "type": "object"
+      },
+      "Holdout": {
+        "properties": {
+          "coverage_80": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage 80"
+          },
+          "mae": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mae"
+          },
+          "mean_width_80": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Width 80"
+          },
+          "rmse": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rmse"
+          }
+        },
+        "title": "Holdout",
+        "type": "object"
+      },
+      "ImportColumn": {
+        "properties": {
+          "column": {
+            "title": "Column",
+            "type": "string"
+          },
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "dtype": {
+            "title": "Dtype",
+            "type": "string"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "enum": [
+                  "exact",
+                  "synonym",
+                  "fuzzy",
+                  "template",
+                  "ai",
+                  "manual"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method"
+          },
+          "phi_flagged": {
+            "default": false,
+            "title": "Phi Flagged",
+            "type": "boolean"
+          },
+          "samples": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 3,
+            "title": "Samples",
+            "type": "array"
+          },
+          "suggested_field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggested Field"
+          },
+          "uncertain": {
+            "default": false,
+            "title": "Uncertain",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "column",
+          "field",
+          "confidence",
+          "dtype"
+        ],
+        "title": "ImportColumn",
+        "type": "object"
+      },
+      "ImportError_": {
+        "properties": {
+          "column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column"
+          },
+          "kind": {
+            "default": "invalid",
+            "enum": [
+              "invalid",
+              "blocked"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "row": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "row",
+          "column",
+          "value",
+          "message"
+        ],
+        "title": "ImportError_",
+        "type": "object"
+      },
+      "ImportJob": {
+        "properties": {
+          "columns": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ImportColumn"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by_me": {
+            "default": false,
+            "title": "Created By Me",
+            "type": "boolean"
+          },
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "file_available": {
+            "default": false,
+            "title": "File Available",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "original_filename": {
+            "title": "Original Filename",
+            "type": "string"
+          },
+          "parse": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ParseSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phi": {
+            "$ref": "#/components/schemas/PhiSummary",
+            "default": {
+              "cells_blocked": 0,
+              "columns_removed": 0,
+              "rows_flagged": 0
+            }
+          },
+          "rows_committed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rows Committed"
+          },
+          "status": {
+            "enum": [
+              "uploaded",
+              "parsed",
+              "mapped",
+              "validated",
+              "committed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "validation": {
+            "$ref": "#/components/schemas/Validation",
+            "default": {
+              "errors": [],
+              "invalid_rows": 0,
+              "preview": [],
+              "valid_rows": 0
+            }
+          }
+        },
+        "required": [
+          "id",
+          "department_id",
+          "original_filename",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ImportJob",
+        "type": "object"
+      },
+      "ImportSummary": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by_me": {
+            "default": false,
+            "title": "Created By Me",
+            "type": "boolean"
+          },
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "original_filename": {
+            "title": "Original Filename",
+            "type": "string"
+          },
+          "rows_committed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rows Committed"
+          },
+          "status": {
+            "enum": [
+              "uploaded",
+              "parsed",
+              "mapped",
+              "validated",
+              "committed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "department_id",
+          "original_filename",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ImportSummary",
+        "type": "object"
+      },
+      "Importance": {
+        "properties": {
+          "feature": {
+            "title": "Feature",
+            "type": "string"
+          },
+          "mean_abs_shap": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Abs Shap"
+          }
+        },
+        "required": [
+          "feature",
+          "mean_abs_shap"
+        ],
+        "title": "Importance",
         "type": "object"
       },
       "Invite": {
@@ -586,6 +1330,130 @@
         "title": "LeverBounds",
         "type": "object"
       },
+      "LiveMetrics": {
+        "properties": {
+          "bias": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "mean of actual minus p50, hours",
+            "title": "Bias"
+          },
+          "confusion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Confusion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "coverage_80": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage 80"
+          },
+          "coverage_target": {
+            "default": 0.8,
+            "title": "Coverage Target",
+            "type": "number"
+          },
+          "daily": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DailyError"
+            },
+            "title": "Daily",
+            "type": "array"
+          },
+          "days": {
+            "title": "Days",
+            "type": "integer"
+          },
+          "mae": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mae"
+          },
+          "residual_histogram": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/HistBin"
+            },
+            "title": "Residual Histogram",
+            "type": "array"
+          },
+          "rmse": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rmse"
+          },
+          "window_days": {
+            "title": "Window Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "window_days",
+          "days"
+        ],
+        "title": "LiveMetrics",
+        "type": "object"
+      },
+      "MappingPatch": {
+        "properties": {
+          "department_id": {
+            "format": "uuid",
+            "title": "Department Id",
+            "type": "string"
+          },
+          "mapping": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": "Source column to schema field (null to leave the column out)",
+            "title": "Mapping",
+            "type": "object"
+          }
+        },
+        "required": [
+          "department_id",
+          "mapping"
+        ],
+        "title": "MappingPatch",
+        "type": "object"
+      },
       "Me": {
         "properties": {
           "aal": {
@@ -670,6 +1538,149 @@
           "roles"
         ],
         "title": "Membership",
+        "type": "object"
+      },
+      "ModelCardView": {
+        "properties": {
+          "activated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activated At"
+          },
+          "activated_by_role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "platform_admin",
+                  "cli"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activated By Role"
+          },
+          "baselines": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "default": {},
+            "title": "Baselines",
+            "type": "object"
+          },
+          "card": {
+            "$ref": "#/components/schemas/CardSections"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "datasets": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Datasets",
+            "type": "array"
+          },
+          "feature_set": {
+            "enum": [
+              "full",
+              "core"
+            ],
+            "title": "Feature Set",
+            "type": "string"
+          },
+          "feature_sets": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Holdout"
+            },
+            "default": {},
+            "title": "Feature Sets",
+            "type": "object"
+          },
+          "gates_passed": {
+            "title": "Gates Passed",
+            "type": "boolean"
+          },
+          "holdout": {
+            "$ref": "#/components/schemas/Holdout"
+          },
+          "shap_global": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Importance"
+            },
+            "title": "Shap Global",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "candidate",
+              "active",
+              "retired",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "thresholds": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thresholds"
+          },
+          "thresholds_source": {
+            "title": "Thresholds Source",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "feature_set",
+          "status",
+          "gates_passed",
+          "thresholds_source",
+          "holdout",
+          "card"
+        ],
+        "title": "ModelCardView",
         "type": "object"
       },
       "ModelVersionOut": {
@@ -811,6 +1822,145 @@
           "what_if"
         ],
         "title": "OptionOut",
+        "type": "object"
+      },
+      "ParseSummary": {
+        "properties": {
+          "columns": {
+            "default": 0,
+            "title": "Columns",
+            "type": "integer"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "file_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Type"
+          },
+          "header_rows": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Header Rows",
+            "type": "array"
+          },
+          "rows": {
+            "default": 0,
+            "title": "Rows",
+            "type": "integer"
+          },
+          "sheet": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sheet"
+          },
+          "sheets": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Sheets",
+            "type": "array"
+          },
+          "transform_notes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Transform Notes",
+            "type": "array"
+          },
+          "wide": {
+            "default": false,
+            "title": "Wide",
+            "type": "boolean"
+          }
+        },
+        "title": "ParseSummary",
+        "type": "object"
+      },
+      "Performance": {
+        "properties": {
+          "active": {
+            "items": {
+              "$ref": "#/components/schemas/ModelCardView"
+            },
+            "title": "Active",
+            "type": "array"
+          },
+          "department_id": {
+            "title": "Department Id",
+            "type": "string"
+          },
+          "live": {
+            "$ref": "#/components/schemas/LiveMetrics"
+          },
+          "registry": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ModelCardView"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Every version, for platform admins only",
+            "title": "Registry"
+          }
+        },
+        "required": [
+          "department_id",
+          "active",
+          "live"
+        ],
+        "title": "Performance",
+        "type": "object"
+      },
+      "PhiSummary": {
+        "properties": {
+          "cells_blocked": {
+            "default": 0,
+            "title": "Cells Blocked",
+            "type": "integer"
+          },
+          "columns_removed": {
+            "default": 0,
+            "title": "Columns Removed",
+            "type": "integer"
+          },
+          "rows_flagged": {
+            "default": 0,
+            "title": "Rows Flagged",
+            "type": "integer"
+          }
+        },
+        "title": "PhiSummary",
         "type": "object"
       },
       "PlanOut": {
@@ -1150,6 +2300,57 @@
         "title": "PlanPut",
         "type": "object"
       },
+      "PreviewCell": {
+        "properties": {
+          "changed": {
+            "default": false,
+            "title": "Changed",
+            "type": "boolean"
+          },
+          "hidden": {
+            "default": false,
+            "title": "Hidden",
+            "type": "boolean"
+          },
+          "original": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original"
+          },
+          "value": {
+            "title": "Value"
+          }
+        },
+        "title": "PreviewCell",
+        "type": "object"
+      },
+      "PreviewRow": {
+        "properties": {
+          "cells": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PreviewCell"
+            },
+            "title": "Cells",
+            "type": "object"
+          },
+          "row": {
+            "title": "Row",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "row",
+          "cells"
+        ],
+        "title": "PreviewRow",
+        "type": "object"
+      },
       "Problem": {
         "description": "Problem Details (RFC 9457).",
         "properties": {
@@ -1262,6 +2463,21 @@
           "reason"
         ],
         "title": "ReopenIn",
+        "type": "object"
+      },
+      "RollbackBody": {
+        "properties": {
+          "feature_set": {
+            "default": "full",
+            "enum": [
+              "full",
+              "core"
+            ],
+            "title": "Feature Set",
+            "type": "string"
+          }
+        },
+        "title": "RollbackBody",
         "type": "object"
       },
       "ScenarioIn": {
@@ -2592,6 +3808,25 @@
         "title": "TargetOut",
         "type": "object"
       },
+      "TemplateOut": {
+        "properties": {
+          "column_signature": {
+            "title": "Column Signature",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "column_signature"
+        ],
+        "title": "TemplateOut",
+        "type": "object"
+      },
       "Thresholds": {
         "properties": {
           "low_max": {
@@ -2616,6 +3851,38 @@
           "source"
         ],
         "title": "Thresholds",
+        "type": "object"
+      },
+      "Validation": {
+        "properties": {
+          "errors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ImportError_"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "invalid_rows": {
+            "default": 0,
+            "title": "Invalid Rows",
+            "type": "integer"
+          },
+          "preview": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/PreviewRow"
+            },
+            "title": "Preview",
+            "type": "array"
+          },
+          "valid_rows": {
+            "default": 0,
+            "title": "Valid Rows",
+            "type": "integer"
+          }
+        },
+        "title": "Validation",
         "type": "object"
       }
     }
@@ -3082,6 +4349,489 @@
         ]
       }
     },
+    "/v1/imports": {
+      "get": {
+        "operationId": "history_v1_imports_get",
+        "parameters": [
+          {
+            "description": "Department the import belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the import belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ImportSummary"
+                  },
+                  "title": "Response History V1 Imports Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "History",
+        "tags": [
+          "imports"
+        ]
+      },
+      "post": {
+        "description": "Upload a file, then parse, PHI-guard, map and validate it. Nothing is committed.",
+        "operationId": "upload_v1_imports_post",
+        "parameters": [
+          {
+            "description": "Department the import belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the import belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_v1_imports_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Upload",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/v1/imports/fields": {
+      "get": {
+        "description": "Schema fields an import column can map to (for the mapping select).",
+        "operationId": "list_fields_v1_imports_fields_get",
+        "parameters": [
+          {
+            "description": "Department the import belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the import belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FieldOption"
+                  },
+                  "title": "Response List Fields V1 Imports Fields Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "List Fields",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/v1/imports/{job_id}": {
+      "get": {
+        "operationId": "get_job_v1_imports__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department the import belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the import belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Get Job",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/v1/imports/{job_id}/cancel": {
+      "post": {
+        "operationId": "cancel_v1_imports__job_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeptBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Cancel",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/v1/imports/{job_id}/commit": {
+      "post": {
+        "description": "Write the valid rows as real data (audited). Existing real days are skipped unless a\ndepartment admin sets overwrite.",
+        "operationId": "commit_v1_imports__job_id__commit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Commit",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/v1/imports/{job_id}/mapping": {
+      "patch": {
+        "description": "Change column mappings and validate again.",
+        "operationId": "remap_v1_imports__job_id__mapping_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MappingPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Remap",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/v1/imports/{job_id}/rejected.csv": {
+      "get": {
+        "operationId": "rejected_v1_imports__job_id__rejected_csv_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Department the import belongs to",
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "description": "Department the import belongs to",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/csv": {}
+            },
+            "description": "Rejected rows"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Rejected",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/v1/imports/{job_id}/template": {
+      "post": {
+        "description": "Save this file's mapping so the next file with the same columns maps itself.",
+        "operationId": "save_template_v1_imports__job_id__template_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeptBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Save Template",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
     "/v1/me": {
       "get": {
         "operationId": "me_v1_me_get",
@@ -3146,6 +4896,108 @@
           }
         },
         "summary": "List Models",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/models/performance": {
+      "get": {
+        "description": "Holdout metrics of the active models and live accuracy on approved real shift logs.",
+        "operationId": "performance_v1_models_performance_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "department_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Department Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Days of real data to score",
+            "in": "query",
+            "name": "window",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "description": "Days of real data to score",
+              "maximum": 365,
+              "minimum": 7,
+              "title": "Window",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Performance"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Performance",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/models/rollback": {
+      "post": {
+        "description": "Platform admin with a fresh two-factor proof: re-activate the most recently retired\nversion of the feature set. Audited by the model_versions trigger.",
+        "operationId": "rollback_model_v1_models_rollback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RollbackBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelVersionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "application/problem+json": {}
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Rollback Model",
         "tags": [
           "models"
         ]
