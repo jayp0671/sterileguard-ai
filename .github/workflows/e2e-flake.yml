@@ -1,0 +1,61 @@
+name: e2e-flake
+
+# SG-26 Part C: run the whole journey suite 10 times on a deployment and report the flake rate.
+# Anything that fails intermittently is quarantined per docs/testing.md, with a ticket.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Deployment URL to test (a preview or staging)
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  flake:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox, webkit, tablet]
+    env:
+      E2E_BASE_URL: ${{ inputs.base_url }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+      E2E_TECHNICIAN_EMAIL: ${{ secrets.E2E_TECHNICIAN_EMAIL }}
+      E2E_TECHNICIAN_PASSWORD: ${{ secrets.E2E_TECHNICIAN_PASSWORD }}
+      E2E_TECHNICIAN_TOTP_SECRET: ${{ secrets.E2E_TECHNICIAN_TOTP_SECRET }}
+      E2E_SUPERVISOR_EMAIL: ${{ secrets.E2E_SUPERVISOR_EMAIL }}
+      E2E_SUPERVISOR_PASSWORD: ${{ secrets.E2E_SUPERVISOR_PASSWORD }}
+      E2E_SUPERVISOR_TOTP_SECRET: ${{ secrets.E2E_SUPERVISOR_TOTP_SECRET }}
+      E2E_DEPT_ADMIN_EMAIL: ${{ secrets.E2E_DEPT_ADMIN_EMAIL }}
+      E2E_DEPT_ADMIN_PASSWORD: ${{ secrets.E2E_DEPT_ADMIN_PASSWORD }}
+      E2E_DEPT_ADMIN_TOTP_SECRET: ${{ secrets.E2E_DEPT_ADMIN_TOTP_SECRET }}
+      E2E_DATA_STEWARD_EMAIL: ${{ secrets.E2E_DATA_STEWARD_EMAIL }}
+      E2E_DATA_STEWARD_PASSWORD: ${{ secrets.E2E_DATA_STEWARD_PASSWORD }}
+      E2E_DATA_STEWARD_TOTP_SECRET: ${{ secrets.E2E_DATA_STEWARD_TOTP_SECRET }}
+      E2E_OUTSIDER_EMAIL: ${{ secrets.E2E_OUTSIDER_EMAIL }}
+      E2E_OUTSIDER_PASSWORD: ${{ secrets.E2E_OUTSIDER_PASSWORD }}
+      E2E_OUTSIDER_TOTP_SECRET: ${{ secrets.E2E_OUTSIDER_TOTP_SECRET }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter @sg/web exec playwright install --with-deps ${{ matrix.project == 'tablet' && 'webkit' || matrix.project }}
+      - name: 10 runs, no retries
+        run: |
+          pnpm --filter @sg/web exec playwright test --project=${{ matrix.project }} e2e/journeys \
+            --repeat-each=10 --retries=0 --reporter=json > flake.json || true
+      - name: Flake rate
+        run: |
+          python3 - <<'PY'
+          import json
+          r = json.load(open("flake.json"))
+          s = r["stats"]
+          ran = s["expected"] + s["unexpected"] + s["flaky"]
+          rate = (s["unexpected"] + s["flaky"]) / ran if ran else 0
+          line = f"${{ matrix.project }}: {ran} runs, {s['unexpected']} failed, {s['flaky']} flaky, {s['skipped']} skipped, rate {rate:.1%}"
+          print(line)
+          open(__import__("os").environ["GITHUB_STEP_SUMMARY"], "a").write(line + "\n")
+          raise SystemExit(1 if rate >= 0.02 else 0)
+          PY

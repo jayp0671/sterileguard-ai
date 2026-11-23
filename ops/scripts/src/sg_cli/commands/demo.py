@@ -35,6 +35,10 @@ app = typer.Typer(no_args_is_help=True)
 DEMO_DEPARTMENT = "00000000-0000-4000-8000-000000000003"  # supabase/seed.sql (dental-cs)
 DEMO_TZ = ZoneInfo("America/New_York")
 ROLES = ("technician", "supervisor", "dept_admin", "data_steward", "platform_admin")
+# SG-26 tenant isolation: a technician of a second demo department who must see nothing of
+# dental-cs. Same facility, fixed id, no history.
+OTHER_DEPARTMENT = "00000000-0000-4000-8000-0000000000d2"
+OUTSIDER = "outsider"
 SECRETS_FILE = Path("ops/secrets/demo-totp.json")
 ENV_VARS = {
     "local": ("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"),
@@ -226,6 +230,32 @@ def seed_users(t: dict[str, str], root: Path) -> dict[str, Any]:
                 "user_id": user["id"],
             }
             save_secrets(root, store)  # after each user, so a failure keeps what worked
+        conn.execute(
+            "insert into public.departments (id, facility_id, name, slug) "
+            "select %s, facility_id, 'Demo Other Department', 'demo-other' from public.departments "
+            "where id = %s on conflict (id) do nothing",
+            (OTHER_DEPARTMENT, DEMO_DEPARTMENT),
+        )
+        entry = store.get(OUTSIDER) or {}
+        email = plus_address(base, OUTSIDER)
+        password = entry.get("password") or secrets.token_urlsafe(18) + "aA1!"
+        user = auth.ensure_user(email, password)
+        verified = [f for f in user.get("factors") or [] if f.get("status") == "verified"]
+        secret = entry.get("totp_secret") if verified and entry.get("totp_secret") else None
+        if secret is None:
+            secret = auth.enroll_totp(user, email, password)
+        conn.execute(
+            "insert into public.memberships (user_id, department_id, role) "
+            "values (%s, %s, 'technician') on conflict do nothing",
+            (user["id"], OTHER_DEPARTMENT),
+        )
+        store[OUTSIDER] = {
+            "email": email,
+            "password": password,
+            "totp_secret": secret,
+            "user_id": user["id"],
+        }
+        save_secrets(root, store)
         conn.commit()
     return store
 
@@ -314,6 +344,14 @@ def reseed_data(
         )
         # Deleting the demo dataset cascades to its plans and actuals.
         cur.execute("delete from public.datasets where id = %s", (dataset_id,))
+        # SG-26 journey 4 commits synthetic files named e2e-*.csv; their rows are not real
+        # data, so they go too (the dataset cascade removes the plans and actuals).
+        cur.execute(
+            "delete from public.datasets where department_id = %s and import_job_id in "
+            "(select id from public.import_jobs where department_id = %s "
+            "and original_filename like 'e2e-%%')",
+            (DEMO_DEPARTMENT, DEMO_DEPARTMENT),
+        )
         cur.execute(
             "insert into public.datasets (id, department_id, source, name, row_count, "
             "content_hash, config_hash, seed) "
@@ -387,6 +425,65 @@ def seed_demo(
         f"{data['days']} demo days {data['first']} to {data['last']}, model {data['model_version']}"
     )
     result.finish()
+
+
+@app.command(
+    "e2e-secrets",
+    help="Copy the demo users' E2E_* credentials into GitHub secrets (values never printed).",
+)
+def e2e_secrets(
+    apply: bool = typer.Option(False, "--apply", help="Run gh secret set for each value"),
+) -> None:
+    import subprocess
+
+    result = core.Result("demo", "e2e-secrets")
+    store = load_secrets(core.repo_root())
+    names: list[tuple[str, str]] = []
+    for role in (*ROLES, OUTSIDER):
+        entry = store.get(role)
+        if not entry:
+            result.add(f"- {role}: not seeded (run sg demo seed-demo first)")
+            continue
+        key = role.upper()
+        names += [
+            (f"E2E_{key}_EMAIL", entry["email"]),
+            (f"E2E_{key}_PASSWORD", entry["password"]),
+            (f"E2E_{key}_TOTP_SECRET", entry["totp_secret"]),
+        ]
+    for name, value in names:
+        if apply and not core.OPTIONS.dry_run:
+            code = subprocess.run(
+                ["gh", "secret", "set", name],
+                input=value.encode(),
+                capture_output=True,
+                check=False,
+            ).returncode
+            result.ok &= code == 0
+            result.add(f"- {name}: {'set' if code == 0 else 'FAILED'}")
+        else:
+            result.add(f"- would set {name}")
+    if not apply:
+        result.add("dry list only: add --apply to write them with gh (values are never printed)")
+    result.finish()
+
+
+@app.command("e2e-env", help="KEY=VALUE lines for the local-stack CI job (local users only).")
+def e2e_env() -> None:
+    """Prints the local demo users' E2E_* values for $GITHUB_ENV. Refuses unless the secrets
+    file came from the local stack (CI's throwaway Supabase), so staging values never print."""
+    import os
+
+    store = load_secrets(core.repo_root())
+    if os.environ.get("CI") != "true" or os.environ.get("E2E_LOCAL_STACK") != "1":
+        raise SystemExit("e2e-env only runs in the CI local-stack job (CI=true, E2E_LOCAL_STACK=1)")
+    for role in (*ROLES, OUTSIDER):
+        entry = store.get(role)
+        if not entry:
+            continue
+        key = role.upper()
+        print(f"E2E_{key}_EMAIL={entry['email']}")
+        print(f"E2E_{key}_PASSWORD={entry['password']}")
+        print(f"E2E_{key}_TOTP_SECRET={entry['totp_secret']}")
 
 
 @app.command("reset-demo", help="Delete demo rows and reseed them deterministically.")
